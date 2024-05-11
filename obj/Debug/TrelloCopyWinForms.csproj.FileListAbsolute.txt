@@ -8,3 +8,7 @@ B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.csproj.GenerateResourc
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.csproj.CoreCompileInputs.cache
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.exe
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.pdb
+B:\GitHub\TrelloCopyWinForms\bin\Debug\MaterialSkin.dll
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.csproj.CopyComplete
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.EnterAccount.AccountCreation.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Login.resources
