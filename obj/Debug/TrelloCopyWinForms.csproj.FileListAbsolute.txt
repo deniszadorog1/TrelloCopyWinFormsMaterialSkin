@@ -1,0 +1,10 @@
+B:\GitHub\TrelloCopyWinForms\bin\Debug\TrelloCopyWinForms.exe.config
+B:\GitHub\TrelloCopyWinForms\bin\Debug\TrelloCopyWinForms.exe
+B:\GitHub\TrelloCopyWinForms\bin\Debug\TrelloCopyWinForms.pdb
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.csproj.AssemblyReference.cache
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.csproj.SuggestedBindingRedirects.cache
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Properties.Resources.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.csproj.GenerateResource.cache
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.csproj.CoreCompileInputs.cache
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.exe
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.pdb
