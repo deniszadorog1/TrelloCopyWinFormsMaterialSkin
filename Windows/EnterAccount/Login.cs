@@ -12,6 +12,9 @@ using MaterialSkin;
 using MaterialSkin.Controls;
 
 using TrelloCopyWinForms.Windows.EnterAccount;
+using TrelloCopyWinForms.Models.DataBase;
+using TrelloCopyWinForms.Models.UserModel;
+using TrelloCopyWinForms.Windows.UserMainMenu;
 
 namespace TrelloCopyWinForms
 {
@@ -27,6 +30,8 @@ namespace TrelloCopyWinForms
             materialSkinManager.ColorScheme = new ColorScheme(Primary.BlueGrey800, Primary.BlueGrey900, Primary.BlueGrey500, Accent.LightBlue200, TextShade.WHITE);
 
             InitFacePic();
+
+            DBUsage.InitConnectionString();
         }
 
 
@@ -51,6 +56,29 @@ namespace TrelloCopyWinForms
             createAccount.ShowDialog();
             Show();
                      
+        }
+
+        private void LoginBut_Click(object sender, EventArgs e)
+        {
+            //verfy login and hash for password
+            if(LoginBox.Text == "" || PasswordBox.Text == "")
+            {
+                MessageBox.Show("Smth went wrong!", "Mistake!");
+                return;
+            }
+
+            User user = DBUsage.GetUserInAuthorization(LoginBox.Text, PasswordBox.Text);
+
+            if(!(user is null))//we can enter in account
+            {
+                PasswordBox.Text = "";
+                Hide();
+                UserMenu menu = new UserMenu(user);
+                menu.ShowDialog();
+                Show();
+                return;
+            }
+            MessageBox.Show("Smth went wrong!", "Mistake!");
         }
     }
 }

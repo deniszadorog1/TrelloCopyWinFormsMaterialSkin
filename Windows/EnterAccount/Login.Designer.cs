@@ -56,7 +56,7 @@
             this.LoginBox.AnimateReadOnly = false;
             this.LoginBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.LoginBox.Depth = 0;
-            this.LoginBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.LoginBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.LoginBox.LeadingIcon = null;
             this.LoginBox.Location = new System.Drawing.Point(69, 227);
             this.LoginBox.MaxLength = 32;
@@ -73,7 +73,7 @@
             this.PasswordBox.AnimateReadOnly = false;
             this.PasswordBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.PasswordBox.Depth = 0;
-            this.PasswordBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.PasswordBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.PasswordBox.LeadingIcon = null;
             this.PasswordBox.Location = new System.Drawing.Point(69, 314);
             this.PasswordBox.MaxLength = 32;
@@ -118,6 +118,7 @@
             this.LoginBut.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.LoginBut.UseAccentColor = false;
             this.LoginBut.UseVisualStyleBackColor = true;
+            this.LoginBut.Click += new System.EventHandler(this.LoginBut_Click);
             // 
             // NewAccBut
             // 
@@ -149,7 +150,7 @@
             this.FacePic.TabIndex = 6;
             this.FacePic.TabStop = false;
             // 
-            // Loign
+            // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -161,7 +162,7 @@
             this.Controls.Add(this.materialLabel2);
             this.Controls.Add(this.LoginBox);
             this.Controls.Add(this.materialLabel1);
-            this.Name = "Loign";
+            this.Name = "Login";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login Form";
             this.Load += new System.EventHandler(this.Form1_Load);

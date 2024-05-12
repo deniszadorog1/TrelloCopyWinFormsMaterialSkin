@@ -12,3 +12,16 @@ B:\GitHub\TrelloCopyWinForms\bin\Debug\MaterialSkin.dll
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.csproj.CopyComplete
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.EnterAccount.AccountCreation.resources
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Login.resources
+B:\GitHub\TrelloCopyWinForms\bin\Debug\BCrypt.Net-Next.dll
+B:\GitHub\TrelloCopyWinForms\bin\Debug\dotenv.net.dll
+B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Buffers.dll
+B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Memory.dll
+B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Numerics.Vectors.dll
+B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+B:\GitHub\TrelloCopyWinForms\bin\Debug\BCrypt.Net-Next.xml
+B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Buffers.xml
+B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Memory.xml
+B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Numerics.Vectors.xml
+B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.UserMainMenu.UserMenu.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.CreateTableWindow.CreateTable.resources
