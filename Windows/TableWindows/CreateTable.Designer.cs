@@ -120,6 +120,7 @@
             this.CreateBut.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.CreateBut.UseAccentColor = false;
             this.CreateBut.UseVisualStyleBackColor = true;
+            this.CreateBut.Click += new System.EventHandler(this.CreateBut_Click);
             // 
             // BackBut
             // 

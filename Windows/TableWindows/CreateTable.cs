@@ -10,20 +10,27 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MaterialSkin.Controls;
 
+using TrelloCopyWinForms.Models.TableModels;
+using TrelloCopyWinForms.Windows.TableWindows;
 
 namespace TrelloCopyWinForms.Windows.CreateTableWindow
 {
     public partial class CreateTable : MaterialForm
     {
-        List<Image> _images = new List<Image>();
+        private List<Image> _images = new List<Image>();
+        private Image _chosenImage = null;
 
         private (int, int) _backGroundPicSize = (215, 125);
         private const int _distanceBetweenPossiableBGs = 5;
+        private string _pathToBackGroundImages = "";
+
         public CreateTable()
         {
             InitializeComponent();
 
-            InitBackGroundImages();
+            RenameBGImages();
+            InitBGImagesInList();
+
             FillImageIn();
         }
 
@@ -38,7 +45,7 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                 location.Item2 += _backGroundPicSize.Item2 + _distanceBetweenPossiableBGs;
             }
         }
-        private void AddPictureBox(Image img, (int,int) location)
+        private void AddPictureBox(Image img, (int, int) location)
         {
             PictureBox pic = new PictureBox();
             pic.Size = new Size(_backGroundPicSize.Item1, _backGroundPicSize.Item2);
@@ -53,32 +60,33 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
 
         private void ChosePic_Click(object sender, EventArgs e)
         {
-            if(sender is PictureBox pic)
+            if (sender is PictureBox pic)
             {
-                if(pic.Image is null)
+                if (pic.Image is null)
                 {
 
                 }
                 else
                 {
                     ChosenBG.Image = pic.Image;
+                    _chosenImage = pic.Image;
                 }
             }
         }
 
 
-        private void InitBackGroundImages()
+        private void RenameBGImages()
         {
             DirectoryInfo baseDirectoryInfo = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
             string imageDirectory = baseDirectoryInfo.Parent.Parent.FullName;
             string imagePath = Path.Combine(imageDirectory, "Images");
-            string backGroundPath = Path.Combine(imagePath, "BackgroundTable");
+            _pathToBackGroundImages = Path.Combine(imagePath, "BackgroundTable");
 
-            string[] fileNames = Directory.GetFiles(backGroundPath);
+            string[] fileNames = Directory.GetFiles(_pathToBackGroundImages);
 
             foreach (string filePath in fileNames)
             {
-                string pathToPic = Path.Combine(backGroundPath, filePath);
+                string pathToPic = Path.Combine(_pathToBackGroundImages, filePath);
                 string fileExtension = GetFileExtension(pathToPic);
                 string fileName = GetFileName(filePath);
 
@@ -86,16 +94,37 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                      fileName.Contains(".png") ||
                      fileName.Contains(".jpeg"))
                 {
-                    _images.Add(Image.FromFile(pathToPic));
-                    _images.Last().Tag = fileName;
+                   /* _images.Add(Image.FromFile(pathToPic));
+                    _images.Last().Tag = fileName;*/
 
                     if (fileName.Length <= 32)
                     {
                         string newName = Guid.NewGuid().ToString();
                         newName += fileExtension;
 
-                        File.Move(pathToPic, Path.Combine(backGroundPath, newName));
+                        string newPath = Path.Combine(_pathToBackGroundImages, newName);
+
+                        File.Move(pathToPic, newPath);
                     }
+                }
+            }
+        }
+
+        private void InitBGImagesInList()
+        {
+            string[] fileNames = Directory.GetFiles(_pathToBackGroundImages);
+
+            foreach (string filePath in fileNames)
+            {
+                string fileName = GetFileName(filePath);
+                string pathToPic = Path.Combine(_pathToBackGroundImages, filePath);
+
+                if (fileName.Contains(".jpg") ||
+                     fileName.Contains(".png") ||
+                     fileName.Contains(".jpeg"))
+                {
+                    _images.Add(Image.FromFile(pathToPic));
+                    _images.Last().Tag = fileName;
                 }
             }
         }
@@ -120,7 +149,7 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         {
             string fileName = "";
             char cros = '\\';
-            for(int i = filePath.Length - 1; i >= 0; i--)
+            for (int i = filePath.Length - 1; i >= 0; i--)
             {
                 if (filePath[i] == cros)
                 {
@@ -136,6 +165,22 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         private void BackBut_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void CreateBut_Click(object sender, EventArgs e)
+        {
+            if (TableNameBox.Text == "" || ChosenBG.Image is null)
+            {
+                MessageBox.Show("Smth went wrong");
+                return;
+            }
+
+            Table newTable = new Table(new List<TableTask>(), TableNameBox.Text, _chosenImage);
+            Hide();         
+            TableWindow window = new TableWindow(newTable);
+            window.ShowDialog();
+            Show();
+
         }
     }
 }

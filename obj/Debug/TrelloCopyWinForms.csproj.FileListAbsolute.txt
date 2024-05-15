@@ -25,3 +25,6 @@ B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Numerics.Vectors.xml
 B:\GitHub\TrelloCopyWinForms\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.UserMainMenu.UserMenu.resources
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.CreateTableWindow.CreateTable.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWIndows.TableWindow.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow.CreateTask.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.CreateSubTask.resources

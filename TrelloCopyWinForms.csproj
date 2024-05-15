@@ -70,11 +70,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\DataBase\DBUsage.cs" />
+    <Compile Include="Models\TableModels\SubTask.cs" />
+    <Compile Include="Models\TableModels\Table.cs" />
+    <Compile Include="Models\TableModels\TableTask.cs" />
     <Compile Include="Models\UserModel\User.cs" />
-    <Compile Include="Windows\CreateTableWindow\CreateTable.cs">
+    <Compile Include="Windows\TableWindows\CreateTable.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Windows\CreateTableWindow\CreateTable.Designer.cs">
+    <Compile Include="Windows\TableWindows\CreateTable.Designer.cs">
       <DependentUpon>CreateTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\EnterAccount\AccountCreation.cs">
@@ -91,13 +94,34 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Windows\TableWindows\CreateTaskWindow\CreateTask.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\CreateTaskWindow\CreateTask.Designer.cs">
+      <DependentUpon>CreateTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.Designer.cs">
+      <DependentUpon>CreateSubTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\TableWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\TableWindow.Designer.cs">
+      <DependentUpon>TableWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\TransparentFlowLayoutPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Windows\UserMainMenu\UserMenu.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Windows\UserMainMenu\UserMenu.Designer.cs">
       <DependentUpon>UserMenu.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Windows\CreateTableWindow\CreateTable.resx">
+    <EmbeddedResource Include="Windows\TableWindows\CreateTable.resx">
       <DependentUpon>CreateTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\EnterAccount\AccountCreation.resx">
@@ -116,6 +140,15 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Windows\TableWindows\CreateTaskWindow\CreateTask.resx">
+      <DependentUpon>CreateTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.resx">
+      <DependentUpon>CreateSubTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\TableWindow.resx">
+      <DependentUpon>TableWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Windows\UserMainMenu\UserMenu.resx">
       <DependentUpon>UserMenu.cs</DependentUpon>
     </EmbeddedResource>
@@ -137,6 +170,8 @@
   <ItemGroup>
     <Content Include="Images\BackgroundTable\eagle.jpg" />
     <Content Include="Images\BackgroundTable\nightShine.jpg" />
+    <Content Include="Images\BackgroundTable\smthBg.jpg" />
+    <Content Include="Images\BackgroundTable\winterForest.jpg" />
     <Content Include="Images\CorrectAccount\Eye.png" />
     <Content Include="Images\LoginPage\LoginFace.png" />
   </ItemGroup>
