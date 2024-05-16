@@ -26,5 +26,39 @@ namespace TrelloCopyWinForms.Models.TableModels
             BGImage = bgImage;
         }
 
+        public TableTask GetTaskByName(string name)
+        {
+            name = DeleteStrTransfersInString(name);
+            for (int i = 0; i < Tasks.Count; i++)
+            {
+                if (Tasks[i].Name == name)
+                {
+                    return Tasks[i];
+                }
+            }
+            return null;
+        }
+        private string DeleteStrTransfersInString(string str)
+        {
+            string res = "";
+            for(int i = 0; i < str.Length; i++)
+            {
+                if (str[i] != '\n')
+                {
+                    res += str[i];
+                }
+            }
+            return res;
+        }
+        public void AddTask(string name)
+        {
+            Tasks.Add(new TableTask(name, new List<SubTask>()));
+        }
+        public void AddSubTask(string tasksName, string subTaskName)
+        {
+            TableTask task = GetTaskByName(tasksName);
+            task.SubTasks.Add(new SubTask(subTaskName));
+
+        }
     }
 }

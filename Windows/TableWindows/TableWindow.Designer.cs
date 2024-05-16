@@ -35,6 +35,7 @@
             // 
             // TablePanel
             // 
+            this.TablePanel.AllowDrop = true;
             this.TablePanel.AutoScroll = true;
             this.TablePanel.Location = new System.Drawing.Point(6, 79);
             this.TablePanel.Name = "TablePanel";
@@ -56,6 +57,7 @@
             // 
             // TableWindow
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);

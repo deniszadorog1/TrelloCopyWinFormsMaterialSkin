@@ -28,6 +28,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 return;
             }
             _subTaskName = NameBox.Text;
+            Close();
         }
 
         private void materialButton2_Click(object sender, EventArgs e)

@@ -33,7 +33,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow
                 MessageBox.Show("Cant be add!", "Mistake!");
                 return;
             }
-            _task = new TableTask(TaskNameBox.Text);
+            _task = new TableTask(TaskNameBox.Text, new List<SubTask>());
             Close();
         }
     }

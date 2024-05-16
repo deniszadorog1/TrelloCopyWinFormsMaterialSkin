@@ -10,5 +10,13 @@ namespace TrelloCopyWinForms.Models.TableModels
     {
         public string Name { get; set; }
 
+        public SubTask()
+        {
+
+        }
+        public SubTask(string name)
+        {
+            Name = name;
+        }
     }
 }

@@ -28,3 +28,4 @@ B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.CreateTableWin
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWIndows.TableWindow.resources
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow.CreateTask.resources
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.CreateSubTask.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow.RenameTask.resources
