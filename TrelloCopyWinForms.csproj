@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\DataBase\DBUsage.cs" />
+    <Compile Include="Models\Enums\XLocWays.cs" />
     <Compile Include="Models\TableModels\SubTask.cs" />
     <Compile Include="Models\TableModels\Table.cs" />
     <Compile Include="Models\TableModels\TableTask.cs" />
@@ -111,6 +112,12 @@
     </Compile>
     <Compile Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.Designer.cs">
       <DependentUpon>CreateSubTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskMenu.Designer.cs">
+      <DependentUpon>SubTaskMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\TableWindows\TableWindow.cs">
       <SubType>Form</SubType>
@@ -154,6 +161,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.resx">
       <DependentUpon>CreateSubTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskMenu.resx">
+      <DependentUpon>SubTaskMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\TableWindow.resx">
       <DependentUpon>TableWindow.cs</DependentUpon>

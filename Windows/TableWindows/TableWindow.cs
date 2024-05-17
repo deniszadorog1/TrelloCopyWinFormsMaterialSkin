@@ -12,6 +12,7 @@ using MaterialSkin.Controls;
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow;
 using TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows;
+using TrelloCopyWinForms.Models.Enums;
 
 namespace TrelloCopyWinForms.Windows.TableWindows
 {
@@ -81,7 +82,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             TablePanel.Controls.Clear();
             for (int i = 0; i < _taskControls.Count; i++)
             {
-                //_taskControls[i].BringToFront();
+                
                 TablePanel.Controls.Add(_taskControls[i]);
             }
         }
@@ -159,7 +160,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             int lastControlXLock = newTaskBox.Location.X + newTaskBox.Width;
             UpdateTableWidth(lastControlXLock, lastControl, newTaskBox);
 
-
             int xLocForLastControl = newTaskBox.Location.X + newTaskBox.Width + _distanceBetweenTasks;
             //TablePanel.Size = new Size(xLocForLastControl + lastControl.Width + _distanceBetweenTasks, TablePanel.Height);
 
@@ -171,7 +171,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             UpdateControlsInTable();
         }
-
         private void UpdateTableWidth(int lastControlsWidth, Control lastControl, Control newControl)
         {
             int lastPointInControlLock = lastControlsWidth + lastControl.Width;
@@ -231,22 +230,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             return taskBox;
         }
-        private Point dragStartPoint;
         private void TaskPanel_MouseDown(object sender, MouseEventArgs e)
         {
             if (!(sender is MaterialListBox)) return;
-
             MaterialListBox box = sender as MaterialListBox;
 
             if (e.Button == MouseButtons.Left)
             {
-                dragStartPoint = e.Location;
                 box.DoDragDrop(box, DragDropEffects.Move);
-            }
-
-            if (box.DoDragDrop(box, DragDropEffects.Move) == DragDropEffects.Move)
-            {
-                Console.WriteLine("asd");
             }
         }
         private void TaskPanel_DragOver(object sender, DragEventArgs e)
@@ -259,9 +250,17 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private void TaskPanel_DragDrop(object sender, DragEventArgs e)
         {
-            Panel panel = (Panel)e.Data.GetData(typeof(Panel));
+            //if Panel dropped on anouther Panel => swap them
+
+            //sender - place(or control) where we dropped
+            MaterialListBox panel = (MaterialListBox)e.Data.GetData(typeof(MaterialListBox)); //that was dragged
             Point dropLocation = this.PointToClient(new Point(e.X, e.Y));
-            panel.Location = new Point(dropLocation.X - dragStartPoint.X, dropLocation.Y - dragStartPoint.Y);
+            //Point newPoint = new Point(dropLocation.X - dragStartPoint.X, dropLocation.Y - dragStartPoint.Y);  
+            //panel.Location = newPoint;
+
+            SwapLocsForControls(panel, (MaterialListBox)sender);
+            SwapTasksInTaskList(panel, (MaterialListBox)sender);
+            UpdateControlsInTable();
 
             if (e.Data.GetDataPresent(DataFormats.Bitmap))
             {
@@ -279,8 +278,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 e.Effect = DragDropEffects.None;
             }
         }
-
-
         private void RenameTask_Click(object sender, EventArgs e)
         {
             if (sender is Label taskName)
@@ -381,6 +378,29 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             _table.AddSubTask(taskToAddSubTask.Name, create._subTaskName);
         }
+
+
+        private void SubTask_MouseDown(object sender, EventArgs e)
+        {
+
+        }
+        private void SubTask_DragLeave(object sender, DragEventArgs e)
+        {
+
+        }
+        private void SubTask_DragOver(object sender, DragEventArgs e)
+        {
+
+        }
+        private void SubTask_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+        private void SubTask_DragDrop(object sender, DragEventArgs e)
+        {
+
+        }
+
         public void AddTaskInSubTaskListLits(Control task, Control subTask)
         {
             int taskIndex = GetTaskControlIndexByName(task.Name);
@@ -459,8 +479,27 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             subTask.Controls.Add(subTaskNameLb);
 
+            subTask.MouseEnter += SubTask_MouseEnter;
+            subTask.MouseLeave += SubTask_MouseLeave;
+
             return subTask;
         }
+
+        private void SubTask_MouseEnter(object sender, EventArgs e)
+        {
+            if (sender is Panel subTask)
+            {
+                subTask.BorderStyle = BorderStyle.Fixed3D;
+            }
+        }
+        private void SubTask_MouseLeave(object sender, EventArgs e)
+        {
+            if (sender is Panel subTask)
+            {
+                subTask.BorderStyle = BorderStyle.None;
+            }
+        }
+
         private void GetLocationForNewSubTask(Panel newSubTask, Control taskToAddSubTask)
         {
             //get button (which adds new subTask)
@@ -522,6 +561,24 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             }
             return res;
         }
+        public void SwapTasksInTaskList(Control first, Control second)
+        {
+            int firstControl = GetTaskControlIndexByName(first.Name);
+            int secondControl = GetTaskControlIndexByName(second.Name);
+
+            MaterialListBox temp = (MaterialListBox)_taskControls[secondControl];
+
+            _taskControls[secondControl] = _taskControls[firstControl];
+            _taskControls[firstControl] = temp;
+        }
+        public void SwapLocsForControls(Control first, Control second)
+        {
+            Point temp = first.Location;
+
+            first.Location = second.Location;
+            second.Location = temp;
+        }
+
         private void BGImage_Click(object sender, EventArgs e)
         {
 
