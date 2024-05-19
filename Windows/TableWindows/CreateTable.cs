@@ -73,8 +73,6 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                 }
             }
         }
-
-
         private void RenameBGImages()
         {
             DirectoryInfo baseDirectoryInfo = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
@@ -182,5 +180,6 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
             Show();
 
         }
+        
     }
 }

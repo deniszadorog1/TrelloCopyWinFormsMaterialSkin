@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace TrelloCopyWinForms.Models.Enums
 {
-    public enum XLocWays
+    public enum SubTaskButType
     {
-        Right = 0,
-        Left
+        Partisipants = 0,
+        Tags,
+        CheckList,
+        Date,
+        Attachment,
+        Cover,
     }
 }

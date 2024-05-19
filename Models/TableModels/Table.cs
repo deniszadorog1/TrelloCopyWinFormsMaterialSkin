@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
+using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
+
 namespace TrelloCopyWinForms.Models.TableModels
 {
     public class Table
@@ -13,17 +15,26 @@ namespace TrelloCopyWinForms.Models.TableModels
         public List<TableTask> Tasks { get; set; }
         public Image BGImage { get; set; }
 
+        private List<Flag> _allFlags = new List<Flag>();
         public Table()
         {
             Name = "";
             Tasks = new List<TableTask>();
             BGImage = null;
+
+            _allFlags.Add(new Flag(Color.Red, string.Empty));
+            _allFlags.Add(new Flag(Color.Green, string.Empty));
+            _allFlags.Add(new Flag(Color.Blue, string.Empty));
         }
         public Table(List<TableTask> tasks, string name, Image bgImage)
         {
             Tasks = tasks;
             Name = name;
             BGImage = bgImage;
+
+            _allFlags.Add(new Flag(Color.Red, string.Empty));
+            _allFlags.Add(new Flag(Color.Green, string.Empty));
+            _allFlags.Add(new Flag(Color.Blue, string.Empty));
         }
 
         public TableTask GetTaskByName(string name)
@@ -58,7 +69,19 @@ namespace TrelloCopyWinForms.Models.TableModels
         {
             TableTask task = GetTaskByName(tasksName);
             task.SubTasks.Add(new SubTask(subTaskName));
-
         }
+
+        public SubTask GetSubTask(string taskName, string subTaskName)
+        {
+            TableTask task = GetTaskByName(taskName);
+
+            return task.GetSubTaskByName(subTaskName);
+        }
+
+        public List<Flag> GetAllFlags()
+        {
+            return _allFlags;
+        }
+
     }
 }

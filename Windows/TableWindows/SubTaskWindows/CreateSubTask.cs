@@ -15,6 +15,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
     public partial class CreateSubTask : MaterialForm
     {
         public string _subTaskName = "";
+    
         public CreateSubTask()
         {
             InitializeComponent();

@@ -22,5 +22,17 @@ namespace TrelloCopyWinForms.Models.TableModels
             SubTasks = subTasks;
         }
 
+        public SubTask GetSubTaskByName(string subTaskName)
+        {
+            for(int i = 0; i < SubTasks.Count; i++)
+            {
+                if (SubTasks[i].Name == subTaskName)
+                {
+                    return SubTasks[i];
+                }
+            }
+            return null;
+        }
+
     }
 }

@@ -30,6 +30,7 @@
         {
             this.TablePanel = new System.Windows.Forms.FlowLayoutPanel();
             this.BGImage = new System.Windows.Forms.PictureBox();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             ((System.ComponentModel.ISupportInitialize)(this.BGImage)).BeginInit();
             this.SuspendLayout();
             // 
@@ -73,5 +74,6 @@
         #endregion
         private System.Windows.Forms.PictureBox BGImage;
         private System.Windows.Forms.FlowLayoutPanel TablePanel;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }

@@ -15,6 +15,9 @@ using TrelloCopyWinForms.Windows.EnterAccount;
 using TrelloCopyWinForms.Models.DataBase;
 using TrelloCopyWinForms.Models.UserModel;
 using TrelloCopyWinForms.Windows.UserMainMenu;
+using TrelloCopyWinForms.Models.TableModels;
+
+using TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows;
 
 namespace TrelloCopyWinForms
 {
@@ -79,6 +82,14 @@ namespace TrelloCopyWinForms
                 return;
             }
             MessageBox.Show("Smth went wrong!", "Mistake!");
+        }
+
+        private void CheckSubTaskMenu_Click(object sender, EventArgs e)
+        {
+            SubTask testTask = new SubTask("checkTask");
+
+            SubTaskMenu menu = new SubTaskMenu(testTask, new Table().GetAllFlags());
+            menu.ShowDialog();
         }
     }
 }

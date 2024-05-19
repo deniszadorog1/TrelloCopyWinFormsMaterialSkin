@@ -52,6 +52,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             //UnusualPanel();
         }
 
+
+
         public void UnusualPanel()
         {
             TablePanel.WrapContents = false;
@@ -435,16 +437,24 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             Control taskToAddSubTask = GetTaskTOAddSubTask(((Button)sender).Tag.ToString());
             if (taskToAddSubTask is null) return;
 
+            _table.AddSubTask(taskToAddSubTask.Name, create._subTaskName);
+
             Panel newSubTask = CreateSubTask(create._subTaskName, taskToAddSubTask);
 
             newSubTask.MouseDown += SubTask_MouseDown;
-
             newSubTask.DragOver += SubTask_DragOver;
             newSubTask.DragEnter += SubTask_DragEnter;
             newSubTask.DragLeave += SubTask_DragLeave;
             newSubTask.DragDrop += SubTask_DragDrop;
 
+            newSubTask.Click += (snederObj, clickEventArg) => 
+            {
+                MessageBox.Show("Sub task message!");
 
+
+                SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskToAddSubTask.Name, create._subTaskName), _table.GetAllFlags());
+                subTaskMenu.ShowDialog();
+            };
 
             GetLocationForNewSubTask(newSubTask, taskToAddSubTask);
 
@@ -454,10 +464,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             //Repaint all controls int task panel
             UpdateControlsInTaskPanel(taskToAddSubTask);
 
-            _table.AddSubTask(taskToAddSubTask.Name, create._subTaskName);
         }
-
-       
 
         private void SubTask_MouseDown(object sender, MouseEventArgs e)
         {
