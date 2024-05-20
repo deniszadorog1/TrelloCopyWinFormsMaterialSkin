@@ -452,7 +452,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 MessageBox.Show("Sub task message!");
 
 
-                SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskToAddSubTask.Name, create._subTaskName), _table.GetAllFlags());
+                SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskToAddSubTask.Name, create._subTaskName), _table);
                 subTaskMenu.ShowDialog();
             };
 
@@ -562,8 +562,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             UpdateControlsInTaskPanel(taskBox);
 
         }
-
-
         private void RemoveSubtask(Panel subtask, MaterialListBox taskBox, int taskIndex)
         {
             for (int i = 0; i < _controlsInTasks[taskIndex].Count; i++)
@@ -589,7 +587,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             _controlsInTasks[taskIndex].Add(subTask);
             _controlsInTasks[taskIndex].Add(butControl);
-
 
         }
         public int GetTaskControlIndexByName(string name)
@@ -621,7 +618,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             TablePanel.Controls.Add(task);
         }
-
         public void UpdateControlsInTaskPanel(Control taskPanel)
         {
             taskPanel.Controls.Clear();
@@ -671,7 +667,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             return subTask;
         }
-
         private void SubTask_MouseEnter(object sender, EventArgs e)
         {
             if (sender is Panel subTask)
@@ -686,7 +681,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 subTask.BorderStyle = BorderStyle.None;
             }
         }
-
         private void GetLocationForNewSubTask(Panel newSubTask, Control taskToAddSubTask)
         {
             //get button (which adds new subTask)

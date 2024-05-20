@@ -70,8 +70,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\DataBase\DBUsage.cs" />
+    <Compile Include="Models\Enums\SubTaskTypes.cs" />
     <Compile Include="Models\Enums\SubTaskButType.cs" />
     <Compile Include="Models\TableModels\SubTask.cs" />
+    <Compile Include="Models\TableModels\SubTaskAttribs\CheckListCase.cs" />
+    <Compile Include="Models\TableModels\SubTaskAttribs\CheckListModel.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\Flag.cs" />
     <Compile Include="Models\TableModels\Table.cs" />
     <Compile Include="Models\TableModels\TableTask.cs" />
@@ -120,11 +123,11 @@
     <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddSubTaskFlag.Designer.cs">
       <DependentUpon>AddSubTaskFlag.cs</DependentUpon>
     </Compile>
-    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CheckBoxAction.cs">
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CheckListAction.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CheckBoxAction.Designer.cs">
-      <DependentUpon>CheckBoxAction.cs</DependentUpon>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CheckListAction.Designer.cs">
+      <DependentUpon>CheckListAction.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskMenu.cs">
       <SubType>Form</SubType>
@@ -177,6 +180,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddSubTaskFlag.resx">
       <DependentUpon>AddSubTaskFlag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CheckListAction.resx">
+      <DependentUpon>CheckListAction.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskMenu.resx">
       <DependentUpon>SubTaskMenu.cs</DependentUpon>

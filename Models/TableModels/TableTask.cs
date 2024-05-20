@@ -16,6 +16,11 @@ namespace TrelloCopyWinForms.Models.TableModels
             Name = "";
             SubTasks = new List<SubTask>();
         }
+        public TableTask(string name)
+        {
+            Name = name;
+            SubTasks = new List<SubTask>();
+        }
         public TableTask(string name, List<SubTask> subTasks)
         {
             Name = name;

@@ -16,8 +16,8 @@ using TrelloCopyWinForms.Models.DataBase;
 using TrelloCopyWinForms.Models.UserModel;
 using TrelloCopyWinForms.Windows.UserMainMenu;
 using TrelloCopyWinForms.Models.TableModels;
-
 using TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows;
+using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
 
 namespace TrelloCopyWinForms
 {
@@ -86,9 +86,24 @@ namespace TrelloCopyWinForms
 
         private void CheckSubTaskMenu_Click(object sender, EventArgs e)
         {
-            SubTask testTask = new SubTask("checkTask");
+            TableTask task = new TableTask("firstTask");
 
-            SubTaskMenu menu = new SubTaskMenu(testTask, new Table().GetAllFlags());
+            SubTask testSubTask = new SubTask("checkTask");
+/*
+            testSubTask.CheckLists.Add(new CheckListModel("First check List"));
+            testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("first"));
+            testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("second"));
+
+            testSubTask.CheckLists.Add(new CheckListModel("Second check List"));
+            testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("third"));
+            testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("fourth "));*/
+
+            task.SubTasks.Add(testSubTask);
+
+            Table table = new Table("firstTable");
+            table.Tasks.Add(task);
+
+            SubTaskMenu menu = new SubTaskMenu(testSubTask, table);
             menu.ShowDialog();
         }
     }

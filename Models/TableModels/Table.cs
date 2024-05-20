@@ -26,6 +26,12 @@ namespace TrelloCopyWinForms.Models.TableModels
             _allFlags.Add(new Flag(Color.Green, string.Empty));
             _allFlags.Add(new Flag(Color.Blue, string.Empty));
         }
+        public Table(string name)
+        {
+            Name = name;
+            Tasks = new List<TableTask>();
+            BGImage = null;
+        }
         public Table(List<TableTask> tasks, string name, Image bgImage)
         {
             Tasks = tasks;
@@ -77,10 +83,23 @@ namespace TrelloCopyWinForms.Models.TableModels
 
             return task.GetSubTaskByName(subTaskName);
         }
-
         public List<Flag> GetAllFlags()
         {
             return _allFlags;
+        }
+        public CheckListModel GetCheckBox(string taskName, string subTaskName, string checkName)
+        {
+            TableTask task = Tasks.Find(x => x.Name == taskName);
+            SubTask subTask = task.GetSubTaskByName(subTaskName);
+            CheckListModel res = subTask.CheckLists.Find(x => x.Name == checkName);
+
+            return res;
+        }
+        public bool IfCheckListNameIsExistInSubTask(string taskName, string subTaskName, string checkName)
+        {
+            TableTask task = Tasks.Find(x => x.Name == taskName);
+            SubTask subTask = task.GetSubTaskByName(subTaskName);
+            return subTask.CheckLists.Any(x => x.Name == checkName);
         }
 
     }

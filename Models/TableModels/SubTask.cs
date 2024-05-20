@@ -14,6 +14,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         public string Name { get; set; }
         public List<Flag> Flags { get; set; }
         public DateTime? DeadLine { get; set; }
+        public List<CheckListModel> CheckLists { get; set; }
 
         public SubTask()
         {
@@ -24,6 +25,7 @@ namespace TrelloCopyWinForms.Models.TableModels
             Name = name;
             Flags = new List<Flag>();
             DeadLine = null;
+            CheckLists = new List<CheckListModel>();
         }
 
         public int GetTransfersAmount()
@@ -38,6 +40,11 @@ namespace TrelloCopyWinForms.Models.TableModels
                 }
             }
             return count;
+        }
+
+        public bool IfChackListNameIsExist(CheckListModel model)
+        {
+            return CheckLists.Any(x => x.Name == model.Name);
         }
     }
 }
