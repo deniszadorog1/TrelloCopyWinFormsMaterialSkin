@@ -157,13 +157,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 CheckListModel model = new CheckListModel();
                 model.Name = CheckName.Text;
 
-                if (!_chosenSubTask.IfChackListNameIsExist(model))
+                if (_chosenSubTask.IfChackListNameIsExist(model))
                 {
                     MessageBox.Show("Check list with such name is exist!", "Mistake!");
                     return;
                 }
                 _chosenSubTask.CheckLists.Add(model);
                 Close();
+                return;
             }
 
             CheckListModel boxToCopy = new CheckListModel(GetCheckBox());

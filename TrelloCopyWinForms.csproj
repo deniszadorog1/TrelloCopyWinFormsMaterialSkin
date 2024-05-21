@@ -75,6 +75,7 @@
     <Compile Include="Models\TableModels\SubTask.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\CheckListCase.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\CheckListModel.cs" />
+    <Compile Include="Models\TableModels\SubTaskAttribs\DeadLineDate.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\Flag.cs" />
     <Compile Include="Models\TableModels\Table.cs" />
     <Compile Include="Models\TableModels\TableTask.cs" />
@@ -116,6 +117,18 @@
     </Compile>
     <Compile Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.Designer.cs">
       <DependentUpon>CreateSubTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddCase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddCase.Designer.cs">
+      <DependentUpon>AddCase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddDeadLine.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddDeadLine.Designer.cs">
+      <DependentUpon>AddDeadLine.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddSubTaskFlag.cs">
       <SubType>Form</SubType>
@@ -177,6 +190,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.resx">
       <DependentUpon>CreateSubTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddCase.resx">
+      <DependentUpon>AddCase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddDeadLine.resx">
+      <DependentUpon>AddDeadLine.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddSubTaskFlag.resx">
       <DependentUpon>AddSubTaskFlag.cs</DependentUpon>

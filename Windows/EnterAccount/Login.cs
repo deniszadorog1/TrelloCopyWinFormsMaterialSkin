@@ -89,14 +89,14 @@ namespace TrelloCopyWinForms
             TableTask task = new TableTask("firstTask");
 
             SubTask testSubTask = new SubTask("checkTask");
-/*
+
             testSubTask.CheckLists.Add(new CheckListModel("First check List"));
             testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("first"));
             testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("second"));
 
             testSubTask.CheckLists.Add(new CheckListModel("Second check List"));
             testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("third"));
-            testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("fourth "));*/
+            testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("fourth "));
 
             task.SubTasks.Add(testSubTask);
 

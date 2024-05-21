@@ -36,6 +36,10 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
                 Cases.Add(new CheckListCase(copy.Cases[i]));
             }
         }
+        public int GetAmountOfTurnedOnCases()
+        {
+            return Cases.Where(x => x.IfCaseDone).Count();
+        }
 
     }
 }
