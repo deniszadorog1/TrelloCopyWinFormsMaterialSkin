@@ -14,6 +14,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         public string Name { get; set; }
         public List<TableTask> Tasks { get; set; }
         public Image BGImage { get; set; }
+        public int AmountOfSubTasks { get; set; }
 
         private List<Flag> _allFlags = new List<Flag>();
         public Table()
@@ -29,6 +30,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         public Table(string name)
         {
             Name = name;
+            AmountOfSubTasks = 0;
             Tasks = new List<TableTask>();
             BGImage = null;
         }
@@ -42,7 +44,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             _allFlags.Add(new Flag(Color.Green, string.Empty));
             _allFlags.Add(new Flag(Color.Blue, string.Empty));
         }
-
         public TableTask GetTaskByName(string name)
         {
             name = DeleteStrTransfersInString(name);
@@ -74,7 +75,12 @@ namespace TrelloCopyWinForms.Models.TableModels
         public void AddSubTask(string tasksName, string subTaskName)
         {
             TableTask task = GetTaskByName(tasksName);
-            task.SubTasks.Add(new SubTask(subTaskName));
+            task.SubTasks.Add(new SubTask(subTaskName, task.SubTasks.Count, AmountOfSubTasks));
+            AmountOfSubTasks++;
+        }
+        public int GetUniqueNumForLastSubTask(string tasksName)
+        {
+            return GetTaskByName(tasksName).SubTasks.Last().UniqueIndex;
         }
 
         public SubTask GetSubTask(string taskName, string subTaskName)
@@ -100,6 +106,28 @@ namespace TrelloCopyWinForms.Models.TableModels
             TableTask task = Tasks.Find(x => x.Name == taskName);
             SubTask subTask = task.GetSubTaskByName(subTaskName);
             return subTask.CheckLists.Any(x => x.Name == checkName);
+        }
+        public void UpdateSubTasksIndexes(int tableIndex)
+        {
+            for(int i = 0; i < Tasks[tableIndex].SubTasks.Count; i++)
+            {
+                Tasks[tableIndex].SubTasks[i].UniqueIndex = i;
+            }
+        }
+        public List<SubTask> GetAllSubTasks()
+        {
+            return null;
+        }
+        public string GetTaskNameWitchContainsSubTaskByGlobalIndex(int index)
+        {
+            for(int i = 0; i < Tasks.Count; i++)
+            {
+                if (Tasks[i].IfSubTaskContainsAttachmentWhitchContainsGlobalIndex(index))
+                {
+                    return Tasks[i].Name;
+                }
+            }
+            return "";
         }
 
     }

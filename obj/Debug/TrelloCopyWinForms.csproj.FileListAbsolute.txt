@@ -34,3 +34,5 @@ B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.S
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs.CheckListAction.resources
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs.AddDeadLine.resources
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs.AddCase.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs.CorrectComment.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs.AddAttachment.resources

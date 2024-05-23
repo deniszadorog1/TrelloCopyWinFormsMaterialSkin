@@ -52,8 +52,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             //UnusualPanel();
         }
 
-
-
         public void UnusualPanel()
         {
             TablePanel.WrapContents = false;
@@ -62,8 +60,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             TablePanel.Size = new Size(600, Size.Height - 65);
 
             Controls.Add(TablePanel);
-
-
         }
         public void InitBackGroundColor()
         {
@@ -125,6 +121,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 lastList.Add(control.Controls[i]);
             }
         }
+
         private void AddNewTaskBoxInTable(string taskName)
         {
             //Get task box
@@ -258,7 +255,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 Panel subTaskPan = (Panel)e.Data.GetData(typeof(Panel));
                 Point dropLocation = ((MaterialListBox)sender).PointToClient(new Point(e.X, e.Y));
-                //Point asd = this.PointToClient(new Point(e.X, e.Y));
+
+                
                 
                 SubTaskeMoved(subTaskPan, dropLocation, (MaterialListBox)sender);
                 return;
@@ -279,12 +277,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             SwapTasksInTaskList(panel, (MaterialListBox)sender);
             SwapControlsInTasksList(panel, (MaterialListBox)sender);
 
-            /*            UpdateTaskControlsLocation(panel);
-                        UpdateTaskControlsLocation((MaterialListBox)sender);*/
-
             UpdateTable();
-            /*UpdateControlsInTaskPanel(panel);
-            UpdateControlsInTaskPanel((MaterialListBox)sender);     */
         }
         private void SubTaskeMoved(Panel toMove, Point cordWherePanelDroped, MaterialListBox taskWhereWasDropped)
         {
@@ -299,7 +292,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             //Get list with conrols of where we are dragging into (into list controls)
             int tableIndexIndsertingInto = GetTaskControlIndexByName(taskWhereWasDropped.Name);
             List<Control> subTasksInsertingSubInto = _controlsInTasks[tableIndexIndsertingInto];
-
 
             //Remove from list (table + list getting from)
             RemoveSubtask(toMove, (MaterialListBox)tablePanelGettingFrom, tableIndexGettingFrom);
@@ -440,6 +432,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             _table.AddSubTask(taskToAddSubTask.Name, create._subTaskName);
 
             Panel newSubTask = CreateSubTask(create._subTaskName, taskToAddSubTask);
+            newSubTask.Tag = _table.GetUniqueNumForLastSubTask(taskToAddSubTask.Name);
 
             newSubTask.MouseDown += SubTask_MouseDown;
             newSubTask.DragOver += SubTask_DragOver;
@@ -451,8 +444,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 MessageBox.Show("Sub task message!");
 
-
-                SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskToAddSubTask.Name, create._subTaskName), _table);
+                SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskToAddSubTask.Name, create._subTaskName), _table, _table.GetTaskByName(taskToAddSubTask.Name));
                 subTaskMenu.ShowDialog();
             };
 
@@ -509,6 +501,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             //Get table where we dragging into 
             Control tablePanelInsertingInto = ((Panel)sender).Parent;
 
+            
 
             //Get list with conrols of where we are dragging (from list controls)
             int tableIndexGettingFrom = GetTaskControlIndexByName(tablePanelGettingFrom.Name);
@@ -559,14 +552,33 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
                 //InsertButAt th end
             }
-            UpdateControlsInTaskPanel(taskBox);
+            
+            ApdateRaskControlsUnqueIndexes(taskControls, taskIndex);
 
+            UpdateControlsInTaskPanel(taskBox);
         }
+        private void ApdateRaskControlsUnqueIndexes(List<Control> controls, int taskIndex)
+        {
+            int count = 0;
+            for(int i = 0; i < controls.Count; i++)
+            {
+                if (controls[i] is Panel)
+                {
+                    controls[i] = controls[i];
+                    count++;
+                }
+            }
+            //Updaate in subTasks Logic
+            _table.UpdateSubTasksIndexes(taskIndex);
+        }
+
+
         private void RemoveSubtask(Panel subtask, MaterialListBox taskBox, int taskIndex)
         {
             for (int i = 0; i < _controlsInTasks[taskIndex].Count; i++)
             {
-                if (subtask.Name == _controlsInTasks[taskIndex][i].Name)
+                if (subtask.Name == _controlsInTasks[taskIndex][i].Name && 
+                    subtask.Tag == _controlsInTasks[taskIndex][i].Tag)
                 {
                     _controlsInTasks[taskIndex].RemoveAt(i);
                     break;
@@ -580,7 +592,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             int taskIndex = GetTaskControlIndexByName(task.Name);
             if (taskIndex == -1) return;
 
-            List<Control> list = _controlsInTasks[taskIndex];
+            //List<(Control, int)> list = _controlsInTasks[taskIndex];
 
             Control butControl = GetButtonControl(task);
             _controlsInTasks[taskIndex].RemoveAt(_controlsInTasks[taskIndex].Count - 1);
@@ -627,6 +639,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             for (int i = 0; i < subTaskControls.Count; i++)
             {
                 taskPanel.Controls.Add(subTaskControls[i]);
+                taskPanel.Controls[taskPanel.Controls.Count - 1].Tag = subTaskControls[i].Tag;
             }
         }
         private Control GetTaskTOAddSubTask(string butTag)

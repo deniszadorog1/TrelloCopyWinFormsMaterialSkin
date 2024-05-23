@@ -10,7 +10,7 @@ namespace TrelloCopyWinForms.Models.TableModels
     {
         public string Name { get; set; }
         public List<SubTask> SubTasks { get; set; }
-
+        
         public TableTask()
         {
             Name = "";
@@ -39,5 +39,16 @@ namespace TrelloCopyWinForms.Models.TableModels
             return null;
         }
 
+        public bool IfSubTaskContainsAttachmentWhitchContainsGlobalIndex(int index)
+        {
+            for(int i = 0; i < SubTasks.Count; i++)
+            {
+                if (SubTasks[i].IfSubTaskContainsAttachmentWithGlobalIndex(index))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

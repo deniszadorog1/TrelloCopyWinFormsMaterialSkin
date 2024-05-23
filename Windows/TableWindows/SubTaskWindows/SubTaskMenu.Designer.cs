@@ -28,7 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.MainPanel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
+            // 
+            // MainPanel
+            // 
+            this.MainPanel.AutoScroll = true;
+            this.MainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainPanel.Location = new System.Drawing.Point(3, 64);
+            this.MainPanel.Name = "MainPanel";
+            this.MainPanel.Size = new System.Drawing.Size(694, 733);
+            this.MainPanel.TabIndex = 0;
             // 
             // SubTaskMenu
             // 
@@ -36,6 +46,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(700, 800);
+            this.Controls.Add(this.MainPanel);
             this.Name = "SubTaskMenu";
             this.Text = "SubTaskMenu";
             this.ResumeLayout(false);
@@ -43,5 +54,7 @@
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel MainPanel;
     }
 }

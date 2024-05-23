@@ -88,7 +88,7 @@ namespace TrelloCopyWinForms
         {
             TableTask task = new TableTask("firstTask");
 
-            SubTask testSubTask = new SubTask("checkTask");
+            SubTask testSubTask = new SubTask("checkTask", 0, 1);
 
             testSubTask.CheckLists.Add(new CheckListModel("First check List"));
             testSubTask.CheckLists.Last().Cases.Add(new CheckListCase("first"));
@@ -103,7 +103,7 @@ namespace TrelloCopyWinForms
             Table table = new Table("firstTable");
             table.Tasks.Add(task);
 
-            SubTaskMenu menu = new SubTaskMenu(testSubTask, table);
+            SubTaskMenu menu = new SubTaskMenu(testSubTask, table, task);
             menu.ShowDialog();
         }
     }
