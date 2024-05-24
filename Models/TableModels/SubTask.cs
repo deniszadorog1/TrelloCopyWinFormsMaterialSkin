@@ -20,6 +20,8 @@ namespace TrelloCopyWinForms.Models.TableModels
         public List<Comment> Comments { get; set; }
         public List<Comment> History { get; set; }
         public List<Attachment> Attachments { get; set; }
+        public Cover Cover { get; set; }
+        public List<int> UsersIdsInSuBTask { get; set; }
 
         public SubTask()
         {
@@ -32,6 +34,8 @@ namespace TrelloCopyWinForms.Models.TableModels
             Comments = new List<Comment>();
             History = new List<Comment>();
             Attachments = new List<Attachment>();
+            Cover = new Cover();
+            UsersIdsInSuBTask = new List<int>();
         }
         public SubTask(string name, int uniqueIndex, int globalSubTaskIndex)
         {
@@ -44,6 +48,8 @@ namespace TrelloCopyWinForms.Models.TableModels
             Comments = new List<Comment>();
             History = new List<Comment>();
             Attachments = new List<Attachment>();
+            Cover = new Cover();
+            UsersIdsInSuBTask = new List<int>();
         }
         public int GetTransfersAmount()
         {
@@ -135,5 +141,24 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return false;
         }
+        public string GetSubTaskNameByGlobalIndex(int index)
+        {
+            return GlobalSubTaskIndex == index ? this.Name : string.Empty;
+        }
+
+        public void DeleteAttachmentGyUniqueIndex(int index)
+        {
+            for(int i = 0; i < Attachments.Count; i++)
+            {
+                if (Attachments[i].UniqueIndex == index)
+                {
+                    Attachments.RemoveAt(i);
+                    return;
+                }
+            }
+            new Exception("Cant find attachment with such index!");
+        }
+
+       
     }
 }

@@ -34,8 +34,7 @@
             // MainPanel
             // 
             this.MainPanel.AutoScroll = true;
-            this.MainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainPanel.Location = new System.Drawing.Point(3, 64);
+            this.MainPanel.Location = new System.Drawing.Point(0, 64);
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(694, 733);
             this.MainPanel.TabIndex = 0;

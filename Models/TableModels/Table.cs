@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
+using TrelloCopyWinForms.Models.UserModel;
 
 namespace TrelloCopyWinForms.Models.TableModels
 {
@@ -14,7 +15,8 @@ namespace TrelloCopyWinForms.Models.TableModels
         public string Name { get; set; }
         public List<TableTask> Tasks { get; set; }
         public Image BGImage { get; set; }
-        public int AmountOfSubTasks { get; set; }
+        public int LastSubTaskIndex { get; set; }
+        public List<User> UserInTable { get; set; }
 
         private List<Flag> _allFlags = new List<Flag>();
         public Table()
@@ -22,6 +24,7 @@ namespace TrelloCopyWinForms.Models.TableModels
             Name = "";
             Tasks = new List<TableTask>();
             BGImage = null;
+            UserInTable = new List<User>();
 
             _allFlags.Add(new Flag(Color.Red, string.Empty));
             _allFlags.Add(new Flag(Color.Green, string.Empty));
@@ -30,15 +33,18 @@ namespace TrelloCopyWinForms.Models.TableModels
         public Table(string name)
         {
             Name = name;
-            AmountOfSubTasks = 0;
+            LastSubTaskIndex = 0;
             Tasks = new List<TableTask>();
             BGImage = null;
+            UserInTable = new List<User>();
         }
         public Table(List<TableTask> tasks, string name, Image bgImage)
         {
             Tasks = tasks;
             Name = name;
             BGImage = bgImage;
+
+            UserInTable = new List<User>();
 
             _allFlags.Add(new Flag(Color.Red, string.Empty));
             _allFlags.Add(new Flag(Color.Green, string.Empty));
@@ -75,19 +81,19 @@ namespace TrelloCopyWinForms.Models.TableModels
         public void AddSubTask(string tasksName, string subTaskName)
         {
             TableTask task = GetTaskByName(tasksName);
-            task.SubTasks.Add(new SubTask(subTaskName, task.SubTasks.Count, AmountOfSubTasks));
-            AmountOfSubTasks++;
+            task.SubTasks.Add(new SubTask(subTaskName, task.SubTasks.Count, LastSubTaskIndex));
+            LastSubTaskIndex++;
         }
         public int GetUniqueNumForLastSubTask(string tasksName)
         {
             return GetTaskByName(tasksName).SubTasks.Last().UniqueIndex;
         }
 
-        public SubTask GetSubTask(string taskName, string subTaskName)
+        public SubTask GetSubTask(string taskName, string subTaskName, int uniqueIndex)
         {
             TableTask task = GetTaskByName(taskName);
 
-            return task.GetSubTaskByName(subTaskName);
+            return task.GetSubTaskByNameAndIndex(subTaskName, uniqueIndex);
         }
         public List<Flag> GetAllFlags()
         {
@@ -130,5 +136,44 @@ namespace TrelloCopyWinForms.Models.TableModels
             return "";
         }
 
+        public string GetSubTaskNameByGlobalindex(int index)
+        {
+            for (int i = 0; i < Tasks.Count; i++)
+            {
+                string res = Tasks[i].GetSubTaskaNameByGlobalIndex(index);
+                if (res != string.Empty)
+                {
+                    return res;
+                }
+            }
+            return "";
+        }
+
+        public bool IfSuccessDeleteAttachment(string taskName, string subTaskName, int uniqueIndex, int subTaskGlobalIndex)
+        {
+            TableTask task = GetTaskByName(taskName);
+            SubTask subTask = task.GetSubTaskByIndex(subTaskGlobalIndex);
+
+            for(int i = 0; i < subTask.Attachments.Count; i++)
+            {
+                if (subTask.Attachments[i].UniqueIndex == uniqueIndex)
+                {
+                    subTask.Attachments.RemoveAt(i);
+                    return true;
+                }
+            }
+            return false;
+        }
+        public string GetUserLoginById(int userId)
+        {
+            for(int i = 0; i < UserInTable.Count; i++)
+            {
+                if (UserInTable[i].Id == userId)
+                {
+                    return UserInTable[i].Login;
+                }
+            }
+            throw new Exception("Cant find user with such ID");
+        }
     }
 }

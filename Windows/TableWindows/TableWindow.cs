@@ -440,11 +440,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             newSubTask.DragLeave += SubTask_DragLeave;
             newSubTask.DragDrop += SubTask_DragDrop;
 
-            newSubTask.Click += (snederObj, clickEventArg) => 
+            newSubTask.Click += (senderObj, clickEventArg) => 
             {
-                MessageBox.Show("Sub task message!");
+                int SubTaskUniqueIndex = int.Parse(((Panel)senderObj).Tag.ToString());
 
-                SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskToAddSubTask.Name, create._subTaskName), _table, _table.GetTaskByName(taskToAddSubTask.Name));
+                SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskToAddSubTask.Name, create._subTaskName, SubTaskUniqueIndex), _table, _table.GetTaskByName(taskToAddSubTask.Name));
                 subTaskMenu.ShowDialog();
             };
 

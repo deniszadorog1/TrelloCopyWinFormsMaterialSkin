@@ -39,6 +39,32 @@ namespace TrelloCopyWinForms.Models.TableModels
             return null;
         }
 
+        public SubTask GetSubTaskByNameAndIndex(string name, int index)
+        {
+            for (int i = 0; i < SubTasks.Count; i++)
+            {
+                if (SubTasks[i].Name == name &&
+                    SubTasks[i].UniqueIndex == index)
+                {
+                    return SubTasks[i];
+                }
+            }
+            return null;
+        }
+
+        public SubTask GetSubTaskByIndex(int index)
+        {
+            for(int i = 0; i < SubTasks.Count; i++)
+            {
+                if (SubTasks[i].GlobalSubTaskIndex == index)
+                {
+                    return SubTasks[i];
+                }
+            }
+            throw new Exception("Cant find subTask with such globalsubTaskIndex");
+        }
+
+
         public bool IfSubTaskContainsAttachmentWhitchContainsGlobalIndex(int index)
         {
             for(int i = 0; i < SubTasks.Count; i++)
@@ -50,5 +76,21 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return false;
         }
+
+        public string GetSubTaskaNameByGlobalIndex(int index)
+        {
+            for (int i = 0; i < SubTasks.Count; i++)
+            {
+                string res = SubTasks[i].GetSubTaskNameByGlobalIndex(index);
+
+                if (res != string.Empty)
+                {
+                    return res;
+                }
+            }
+            return "";
+        }
+
+       
     }
 }

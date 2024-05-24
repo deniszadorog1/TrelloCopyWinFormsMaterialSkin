@@ -42,8 +42,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         }
         private void TaskChosen_TextChanged(object sender, EventArgs e)
         {
-            FillSubTasks();
             InitSubTaskListWithoutChosenList();
+            FillSubTasks();
         }
         private void FillSubTasks()
         {
@@ -81,8 +81,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 MessageBox.Show("Smth went wrong!", "Mistake!");
                 return;
             }
-            _newAttachment = new Attachment(_table.AmountOfSubTasks, SignBox.Text);
-            _table.AmountOfSubTasks++;
+            _newAttachment = new Attachment(_listWithoutChosen[SubTaskBox.SelectedIndex].GlobalSubTaskIndex, SignBox.Text, _chosenSubTask.Attachments.Count);
+            _table.LastSubTaskIndex++;
             _chosenSubTask.Attachments.Add(_newAttachment);
 
             Close();

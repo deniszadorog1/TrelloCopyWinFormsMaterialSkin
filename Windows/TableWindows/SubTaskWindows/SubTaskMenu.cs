@@ -101,16 +101,18 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             //Check Lists
             //History || comments
 
-            //Name Label
-            Label nameLabel = new Label();
-            nameLabel.Text = _subTask.Name;
-            nameLabel.Font = new Font("Times New Roman", 16);
-            nameLabel.AutoSize = true;
+      
 
-            _namePanel.Controls.Add(nameLabel);
-            _namePanel.BorderStyle = BorderStyle.FixedSingle;
+            //Cover 
+            InitCover();
 
-            //Flags trello
+            //Name
+            InitName();
+
+            //Init Particioants
+            InitParticipants();
+
+            //Flags
             InitFlags();
 
             //Init Date
@@ -128,37 +130,233 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             //Init History
             InitHistoryComments();
         }
+        public void InitName()
+        {
+            _namePanel.Controls.Clear();
+            Label nameLabel = new Label();
+            nameLabel.Text = _subTask.Name;
+            nameLabel.Font = new Font("Times New Roman", 16);
+            nameLabel.AutoSize = false;
+
+            nameLabel.MaximumSize = new Size(_namePanel.Width, 0);
+            nameLabel.BorderStyle = BorderStyle.FixedSingle;
+            nameLabel.Size = new Size(_namePanel.Width, 40);
+
+            nameLabel.AutoEllipsis = true;
+            nameLabel.AutoSize = true;
+
+            nameLabel.Click += ChangeName_Click;
+            _namePanel.Controls.Add(nameLabel);
+            _namePanel.BorderStyle = BorderStyle.FixedSingle;
+            _namePanel.Click += ChangeName_Click;
+
+            if (_namePanel.Height < nameLabel.Height)
+            {
+                _namePanel.Height = nameLabel.Height + _distanceBetweenBlocks;
+            }
+            InitLocationForBlocks();
+        }
+        private void ChangeName_Click(object sender, EventArgs e)
+        {
+            ChangeName changeName = new ChangeName(_subTask);
+            changeName.ShowDialog();
+
+            InitName();
+        }
+        public void InitParticipants()
+        {
+            _partisipentsPanel.Controls.Clear();
+            _partisipentsPanel.Size = new Size(_partisipentsPanel.Width, 75);
+
+            MaterialLabel panelNameLB = new MaterialLabel();
+            panelNameLB.Text = "Particepants";
+            panelNameLB.Location = new Point(_distanceBetweenSubBlocks, _distanceBetweenSubBlocks);
+            _partisipentsPanel.Controls.Add(panelNameLB);
+
+            _partisipentsPanel.BorderStyle = BorderStyle.FixedSingle;
+            Point point = new Point(_distanceBetweenSubBlocks, panelNameLB.Location.Y + panelNameLB.Height + _distanceBetweenSubBlocks);
+            for (int i = 0; i < _subTask.UsersIdsInSuBTask.Count; i++)
+            {
+                string userLogin = _table.GetUserLoginById(_subTask.UsersIdsInSuBTask[i]);
+                char firstLetter = userLogin[0]; 
+
+                PictureBox box = new PictureBox();
+                box.BorderStyle = BorderStyle.FixedSingle;
+                box.Size = new Size(30, 30);
+                box.Tag = firstLetter; 
+                box.Paint += userCircles_Paint;
+
+                box.Location = point;
+
+                _partisipentsPanel.Controls.Add(box);
+
+                point = new Point(point.X + box.Width + _distanceBetweenBlocks, point.Y);
+            }
+
+            InitLocationForBlocks();
+        }
+
+        private void userCircles_Paint(object sender, PaintEventArgs e)
+        {
+            PictureBox box = sender as PictureBox;
+            if (box == null) return;
+
+            // Получаем объект Graphics
+            Graphics g = e.Graphics;
+
+            // Настройки круга
+            int circleDiameter = 25;
+            int circleX = (box.Width - circleDiameter) / 2;
+            int circleY = (box.Height - circleDiameter) / 2;
+
+            // Рисуем круг
+            using (Pen pen = new Pen(Color.Black, 2))
+            {
+                g.DrawEllipse(pen, circleX, circleY, circleDiameter, circleDiameter);
+            }
+
+            // Настройки текста
+            string symbol = box.Tag.ToString(); 
+            Font font = new Font("Arial", 12, FontStyle.Bold);
+            SizeF textSize = g.MeasureString(symbol, font);
+
+            float textX = circleX + (circleDiameter - textSize.Width) / 2;
+            float textY = circleY + (circleDiameter - textSize.Height) / 2;
+
+            // Рисуем текст
+            using (Brush brush = new SolidBrush(Color.Black))
+            {
+                g.DrawString(symbol, font, brush, textX, textY);
+            }
+        }
+
+
+        public void InitCover()
+        {
+            const int coverHeight = 90;
+            if (_subTask.Cover is null || _subTask.Cover.BGColor is null)
+            {
+                _coverPanel.Size = new Size(_coverPanel.Width, 0);
+                _coverPanel.BackColor = Color.Empty;
+                _coverPanel.BackgroundImage = null;
+                InitLocationForBlocks();
+                return;
+            }
+            _coverPanel.Size = new Size(_coverPanel.Width, coverHeight);
+            _coverPanel.BackColor = (Color)_subTask.Cover.BGColor;
+
+            InitLocationForBlocks();
+            _coverPanel.Location = new Point(0, 0);
+        }
         public void InitAttachments()
         {
+            _attachmentsPanel.Controls.Clear();
             _attachmentsPanel.Size = new Size(_attachmentsPanel.Width, 500);
 
             //Init main panel name
             Label mainPanelName = new Label();
+            mainPanelName.BorderStyle = BorderStyle.FixedSingle;
+            mainPanelName.Font = new Font("Timaes new Roman", 16);
             mainPanelName.Text = "Attachments";
             mainPanelName.Location = new Point(_distanceBetweenSubBlocks, _distanceBetweenSubBlocks);
+            mainPanelName.AutoSize = false;
+            mainPanelName.Size = new Size(150, 30);
             _attachmentsPanel.Controls.Add(mainPanelName);
 
             int attachmentWidth = _attachmentsPanel.Width / 2 - _distanceBetweenSubBlocks;
+            Point attatchLoc = new Point(mainPanelName.Location.X, mainPanelName.Location.Y + mainPanelName.Height + _distanceBetweenSubBlocks);
             for (int i = 0; i < _subTask.Attachments.Count; i++)
             {
-                Panel attachmentPanel = new Panel();
-                attachmentPanel.Size = new Size(attachmentWidth, 0);
+                Panel attachmnetPanel = new Panel();
+                attachmnetPanel.Tag = _subTask.Attachments[i].UniqueIndex;
+                attachmnetPanel.AutoSize = false;
+                attachmnetPanel.BorderStyle = BorderStyle.FixedSingle;
+                attachmnetPanel.Location = attatchLoc;
 
-                attachmentPanel.BackgroundImage = _table.BGImage;
-                attachmentPanel.BackgroundImageLayout = ImageLayout.Stretch;
+                Panel attachmentLinkPanel = new Panel();
+                attachmentLinkPanel.BorderStyle = BorderStyle.FixedSingle;
+                attachmentLinkPanel.Location = new Point(0, 0);
+                attachmentLinkPanel.Size = new Size(attachmentWidth, 10);
+
+                attachmentLinkPanel.BackgroundImage = _table.BGImage;
+                attachmentLinkPanel.BackgroundImageLayout = ImageLayout.Stretch;
 
                 Label subTaskLB = new Label();
+                subTaskLB.Name = "SubTaskName";
+                subTaskLB.Text = _table.GetSubTaskNameByGlobalindex(_subTask.Attachments[i].SubTaskGlobalIndex);
                 subTaskLB.AutoSize = false;
+                subTaskLB.MaximumSize = new Size(attachmentWidth - _distanceBetweenSubBlocks * 2, 0);
                 subTaskLB.Size = new Size(attachmentWidth - _distanceBetweenSubBlocks * 2, 0);
-                subTaskLB.AutoEllipsis = true;
+                subTaskLB.BorderStyle = BorderStyle.FixedSingle;
 
+                subTaskLB.Size = new Size(attachmentWidth - _distanceBetweenSubBlocks * 2, subTaskLB.Height);
+                subTaskLB.Location = new Point(0, 0);
+
+                subTaskLB.AutoEllipsis = true;
                 subTaskLB.AutoSize = true;
+                attachmentLinkPanel.Controls.Add(subTaskLB);
 
                 Label taskLB = new Label();
+                taskLB.Name = "TaskName";
                 taskLB.Text = _table.GetTaskNameWitchContainsSubTaskByGlobalIndex(_subTask.Attachments[i].SubTaskGlobalIndex);
+                taskLB.Location = new Point(subTaskLB.Location.X, subTaskLB.Location.Y + subTaskLB.Height + _distanceBetweenSubBlocks);
+                attachmentLinkPanel.Controls.Add(taskLB);
 
-                _attachmentsPanel.Controls.Add(attachmentPanel);
+                attachmentLinkPanel.Size = new Size(attachmentLinkPanel.Width, subTaskLB.Height + taskLB.Height);
+                attachmnetPanel.Controls.Add(attachmentLinkPanel);
+
+                MaterialButton deleteBut = new MaterialButton();
+                deleteBut.Tag = _subTask.Attachments[i].SubTaskGlobalIndex;
+                deleteBut.Text = "Delete";
+                deleteBut.Location = new Point(attachmentLinkPanel.Location.X + _distanceBetweenSubBlocks, attachmentLinkPanel.Location.Y + attachmentLinkPanel.Height + _distanceBetweenSubBlocks);
+
+                deleteBut.Click += DeleteAttachment_Click;
+
+
+                attachmnetPanel.Controls.Add(deleteBut);
+                attachmnetPanel.Size = new Size(attachmnetPanel.Width, attachmentLinkPanel.Height + deleteBut.Height + _distanceBetweenSubBlocks * 2);
+
+                _attachmentsPanel.Controls.Add(attachmnetPanel);
+
+                if (i % 2 != 0)
+                {
+                    Control getXloc = _attachmentsPanel.Controls[_attachmentsPanel.Controls.Count - 2];
+                    Control getYloc = _attachmentsPanel.Controls[_attachmentsPanel.Controls.Count - 1];
+
+                    int yLoc = getYloc.Height > getXloc.Height ? getYloc.Height : getXloc.Height;
+
+                    attatchLoc = new Point(getXloc.Location.X, getYloc.Location.Y + yLoc + _distanceBetweenBlocks);
+                }
+                else
+                {
+                    attatchLoc = new Point(attachmnetPanel.Location.X + attachmnetPanel.Width + _distanceBetweenBlocks, attachmnetPanel.Location.Y);
+                }
             }
+        }
+        private void DeleteAttachment_Click(object sender, EventArgs e)
+        {
+            Panel attachPanel = (Panel)((MaterialButton)sender).Parent;
+            Panel panel = GetPanelControlFormPanel(attachPanel);
+
+            Control taskNameLB = GetLabelFromPanelByName(panel, "TaskName");
+            Control subTaskNameLB = GetLabelFromPanelByName(panel, "SubTaskName");
+            int attachIndex = int.Parse(attachPanel.Tag.ToString());
+            int subTaskIndex = int.Parse(((MaterialButton)sender).Tag.ToString());
+
+            _subTask.DeleteAttachmentGyUniqueIndex(attachIndex);
+
+            InitAttachments();
+        }
+        public Panel GetPanelControlFormPanel(Panel panel)
+        {
+            for (int i = 0; i < panel.Controls.Count; i++)
+            {
+                if (panel.Controls[i] is Panel)
+                {
+                    return (Panel)panel.Controls[i];
+                }
+            }
+            throw new Exception("cant find panel Control!");
         }
         public void InitHistoryComments()
         {
@@ -234,7 +432,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 comment.BorderStyle = BorderStyle.FixedSingle;
                 //comment.Size = new Size(commentPanel.Width, comment.Height);
                 comment.Location = new Point(writer.Location.X, writer.Location.Y + writer.Height + _distBetweenBlocks);
-                
+
                 comment.AutoSize = true;
                 commentPanel.Controls.Add(comment);
 
@@ -295,7 +493,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             correct.ShowDialog();
 
             _subTask.UpdateComment(correct._comment.Value, commentIndex);
-            
+
             InitHistoryComments();
         }
         private void DeleteComment_Click(object sender, EventArgs e)
@@ -368,12 +566,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 descTextPanel.Height = height;
                 descTextPanel.Invalidate();
                 _descriptionPanel.Invalidate();
+                InitLocationForBlocks();
             };
 
             _descriptionPanel.Controls.Add(descLB);
             _descriptionPanel.Controls.Add(descTextPanel);
+            InitLocationForBlocks();
         }
-
         public void InitDeadLine()
         {
             const int borderDist = 5;
@@ -408,7 +607,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             InitLocationForBlocks();
 
         }
-
         public void InitCheckLists()
         {
             const int distanceFromBorders = 5;
@@ -503,11 +701,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     panel.Controls.Add(listCase);
 
                     panel.Size = new Size(panel.Width, panel.Height + listCase.Height + _distanceBetweenSubBlocks);
-
                 }
 
                 lastControl = panel.Controls[panel.Controls.Count - 1];
-
                 //Add AddElement button
                 MaterialButton addElement = new MaterialButton();
                 addElement.Text = "Add Element";
@@ -574,11 +770,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             double percent = (double)amountOfTurnedCheckCases / amountOfCases * 100;
 
             progressBar.Value = (int)percent;
-
         }
-
-
-
         public MaterialProgressBar GetProgressBarFromPanel(Panel panel)
         {
             for (int i = 0; i < panel.Controls.Count; i++)
@@ -614,7 +806,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             }
             return null;
         }
-
         private void DeleteCheckList_Click(object sender, EventArgs e)
         {
             if (sender is Button button)
@@ -630,7 +821,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 InitCheckLists();
             }
         }
-
         public void InitFlags()
         {
             _flagPanel.Size = new Size(_flagPanel.Width, 0);
@@ -683,7 +873,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _flagPanel.Controls.Add(addBut);
 
             InitLocationForBlocks();
-
         }
         public void UpdateFlagPanelHeight(bool ifNeedToTransfer, int statndatFlagPanelHeight)
         {
@@ -710,7 +899,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             }
             return (new Point(tempPoint.X + lastControl.Width + _distBetweenFlagsInPanel, tempPoint.Y), false);
         }
-
         private int AdjustTextBoxHeight(TextBox textBox)
         {
             // Создаем графический объект для измерения высоты текста
@@ -723,7 +911,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 return (int)Math.Ceiling(textSize.Height) + textBox.Margin.Vertical + SystemInformation.HorizontalScrollBarHeight;
             }
         }
-
         private void InitMenuButtons()
         {
             const int distanceBetweenButtons = 10;
@@ -751,7 +938,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             InitClicks();
 
         }
-
         private void InitClicks()
         {
             for (int i = 0; i <= (int)SubTaskButType.Cover; i++)
@@ -760,7 +946,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                 if ((SubTaskButType)i == SubTaskButType.Partisipants)
                 {
-
+                    but.Click += ParticioanstsAction_Click;
                 }
                 else if ((SubTaskButType)i == SubTaskButType.Tags)
                 {
@@ -780,17 +966,31 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 }
                 else if ((SubTaskButType)i == SubTaskButType.Cover)
                 {
-
+                    but.Click += AddCover_Click;
                 }
             }
+        }
+        private void ParticioanstsAction_Click(object sender, EventArgs e)
+        {
+            ParticipantsAction partAction = new ParticipantsAction(_subTask, _table);
+            partAction.ShowDialog();
+
+            InitParticipants();
+        }
+        private void AddCover_Click(object sender, EventArgs e)
+        {
+            CoverAction coverAction = new CoverAction(_subTask);
+            coverAction.ShowDialog();
+
+            InitCover();
         }
         private void AddAttachment_Click(object sender, EventArgs e)
         {
             AddAttachment addAtt = new AddAttachment(_table, _subTask, _task);
-            addAtt.ShowDialog();            
+            addAtt.ShowDialog();
 
+            InitAttachments();
         }
-        
         private void AddDeadLine_Click(object sender, EventArgs e)
         {
             AddDeadLine deadLine = new AddDeadLine();
@@ -835,7 +1035,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             }
             return null;
         }
-
         private void MakeOneOfThePanelHeightBigger(Panel panel, int heightMove)
         {
             SubTaskTypes? panelType = GetTypeByPanel(panel);
@@ -895,7 +1094,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             {
                 Control control = GetMainPanelByType((SubTaskTypes)i);
 
-                if (!(control.Tag is null) && control.Tag.ToString() == SubTaskTypes.Name.ToString())
+                if(!(control.Tag is null) && control.Tag.ToString() == SubTaskTypes.Cover.ToString())
+                {
+                    control.Location = new Point(0, 0);
+                    tempLoc = new Point(tempLoc.X, tempLoc.Y + control.Height + _distanceBetweenMainBlocks);
+                }
+                else if (!(control.Tag is null) && control.Tag.ToString() == SubTaskTypes.Name.ToString())
                 {
                     control.Location = tempLoc;
                     tempLoc = new Point(tempLoc.X, tempLoc.Y + control.Height + _distanceBetweenMainBlocks);
@@ -909,29 +1113,17 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             int yButMenuLoc = _namePanel.Location.Y + _namePanel.Height * 2;
             _menuPanel.Location = new Point(this.Size.Width - _menuPanel.Width - _distanceBetweenMainBlocks * 3, yButMenuLoc);
         }
-        private int IfSubTaskHasCheckLists()
-        {
-            return _subTask.CheckLists.Count == 0 ? 0 : _distanceBetweenMainBlocks;
-        }
-        private int IfSubTaskDoesntHaveFlags()
-        {
-            return _subTask.Flags.Count == 0 ? 0 : _distanceBetweenMainBlocks;
-        }
-        private int IfSubTaskContainsSmth(object smth)
-        {
-            return smth is null ? 0 : _distanceBetweenMainBlocks;
-        }
-
         private void InitPanelsSize()
         {
             _namePanel.AutoSize = false;
-            _namePanel.Size = new Size(_namePanelWidth, _onePointInNamePanelHeight * _subTask.GetTransfersAmount());
+            _namePanel.Size = new Size(this.Width - 30, _onePointInNamePanelHeight * _subTask.GetTransfersAmount());
 
             _menuPanel.Size = new Size(200, 350);
 
-
             int rightPanelsWidth = this.Width - _menuPanel.Width - 15 - _distanceBetweenBlocks * 3;
 
+            _coverPanel.Size = new Size(this.Width - 30, 0);
+            _partisipentsPanel.Size = new Size(rightPanelsWidth, 0);
             _flagPanel.Size = new Size(rightPanelsWidth, 0);
             _deadlinePanel.Size = new Size(rightPanelsWidth, 0);
             _descriptionPanel.Size = new Size(rightPanelsWidth, 150);
@@ -966,7 +1158,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 }
             }
         }
-
         private void InitTagsForPanl()
         {
             _coverPanel.Tag = SubTaskTypes.Cover;
@@ -980,7 +1171,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _historyPanel.Tag = SubTaskTypes.HistoryComments;
             _menuPanel.Tag = SubTaskTypes.ButMenu;
         }
-
         private void InitBordersForEveryPanel()
         {
             _namePanel.BorderStyle = BorderStyle.FixedSingle;
@@ -991,6 +1181,5 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _checlListsPanel.BorderStyle = BorderStyle.FixedSingle;
             _historyPanel.BorderStyle = BorderStyle.FixedSingle;
         }
-
     }
 }

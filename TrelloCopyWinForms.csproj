@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\DataBase\DBUsage.cs" />
+    <Compile Include="Models\Enums\CoverType.cs" />
     <Compile Include="Models\Enums\SubTaskTypes.cs" />
     <Compile Include="Models\Enums\SubTaskButType.cs" />
     <Compile Include="Models\TableModels\SubTask.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Models\TableModels\SubTaskAttribs\CheckListCase.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\CheckListModel.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\Comment.cs" />
+    <Compile Include="Models\TableModels\SubTaskAttribs\Cover.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\DeadLineDate.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\Flag.cs" />
     <Compile Include="Models\TableModels\Table.cs" />
@@ -144,6 +146,12 @@
     <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddSubTaskFlag.Designer.cs">
       <DependentUpon>AddSubTaskFlag.cs</DependentUpon>
     </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\ChangeName.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\ChangeName.Designer.cs">
+      <DependentUpon>ChangeName.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CheckListAction.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -155,6 +163,18 @@
     </Compile>
     <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CorrectComment.Designer.cs">
       <DependentUpon>CorrectComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CoverAction.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CoverAction.Designer.cs">
+      <DependentUpon>CoverAction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\ParticipantsAction.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\ParticipantsAction.Designer.cs">
+      <DependentUpon>ParticipantsAction.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\TableWindows\SubTaskWindows\SubTaskMenu.cs">
       <SubType>Form</SubType>
@@ -217,11 +237,20 @@
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\AddSubTaskFlag.resx">
       <DependentUpon>AddSubTaskFlag.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\ChangeName.resx">
+      <DependentUpon>ChangeName.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CheckListAction.resx">
       <DependentUpon>CheckListAction.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CorrectComment.resx">
       <DependentUpon>CorrectComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\CoverAction.resx">
+      <DependentUpon>CoverAction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskAttribs\ParticipantsAction.resx">
+      <DependentUpon>ParticipantsAction.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\SubTaskMenu.resx">
       <DependentUpon>SubTaskMenu.cs</DependentUpon>
