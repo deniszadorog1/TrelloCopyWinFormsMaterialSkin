@@ -173,7 +173,76 @@ namespace TrelloCopyWinForms.Models.TableModels
                     return UserInTable[i].Login;
                 }
             }
-            throw new Exception("Cant find user with such ID");
+            throw new InvalidOperationException("Cant find user with such ID");
+        }
+
+        public bool IfTaskIsExist(string name)
+        {
+            return Tasks.Any(x => x.Name == name);
+        }
+
+        public void SwapTwoLastTasks()
+        {
+            if(Tasks.Count >= 2)
+            {
+                TableTask task = Tasks.Last();
+
+                Tasks[Tasks.Count - 1] = Tasks[Tasks.Count - 2];
+                Tasks[Tasks.Count - 2] = task;
+            }
+        }
+        public void RemoveSubTask(int taskIndex, int subTaskGloba)
+        {
+            TableTask task = Tasks[taskIndex];
+
+            task.SubTasks.Remove(task.SubTasks.Find(x => x.GlobalSubTaskIndex == subTaskGloba));
+        }
+        public int GetTaskIndexByName(string name)
+        {
+            for(int i = 0; i < Tasks.Count; i++)
+            {
+                if (Tasks[i].Name == name)
+                {
+                    return i;
+                }
+            }
+            throw new InvalidOperationException("cant find task with such name!");
+        }
+        public void SwapTwoTasks(string firstTaskName, string secondTaskName)
+        {
+            TableTask temp = GetTaskByName(firstTaskName);
+
+            int firstIndex = GetTaskIndexByName(firstTaskName);
+            int secondIndex = GetTaskIndexByName(secondTaskName);
+
+            Tasks[firstIndex] = Tasks[secondIndex];
+            Tasks[secondIndex] = temp;
+        }
+        public void MoveSubTaskToAnoutherTask(string gettingFromName, string initIntoName, string subTaskName, int subTaskUniqueIndex, int insertionPosition)
+        {
+            int fromTaskIndex = GetTaskIndexByName(gettingFromName);
+            int intoTaskIndex = GetTaskIndexByName(initIntoName);
+
+            SubTask draggingSubTask = Tasks[fromTaskIndex].GetSubTaskByNameAndIndex(subTaskName, subTaskUniqueIndex);
+
+            Tasks[fromTaskIndex].RemoveSubTask(subTaskName, subTaskUniqueIndex);
+            Tasks[intoTaskIndex].InserDraggedSubTask(draggingSubTask, insertionPosition);
+
+            Tasks[fromTaskIndex].UpdateSubTasksUniqueIndexes();
+            Tasks[intoTaskIndex].UpdateSubTasksUniqueIndexes();
+        }
+        public void MoveSubTaskInSameTask(string tableName, string subTaskName, int subTaskUniqueIndex, int insertIndex)
+        {
+            int tableIndex = GetTaskIndexByName(tableName);
+
+            SubTask draggingSubTask = Tasks[tableIndex].GetSubTaskByNameAndIndex(subTaskName, subTaskUniqueIndex);
+
+            Tasks[tableIndex].SubTasks.Remove(draggingSubTask);
+            Tasks[tableIndex].InserDraggedSubTask(draggingSubTask, insertIndex);
+
+
+            Tasks[tableIndex].UpdateSubTasksUniqueIndexes();
+
         }
     }
 }

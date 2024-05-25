@@ -90,6 +90,44 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return "";
         }
+        public int GetSubTaskIndexByNameAndUniqueIndex(string name, int index)
+        {
+            for (int i = 0; i < SubTasks.Count; i++)
+            {
+                if (SubTasks[i].Name == name &&
+                    SubTasks[i].UniqueIndex == index)
+                {
+                    return i;
+                }
+            }
+            throw new Exception("Cant find subTasks with such params");
+        }        
+        public void RemoveSubTask(string name, int uniqueIndex)
+        {
+            int subTasksIndex = GetSubTaskIndexByNameAndUniqueIndex(name, uniqueIndex);
+
+            SubTasks.Remove(SubTasks[subTasksIndex]);
+
+        }
+        public void InserDraggedSubTask(SubTask subTask, int insertPlace)
+        {
+            if (insertPlace < SubTasks.Count)
+            {
+                SubTasks.Insert(insertPlace, subTask);
+            }
+            else
+            {
+                SubTasks.Add(subTask);
+            }
+        }
+
+        public void UpdateSubTasksUniqueIndexes()
+        {
+            for(int i = 0; i < SubTasks.Count; i++)
+            {
+                SubTasks[i].UniqueIndex = i;
+            }
+        }
 
        
     }

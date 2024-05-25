@@ -61,7 +61,7 @@ namespace TrelloCopyWinForms
         private void LoginBut_Click(object sender, EventArgs e)
         {
             //verfy login and hash for password
-            if(LoginBox.Text == "" || PasswordBox.Text == "")
+            if (LoginBox.Text == "" || PasswordBox.Text == "")
             {
                 MessageBox.Show("Smth went wrong!", "Mistake!");
                 return;

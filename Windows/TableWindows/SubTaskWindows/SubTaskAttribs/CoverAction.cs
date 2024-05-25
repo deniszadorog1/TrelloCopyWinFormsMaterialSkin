@@ -60,6 +60,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
         private void ClearCoverBut_Click(object sender, EventArgs e)
         {
+            BgColorPanel.BackColor = SystemColors.Control;
             _subTask.Cover = null;
             MessageBox.Show("Cleared!", "Success");
         }

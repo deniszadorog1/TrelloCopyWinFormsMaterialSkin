@@ -14,5 +14,6 @@ namespace TrelloCopyWinForms.Models.Enums
         Date,
         Attachment,
         Cover,
+        Exit
     }
 }

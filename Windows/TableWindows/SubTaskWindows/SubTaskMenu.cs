@@ -61,7 +61,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             "Check-List",
             "Date",
             "Attachment",
-            "Cover"
+            "Cover",
+            "Exit"
         };
         public SubTaskMenu(SubTask subTask, Table table, TableTask tempTask)
         {
@@ -154,7 +155,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             {
                 _namePanel.Height = nameLabel.Height + _distanceBetweenBlocks;
             }
-            InitLocationForBlocks();
+            ReintiLocsForMainBlocks();
         }
         private void ChangeName_Click(object sender, EventArgs e)
         {
@@ -193,7 +194,17 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 point = new Point(point.X + box.Width + _distanceBetweenBlocks, point.Y);
             }
 
-            InitLocationForBlocks();
+            if(_subTask.UsersIdsInSuBTask.Count == 0)
+            {
+                _partisipentsPanel.Height = 0;
+            }
+            else
+            {
+                _partisipentsPanel.Height = _partisipentsPanel.Controls[_partisipentsPanel.Controls.Count - 1].Location.Y +
+                    _partisipentsPanel.Controls[_partisipentsPanel.Controls.Count - 1].Height + _distanceBetweenBlocks;
+            }
+
+            ReintiLocsForMainBlocks();
         }
 
         private void userCircles_Paint(object sender, PaintEventArgs e)
@@ -229,8 +240,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 g.DrawString(symbol, font, brush, textX, textY);
             }
         }
-
-
         public void InitCover()
         {
             const int coverHeight = 90;
@@ -239,14 +248,19 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 _coverPanel.Size = new Size(_coverPanel.Width, 0);
                 _coverPanel.BackColor = Color.Empty;
                 _coverPanel.BackgroundImage = null;
-                InitLocationForBlocks();
+                ReintiLocsForMainBlocks();
                 return;
             }
             _coverPanel.Size = new Size(_coverPanel.Width, coverHeight);
             _coverPanel.BackColor = (Color)_subTask.Cover.BGColor;
 
-            InitLocationForBlocks();
+            ReintiLocsForMainBlocks();
             _coverPanel.Location = new Point(0, 0);
+        }
+        public void ReintiLocsForMainBlocks()
+        {
+            MainPanel.AutoScrollPosition = new Point(0, 0);
+            InitLocationForBlocks();
         }
         public void InitAttachments()
         {
@@ -332,6 +346,17 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     attatchLoc = new Point(attachmnetPanel.Location.X + attachmnetPanel.Width + _distanceBetweenBlocks, attachmnetPanel.Location.Y);
                 }
             }
+
+            if(_subTask.Attachments.Count == 0)
+            {
+                _attachmentsPanel.Height = 0;
+            }
+            else
+            {
+                _attachmentsPanel.Height = _attachmentsPanel.Controls[_attachmentsPanel.Controls.Count - 1].Location.Y +
+                     _attachmentsPanel.Controls[_attachmentsPanel.Controls.Count - 1].Height + _distanceBetweenBlocks;
+            }
+            ReintiLocsForMainBlocks();
         }
         private void DeleteAttachment_Click(object sender, EventArgs e)
         {
@@ -481,7 +506,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
             MainPanel.VerticalScroll.Value = 0;
 
-            InitLocationForBlocks();
+            ReintiLocsForMainBlocks();
         }
         private void ChangeComment_Click(object sender, EventArgs e)
         {
@@ -566,12 +591,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 descTextPanel.Height = height;
                 descTextPanel.Invalidate();
                 _descriptionPanel.Invalidate();
-                InitLocationForBlocks();
+                ReintiLocsForMainBlocks();
             };
 
             _descriptionPanel.Controls.Add(descLB);
             _descriptionPanel.Controls.Add(descTextPanel);
-            InitLocationForBlocks();
+            ReintiLocsForMainBlocks();
         }
         public void InitDeadLine()
         {
@@ -582,29 +607,41 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
             _deadlinePanel.Location = new Point(_flagPanel.Location.X, _flagPanel.Location.Y + _flagPanel.Height + _distanceBetweenMainBlocks);
 
-            if (_subTask.DeadLine is null) return;
             //Init start - end + check
+            if (!(_subTask.DeadLine is null))
+            {
+                MaterialCheckbox box = new MaterialCheckbox();
+                box.AutoSize = false;
+                box.Size = boxSize;
+                box.Text = "";
+                box.Location = new Point(borderDist, borderDist);
 
-            MaterialCheckbox box = new MaterialCheckbox();
-            box.AutoSize = false;
-            box.Size = boxSize;
-            box.Text = "";
-            box.Location = new Point(borderDist, borderDist);
+                Label printLB = new Label();
+                printLB.BorderStyle = BorderStyle.FixedSingle;
 
-            Label printLB = new Label();
-            printLB.BorderStyle = BorderStyle.FixedSingle;
-
-            printLB.Text = _subTask.DeadLine.PrintString;
-            printLB.Location = new Point(box.Location.X + box.Width + borderDist, box.Location.Y + borderDist);
-            printLB.Size = new Size(_deadlinePanel.Width - box.Width - borderDist * 2, box.Height);
+                printLB.Text = _subTask.DeadLine.PrintString;
+                printLB.Location = new Point(box.Location.X + box.Width + borderDist, box.Location.Y + borderDist);
+                printLB.Size = new Size(_deadlinePanel.Width - box.Width - borderDist * 2, box.Height);
 
 
-            _deadlinePanel.Size = new Size(_deadlinePanel.Width, box.Height + borderDist * 2);
+                _deadlinePanel.Size = new Size(_deadlinePanel.Width, box.Height + borderDist * 2);
 
-            _deadlinePanel.Controls.Add(box);
-            _deadlinePanel.Controls.Add(printLB);
+                _deadlinePanel.Controls.Add(box);
+                _deadlinePanel.Controls.Add(printLB);
 
-            InitLocationForBlocks();
+            }
+            if(_subTask.DeadLine is null)
+            {
+                _deadlinePanel.Height = 0;
+            }
+            else
+            {
+                _deadlinePanel.Height = _deadlinePanel.Controls[_deadlinePanel.Controls.Count - 1].Location.Y +
+                    _deadlinePanel.Controls[_deadlinePanel.Controls.Count - 1].Height + _distanceBetweenBlocks;
+            }
+
+
+            ReintiLocsForMainBlocks();
 
         }
         public void InitCheckLists()
@@ -616,7 +653,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _checlListsPanel.Controls.Clear();
             _checlListsPanel.Size = new Size(_checlListsPanel.Width, 50);
 
-            if (_subTask.CheckLists.Count <= 0) return;
             Label checkListsLB = new Label();
             checkListsLB.Text = "Check Lists";
             checkListsLB.Font = new Font("Times New Roman", 16);
@@ -721,6 +757,18 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                 _checlListsPanel.Controls.Add(panel);
             }
+
+            if (_subTask.CheckLists.Count == 0)
+            {
+                _checlListsPanel.Height = 0;
+            }
+            else
+            {
+                _checlListsPanel.Height = _checlListsPanel.Controls[_checlListsPanel.Controls.Count - 1].Location.Y +
+                    _checlListsPanel.Controls[_checlListsPanel.Controls.Count - 1].Height + _distanceBetweenBlocks;
+            }
+            ReintiLocsForMainBlocks();
+
         }
         public MaterialButton GetMaterialButtonFromPanel(Panel panel)
         {
@@ -830,8 +878,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             Point loc = new Point(_distBetweenFlagsInPanel, _distBetweenFlagsInPanel);
             _flagPanel.Controls.Clear();
 
-            if (_subTask.Flags.Count <= 0) return;
-
             _flagPanel.Size = new Size(_flagPanel.Width, baseFlagSize.Width + _distBetweenFlagsInPanel * 2);
 
             _flagPanel.AutoSize = false;
@@ -872,7 +918,18 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             UpdateFlagPanelHeight(transferCheck, baseFlagSize.Height);
             _flagPanel.Controls.Add(addBut);
 
-            InitLocationForBlocks();
+
+            if(_subTask.Flags.Count == 0)
+            {
+                _flagPanel.Height = 0;
+            }
+            else
+            {
+                _flagPanel.Height = _flagPanel.Controls[_flagPanel.Controls.Count - 1].Location.Y +
+                    _flagPanel.Controls[_flagPanel.Controls.Count - 1].Height + _distanceBetweenBlocks;
+            }
+
+            ReintiLocsForMainBlocks();
         }
         public void UpdateFlagPanelHeight(bool ifNeedToTransfer, int statndatFlagPanelHeight)
         {
@@ -940,7 +997,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         private void InitClicks()
         {
-            for (int i = 0; i <= (int)SubTaskButType.Cover; i++)
+            for (int i = 0; i <= (int)SubTaskButType.Exit; i++)
             {
                 Control but = GetButtonFromMenuList((SubTaskButType)i);
 
@@ -968,7 +1025,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 {
                     but.Click += AddCover_Click;
                 }
+                else if ((SubTaskButType)i == SubTaskButType.Exit)
+                {
+                    but.Click += ExitBut_Click;
+                }
             }
+        }
+        private void ExitBut_Click(object sender, EventArgs e)
+        {
+            Close();
         }
         private void ParticioanstsAction_Click(object sender, EventArgs e)
         {
@@ -1009,13 +1074,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         private void AddCheckList_Click(object sender, EventArgs e)
         {
-            _subTask.CheckLists.Add(new CheckListModel("First check List"));
+/*            _subTask.CheckLists.Add(new CheckListModel("First check List"));
             _subTask.CheckLists.Last().Cases.Add(new CheckListCase("first"));
             _subTask.CheckLists.Last().Cases.Add(new CheckListCase("second"));
 
             _subTask.CheckLists.Add(new CheckListModel("Second check List"));
             _subTask.CheckLists.Last().Cases.Add(new CheckListCase("third"));
-            _subTask.CheckLists.Last().Cases.Add(new CheckListCase("fourth "));
+            _subTask.CheckLists.Last().Cases.Add(new CheckListCase("fourth "));*/
+
 
             CheckListAction addCheckList = new CheckListAction(_table, _subTask);
             addCheckList.ShowDialog();

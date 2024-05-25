@@ -18,9 +18,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 {
     public partial class TableWindow : MaterialForm
     {
-        private Table _table = null;
-        private List<Control> _taskControls = new List<Control>();
-        private List<List<Control>> _controlsInTasks = new List<List<Control>>();
+        private Table _table;
 
         private MaterialButton _addTaskBut = new MaterialButton();
         private const string _addTaskButName = "AddTaskBut";
@@ -37,6 +35,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         private const string _addSubTaskButName = "AddSubTask";
         private const string _taskName = "TaskName";
 
+        private bool _addTaskEventCorrection = true;
 
         //private TransparentFlowLayoutPanel TablePanel = new TransparentFlowLayoutPanel();
 
@@ -47,148 +46,128 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             TablePanel.AllowDrop = true;
 
-            InitAddTaskBut();
+            //InitAddTaskBut();
             InitBackGroundColor();
             //UnusualPanel();
+
+            InitTable();
         }
 
-        public void UnusualPanel()
-        {
-            TablePanel.WrapContents = false;
-            TablePanel.AutoScroll = true;
-            TablePanel.Location = new Point(0, 65);
-            TablePanel.Size = new Size(600, Size.Height - 65);
-
-            Controls.Add(TablePanel);
-        }
         public void InitBackGroundColor()
         {
-
-            BackgroundImage = _table.BGImage;
-            //BGImage.Image = _table.BGImage;
-            //BGImage.SendToBack();
-
             //TablePanel.BackgroundImage = _table.BGImage;
-
-            /*       if (!(_table.BGImage is null))
-                   {
-                       BGImage.Image = _table.BGImage;
-                   }*/
         }
-        private void UpdateControlsInTable()
+
+        public void InitTable()
         {
             TablePanel.Controls.Clear();
-            for (int i = 0; i < _taskControls.Count; i++)
+
+            for (int i = 0; i < _table.Tasks.Count; i++)
             {
-                TablePanel.Controls.Add(_taskControls[i]);
+                MaterialListBox taskBox = CreateTaskPanel(_table.Tasks[i].Name);
+                TablePanel.Controls.Add(taskBox);
+
+                Point loc = new Point(GetLabelFormMaterialListBox(taskBox).Location.X, taskBox.Location.Y + taskBox.Height + _distanceBetweenSubTasks);
+                for (int j = 0; j < _table.Tasks[i].SubTasks.Count; j++)
+                {
+                    Panel newSubTask = CreateSubTask(_table.Tasks[i].SubTasks[j].Name, taskBox);
+                    newSubTask.Tag = _table.Tasks[i].SubTasks[j].UniqueIndex;
+
+                    newSubTask.MouseDown += SubTask_MouseDown;
+                    newSubTask.DragOver += SubTask_DragOver;
+                    newSubTask.DragEnter += SubTask_DragEnter;
+                    newSubTask.DragLeave += SubTask_DragLeave;
+                    newSubTask.DragDrop += SubTask_DragDrop;
+
+                    newSubTask.Click += EnterSubTaskMenu_Click;
+                    taskBox.Controls.Add(newSubTask);
+
+                    newSubTask.Location = loc;
+
+                    loc = new Point(loc.X, loc.Y + newSubTask.Height + _distanceBetweenSubTasks);
+                    taskBox.Height += newSubTask.Height + _distanceBetweenSubTasks * 2;
+                }
+                //init add subtask button
+                MaterialButton but = new MaterialButton();
+                but.Text = "Add new subTask";
+                but.Name = _addSubTaskButName;
+                but.Tag = taskBox.Name;
+                but.AutoSize = false;
+                but.Size = new Size(_taskBoxWidth / 4 * 3, _taskBoxWidth / 10);
+
+                but.Location = new Point(_distanceBetweenSubTasks, taskBox.Height - _distanceBetweenSubTasks - but.Height);
+                but.Click += AddSubTask_Click;
+
+                but.Location = loc;
+                taskBox.Height += but.Height + _distanceBetweenSubTasks * 2;
+
+                taskBox.Controls.Add(but);
+
+
+                //init add task button
             }
-        }
-        public void InitAddTaskBut()
-        {
             _addTaskBut.Text = "Add new task";
             _addTaskBut.Name = _addTaskButName;
+            _addTaskBut.Click -= AddTask_Click;
             _addTaskBut.Click += AddTask_Click;
-            _addTaskBut.Location = new Point(0, _upperBorderDistance);
 
-            _taskControls.Add(_addTaskBut);
-            UpdateControlsInTable();
+            _addTaskBut.Location = new Point(0, _upperBorderDistance);
+            TablePanel.Controls.Add(_addTaskBut);
+        }
+        public Label GetLabelFormMaterialListBox(MaterialListBox box)
+        {
+            for (int i = 0; i < box.Controls.Count; i++)
+            {
+                if (box.Controls[i] is Label)
+                {
+                    return (Label)box.Controls[i];
+                }
+            }
+            throw new InvalidOperationException("Cant find label with such name");
+
+        }
+        private void EnterSubTaskMenu_Click(object sender, EventArgs e)
+        {
+            int subTaskUniqueIndex = int.Parse(((Panel)sender).Tag.ToString());
+
+            Control control = ((Panel)sender).Parent;
+            Control taskNameLb = GetLabelNameFromPanel(control);
+
+            Control subTaskNameLB = GetLabelNameFromPanel(((Panel)sender));
+
+
+            SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskNameLb.Text, subTaskNameLB.Text,
+                subTaskUniqueIndex), _table, _table.GetTaskByName(taskNameLb.Text));
+            subTaskMenu.ShowDialog();
         }
         private void AddTask_Click(object sender, EventArgs e)
         {
+            if (!_addTaskEventCorrection) return;
+
             CreateTask create = new CreateTask();
             create.ShowDialog();
 
             if (create._task is null) return;
-            if (!_taskControls.Any(x => x.Name == create._task.Name))
+            if (!_table.IfTaskIsExist(create._task.Name))
             {
-                AddNewTaskBoxInTable(create._task.Name);
-                AddAllControlsForLastTaskInList();
+                //AddNewTaskBoxInTable(create._task.Name);
+                //AddAllControlsForLastTaskInList();
                 _table.AddTask(create._task.Name);
 
+                _addTaskEventCorrection = false;
+                InitTable();
+                _addTaskEventCorrection = true;
                 return;
             }
             MessageBox.Show("task with is name is already exist!");
-        }
-        private void AddAllControlsForLastTaskInList()
-        {
-            _controlsInTasks.Add(new List<Control>());
-
-            Control control = _taskControls[_taskControls.Count - 2];
-            List<Control> lastList = _controlsInTasks.Last();
-
-            for (int i = 0; i < control.Controls.Count; i++)
-            {
-                lastList.Add(control.Controls[i]);
-            }
-        }
-
-        private void AddNewTaskBoxInTable(string taskName)
-        {
-            //Get task box
-            MaterialListBox newTaskBox = CreateTaskPanel(taskName);
-            //Init new location for new task box
-            InitLocationForNewTask(newTaskBox);
-            //reassign controls in table
-            SwapTwoLastTasksLocsInTable();
-        }
-        public void SwapTwoLastTasksLocsInTable()
-        {
-            TablePanel.Controls.RemoveAt(TablePanel.Controls.Count - 1);
-
-            if (_taskControls.Count >= 2)
-            {
-                TablePanel.Controls.Add(_taskControls[_taskControls.Count - 2]);
-                TablePanel.Controls.Add(_taskControls.Last());
-            }
-        }
-        private void InitLocationForNewTask(MaterialListBox newTaskBox)
-        {
-            //Get last controls
-            Control lastControl = _taskControls[_taskControls.Count - 1];
-            //Remove addTaskButon from taskList
-            _taskControls.RemoveAt(_taskControls.Count - 1);
-
-            //Get last control location
-            Point addTaskButLocation = lastControl.Location;
-
-            //init last cont loc to new control
-            newTaskBox.Location = addTaskButLocation;
-            //Assign new location to add controls Box(last location)
-
-            int lastControlXLock = newTaskBox.Location.X + newTaskBox.Width;
-            UpdateTableWidth(lastControlXLock, lastControl, newTaskBox);
-
-            int xLocForLastControl = newTaskBox.Location.X + newTaskBox.Width + _distanceBetweenTasks;
-            //TablePanel.Size = new Size(xLocForLastControl + lastControl.Width + _distanceBetweenTasks, TablePanel.Height);
-
-            lastControl.Location = new Point(xLocForLastControl, _upperBorderDistance);
-            //lastControl.BringToFront();
-
-            _taskControls.Add(newTaskBox);
-            _taskControls.Add(lastControl);
-
-            UpdateControlsInTable();
-        }
-        private void UpdateTableWidth(int lastControlsWidth, Control lastControl, Control newControl)
-        {
-            int lastPointInControlLock = lastControlsWidth + lastControl.Width;
-
-            if (TablePanel.Width <= lastPointInControlLock)
-            {
-                //int differance = lastControlsWidth - TablePanel.Width;
-                //Size = new Size(lastPointInControlLock + newControl.Width + _distanceBetweenTasks, Size.Height);
-                //TablePanel.Size = new Size(lastPointInControlLock + newControl.Width + _distanceBetweenTasks, TablePanel.Height);
-            }
-            else
-            {
-
-            }
         }
         private MaterialListBox CreateTaskPanel(string taskName)
         {
             MaterialListBox taskBox = new MaterialListBox();
             //taskBox.Size = new Size(_taskBoxWidth, _taskBoxStartHeight);
             taskBox.Name = taskName;
+            taskBox.BorderColor = Color.Black;
+            taskBox.ShowBorder = true;
 
             //Add task name
             Label name = new Label();
@@ -197,26 +176,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             name.Location = new Point(_distanceBetweenSubTasks, _distanceBetweenSubTasks);
             name.Name = _taskName;
             name.Click += RenameTask_Click;
+            name.BorderStyle = BorderStyle.FixedSingle;
             taskBox.Controls.Add(name);
 
-
-            //Add add subTask button
-            MaterialButton but = new MaterialButton();
-            but.Text = "Add new subTask";
-            but.Name = _addSubTaskButName;
-            but.Tag = taskName;
-            but.AutoSize = false;
-            but.Size = new Size(_taskBoxWidth / 4 * 3, _taskBoxWidth / 10);
-
-
             taskBox.Size = new Size(_taskBoxWidth + _distanceBetweenSubTasks * 3,
-            name.Height + but.Height + _distanceBetweenSubTasks * 3);
+            name.Height + _distanceBetweenSubTasks * 3);
 
-            but.Location = new Point(_distanceBetweenSubTasks, taskBox.Height - _distanceBetweenSubTasks - but.Height);
-
-            but.Click += AddSubTask_Click;
-
-            taskBox.Controls.Add(but);
             taskBox.AllowDrop = true;
 
             taskBox.MouseDown += TaskPanel_MouseDown;
@@ -243,10 +208,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         {
             e.Effect = DragDropEffects.Move;
         }
-        private void TaskPanel_DragLeave(object sender, DragEventArgs e)
-        {
-
-        }
         private void TaskPanel_DragDrop(object sender, DragEventArgs e)
         {
             //if sender is Panel(subTask) //handle 
@@ -256,67 +217,28 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 Panel subTaskPan = (Panel)e.Data.GetData(typeof(Panel));
                 Point dropLocation = ((MaterialListBox)sender).PointToClient(new Point(e.X, e.Y));
 
-                
-                
-                SubTaskeMoved(subTaskPan, dropLocation, (MaterialListBox)sender);
+                Control from = subTaskPan.Parent;
+                ReassingDraggedTask(from, (MaterialListBox)sender, subTaskPan, dropLocation);
+
                 return;
             }
-
 
             //if Panel dropped on anouther Panel => swap them
             //sender - place(or control) where we dropped
             MaterialListBox panel = (MaterialListBox)e.Data.GetData(typeof(MaterialListBox)); //that was dragged
-
             if (panel is null) return;
 
-            //Point dropLocation = this.PointToClient(new Point(e.X, e.Y));
-            //Point newPoint = new Point(dropLocation.X - dragStartPoint.X, dropLocation.Y - dragStartPoint.Y);  
-            //panel.Location = newPoint;
-
-            SwapLocsForControls(panel, (MaterialListBox)sender);
-            SwapTasksInTaskList(panel, (MaterialListBox)sender);
-            SwapControlsInTasksList(panel, (MaterialListBox)sender);
-
-            UpdateTable();
+            //Swap tables in logic 
+            SwapTableInLogic(panel, (MaterialListBox)sender);
+            InitTable();
         }
-        private void SubTaskeMoved(Panel toMove, Point cordWherePanelDroped, MaterialListBox taskWhereWasDropped)
+        public void SwapTableInLogic(MaterialListBox first, MaterialListBox second)
         {
-            //Get table where we are dragged from 
-            Control tablePanelGettingFrom = toMove.Parent;
+            Label firstNameLB = GetLabelFormMaterialListBox(first);
+            Label secondNameLB = GetLabelFormMaterialListBox(second);
 
-
-            //Get list with conrols of where we are dragging (from list controls)
-            int tableIndexGettingFrom = GetTaskControlIndexByName(tablePanelGettingFrom.Name);
-            List<Control> subTasksGettingSubFrom = _controlsInTasks[tableIndexGettingFrom];
-
-            //Get list with conrols of where we are dragging into (into list controls)
-            int tableIndexIndsertingInto = GetTaskControlIndexByName(taskWhereWasDropped.Name);
-            List<Control> subTasksInsertingSubInto = _controlsInTasks[tableIndexIndsertingInto];
-
-            //Remove from list (table + list getting from)
-            RemoveSubtask(toMove, (MaterialListBox)tablePanelGettingFrom, tableIndexGettingFrom);
-
-            //Insert into list(table + list inserting into)
-            InsertSubTaskIntoNewTask(toMove, taskWhereWasDropped, tableIndexIndsertingInto, cordWherePanelDroped);
-
-            UpdateTaskControlsLocation(tablePanelGettingFrom);
-            UpdateTaskControlsLocation(taskWhereWasDropped);
-
-
-
-            UpdateControlsInTable();
+            _table.SwapTwoTasks(firstNameLB.Text, secondNameLB.Text);
         }
-        private void UpdateTable()
-        {
-            TablePanel.Controls.Clear();
-
-            for (int i = 0; i < _taskControls.Count; i++)
-            {
-                TablePanel.Controls.Add(_taskControls[i]);
-            }
-
-        }
-
         private void TaskPanel_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(Panel)))
@@ -327,17 +249,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 e.Effect = DragDropEffects.None;
             }
-        }
-        private void SwapControlsInTasksList(Control first, Control second)
-        {
-            int firstTaskIndex = GetTaskControlIndexByName(first.Name);
-            int secondTaskIndex = GetTaskControlIndexByName(second.Name);
-
-            List<Control> firstControls = _controlsInTasks[firstTaskIndex];
-
-            _controlsInTasks[firstTaskIndex] = _controlsInTasks[secondTaskIndex];
-            _controlsInTasks[secondTaskIndex] = firstControls;
-        }
+        }     
         private void RenameTask_Click(object sender, EventArgs e)
         {
             if (sender is Label taskName)
@@ -345,119 +257,36 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 TableTask resTask = _table.GetTaskByName(taskName.Text);
                 if (resTask is null) return;
 
-                Control controlToRename = GetTaskControlByName(resTask.Name);
-                Control taskNameLabel = GetLabelNameFromTask(controlToRename);
+                //Control controlToRename = GetTaskControlByName(resTask.Name);
+                // Control taskNameLabel = GetLabelNameFromTask(controlToRename);
 
                 RenameTask rename = new RenameTask(resTask, _table.Tasks);
                 rename.ShowDialog();
 
-                controlToRename.Name = resTask.Name;
-                taskNameLabel.Text = DevideStringInRows(resTask.Name);
-                ReassignButtinTag(controlToRename);
-
-                //update control in controls list
-                //Update task 
-                UpdateTaskControlsLocation(controlToRename);
+                InitTable();
             }
-        }
-
-        private void UpdateTaskControlsLocation(Control task)
+        }     
+        private Control GetLabelNameFromPanel(Control panel)
         {
-            int taskIndex = GetTaskControlIndexByName(task.Name);
-            bool check = false;
-
-            List<Control> controls = _controlsInTasks[taskIndex];
-
-            for (int i = 0; i < controls.Count; i++)
+            for (int i = 0; i < panel.Controls.Count; i++)
             {
-                if (check)
+                if (panel.Controls[i] is Label)
                 {
-                    controls[i].Location = new Point(controls[i].Location.X, 0);
-                    controls[i].Location = new Point(controls[i].Location.X,
-                        controls[i - 1].Location.Y + controls[i - 1].Height + _distanceBetweenSubTasks);
-                }
-                if (task.Controls[i] is Label)
-                {
-                    check = true;
-                }
-            }
-
-            Control buttonControl = GetButtonControl(task);
-            Control controlBeforeBut = controls[controls.Count - 2];
-
-            buttonControl.Location = new Point(controlBeforeBut.Location.X,
-                controlBeforeBut.Location.Y + controlBeforeBut.Height + _distanceBetweenSubTasks);
-
-            task.Height = buttonControl.Location.Y + buttonControl.Height + _distanceBetweenSubTaskName;
-        }
-
-        private void ReassignButtinTag(Control control)
-        {
-            Button but = null;
-            for (int i = 0; i < control.Controls.Count; i++)
-            {
-                if (control.Controls[i] is Button)
-                {
-                    but = (Button)control.Controls[i];
-                    break;
-                }
-            }
-            if (but is null) return;
-
-            but.Tag = control.Name;
-        }
-
-
-        private Control GetLabelNameFromTask(Control task)
-        {
-            for (int i = 0; i < task.Controls.Count; i++)
-            {
-                if (task.Controls[i] is Label)
-                {
-                    return task.Controls[i];
+                    return panel.Controls[i];
                 }
             }
             return null;
         }
-
         private void AddSubTask_Click(object sender, EventArgs e)
         {
             CreateSubTask create = new CreateSubTask();
             create.ShowDialog();
 
             if (create._subTaskName == "") return;
-            Control taskToAddSubTask = GetTaskTOAddSubTask(((Button)sender).Tag.ToString());
-            if (taskToAddSubTask is null) return;
+            _table.AddSubTask(((Button)sender).Tag.ToString(), create._subTaskName);
 
-            _table.AddSubTask(taskToAddSubTask.Name, create._subTaskName);
-
-            Panel newSubTask = CreateSubTask(create._subTaskName, taskToAddSubTask);
-            newSubTask.Tag = _table.GetUniqueNumForLastSubTask(taskToAddSubTask.Name);
-
-            newSubTask.MouseDown += SubTask_MouseDown;
-            newSubTask.DragOver += SubTask_DragOver;
-            newSubTask.DragEnter += SubTask_DragEnter;
-            newSubTask.DragLeave += SubTask_DragLeave;
-            newSubTask.DragDrop += SubTask_DragDrop;
-
-            newSubTask.Click += (senderObj, clickEventArg) => 
-            {
-                int SubTaskUniqueIndex = int.Parse(((Panel)senderObj).Tag.ToString());
-
-                SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskToAddSubTask.Name, create._subTaskName, SubTaskUniqueIndex), _table, _table.GetTaskByName(taskToAddSubTask.Name));
-                subTaskMenu.ShowDialog();
-            };
-
-            GetLocationForNewSubTask(newSubTask, taskToAddSubTask);
-
-            //panel Location in task panel
-            AddTaskInSubTaskListLits(taskToAddSubTask, newSubTask);
-
-            //Repaint all controls int task panel
-            UpdateControlsInTaskPanel(taskToAddSubTask);
-
+            InitTable();
         }
-
         private void SubTask_MouseDown(object sender, MouseEventArgs e)
         {
             if (!(sender is Panel)) return;
@@ -492,166 +321,76 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             //sender - place(or control) where we dropped
             Panel panel = (Panel)e.Data.GetData(typeof(Panel)); //that was dragged
             Point dropLocation = this.PointToClient(new Point(e.X, e.Y));
-            //Point newPoint = new Point(dropLocation.X - dragStartPoint.X, dropLocation.Y - dragStartPoint.Y);  
-            //panel.Location = newPoint;
 
-            //Get table where we are dragged from 
-            Control tablePanelGettingFrom = ((Panel)panel).Parent;
+            //Get task where we are dragged from 
+            Control taskPanelGettingFrom = panel.Parent;
 
-            //Get table where we dragging into 
-            Control tablePanelInsertingInto = ((Panel)sender).Parent;
+            //Get task where we dragging into 
+            Control taskPanelInsertingInto = ((Panel)sender).Parent;
 
-            
+            //GetTask name drgging from 
+            Control gettingFromLB = GetLabelNameFromPanel(taskPanelGettingFrom);
+            //GetTask name drgging where
+            Control draggingIntoLB = GetLabelNameFromPanel(taskPanelInsertingInto);
 
-            //Get list with conrols of where we are dragging (from list controls)
-            int tableIndexGettingFrom = GetTaskControlIndexByName(tablePanelGettingFrom.Name);
-            List<Control> subTasksGettingSubFrom = _controlsInTasks[tableIndexGettingFrom];
+            //define position
+            int newSubTaskPosition =
+                GetNewPositionInDraggedTaskPanel(dropLocation, (MaterialListBox)taskPanelInsertingInto);
 
-            //Get list with conrols of where we are dragging into (into list controls)
-            int tableIndexIndsertingInto = GetTaskControlIndexByName(tablePanelInsertingInto.Name);
-            List<Control> subTasksInsertingSubInto = _controlsInTasks[tableIndexIndsertingInto];
+            Control subTaskNameLB = GetLabelNameFromPanel(panel);
 
+            _table.MoveSubTaskToAnoutherTask(gettingFromLB.Text, draggingIntoLB.Text, subTaskNameLB.Text, int.Parse(panel.Tag.ToString()), newSubTaskPosition);
 
-            //Remove from list (table + list getting from)
-            RemoveSubtask(panel, (MaterialListBox)tablePanelGettingFrom, tableIndexGettingFrom);
-
-            //Insert into list(table + list inserting into)
-            InsertSubTaskIntoNewTask(panel, (MaterialListBox)tablePanelInsertingInto, tableIndexIndsertingInto, dropLocation);
-
-            /*            SwapLocsForControls(panel, (Panel)sender);
-                        SwapTasksInTaskList(panel, (Panel)sender);
-            */
-            UpdateControlsInTable();
+            InitTable();
         }
-
-
-
-        private void InsertSubTaskIntoNewTask(Panel subTask, MaterialListBox taskBox, int taskIndex, Point dropLoc)
+        public void ReassingDraggedTask(Control from, Control into, Panel draggedPanel, Point droppedPosition)
         {
-            List<Control> taskControls = _controlsInTasks[taskIndex];
-            bool check = false;
+            //GetTask name drgging from 
+            Control gettingFromLB = GetLabelNameFromPanel(from);
+            //GetTask name drgging where
+            Control draggingIntoLB = GetLabelNameFromPanel(into);
 
-            for (int i = 0; i < taskControls.Count; i++)
+            //define position
+            int newSubTaskPosition =
+                GetNewPositionInDraggedTaskPanel(droppedPosition, (MaterialListBox)into);
+
+            Control subTaskNameLB = GetLabelNameFromPanel(draggedPanel);
+
+            if (from.Name == into.Name)
             {
-                if (!(taskControls[i] is Button) &&
-                    !(taskControls[i] is Label) &&
-                    !(taskControls[i] is MaterialScrollBar))
+                _table.MoveSubTaskInSameTask(gettingFromLB.Text, subTaskNameLB.Text, int.Parse(draggedPanel.Tag.ToString()), newSubTaskPosition);
+            }
+            else
+            {
+                _table.MoveSubTaskToAnoutherTask(gettingFromLB.Text, draggingIntoLB.Text, subTaskNameLB.Text, int.Parse(draggedPanel.Tag.ToString()), newSubTaskPosition);
+            }
+            InitTable();
+        }
+        public int GetNewPositionInDraggedTaskPanel(Point droppedPoint, MaterialListBox newTaskBox)
+        {
+            int lastpanelIndex = -1;
+            for (int i = 0; i < newTaskBox.Controls.Count; i++)
+            {
+                if (!(newTaskBox.Controls[i] is Button) &&
+                    !(newTaskBox.Controls[i] is Label) &&
+                    !(newTaskBox.Controls[i] is MaterialScrollBar))
                 {
-                    if (dropLoc.Y < taskControls[i].Location.Y)
+                    lastpanelIndex = GetSubTasksBySubTaskPanek((Panel)newTaskBox.Controls[i]).UniqueIndex;
+                    if (droppedPoint.Y < newTaskBox.Controls[i].Location.Y + newTaskBox.Controls[i].Height)
                     {
-                        taskControls.Insert(i, subTask);
-                        check = true;
-                        break;
+                        return lastpanelIndex;
                     }
                 }
             }
-            if (!check)
-            {
-                GetLocationForNewSubTask(subTask, taskBox);
-                taskControls.Insert(taskControls.Count - 1, subTask);
-
-                //InsertButAt th end
-            }
-            
-            ApdateRaskControlsUnqueIndexes(taskControls, taskIndex);
-
-            UpdateControlsInTaskPanel(taskBox);
-        }
-        private void ApdateRaskControlsUnqueIndexes(List<Control> controls, int taskIndex)
+            return lastpanelIndex != -1 ? lastpanelIndex + 1 : 0;
+        }       
+        public SubTask GetSubTasksBySubTaskPanek(Panel subTaskPanel)
         {
-            int count = 0;
-            for(int i = 0; i < controls.Count; i++)
-            {
-                if (controls[i] is Panel)
-                {
-                    controls[i] = controls[i];
-                    count++;
-                }
-            }
-            //Updaate in subTasks Logic
-            _table.UpdateSubTasksIndexes(taskIndex);
-        }
+            Control taskName = GetLabelNameFromPanel(subTaskPanel.Parent);
+            Control subTaskNameLB = GetLabelNameFromPanel(subTaskPanel);
 
-
-        private void RemoveSubtask(Panel subtask, MaterialListBox taskBox, int taskIndex)
-        {
-            for (int i = 0; i < _controlsInTasks[taskIndex].Count; i++)
-            {
-                if (subtask.Name == _controlsInTasks[taskIndex][i].Name && 
-                    subtask.Tag == _controlsInTasks[taskIndex][i].Tag)
-                {
-                    _controlsInTasks[taskIndex].RemoveAt(i);
-                    break;
-                }
-            }
-            UpdateControlsInTaskPanel(taskBox);
-        }
-
-        public void AddTaskInSubTaskListLits(Control task, Control subTask)
-        {
-            int taskIndex = GetTaskControlIndexByName(task.Name);
-            if (taskIndex == -1) return;
-
-            //List<(Control, int)> list = _controlsInTasks[taskIndex];
-
-            Control butControl = GetButtonControl(task);
-            _controlsInTasks[taskIndex].RemoveAt(_controlsInTasks[taskIndex].Count - 1);
-
-            _controlsInTasks[taskIndex].Add(subTask);
-            _controlsInTasks[taskIndex].Add(butControl);
-
-        }
-        public int GetTaskControlIndexByName(string name)
-        {
-            for (int i = 0; i < _taskControls.Count; i++)
-            {
-                if (name == _taskControls[i].Name)
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
-        public Control GetTaskControlByName(string name)
-        {
-            for (int i = 0; i < _taskControls.Count; i++)
-            {
-                if (_taskControls[i].Name == name)
-                {
-                    return _taskControls[i];
-                }
-            }
-            return null;
-        }
-        public void UpdateTask(Control task)
-        {
-            int taskIndex = GetTaskControlIndexByName(task.Name);
-            TablePanel.Controls.RemoveAt(taskIndex);
-
-            TablePanel.Controls.Add(task);
-        }
-        public void UpdateControlsInTaskPanel(Control taskPanel)
-        {
-            taskPanel.Controls.Clear();
-
-            List<Control> subTaskControls = _controlsInTasks[GetTaskControlIndexByName(taskPanel.Name)];
-
-            for (int i = 0; i < subTaskControls.Count; i++)
-            {
-                taskPanel.Controls.Add(subTaskControls[i]);
-                taskPanel.Controls[taskPanel.Controls.Count - 1].Tag = subTaskControls[i].Tag;
-            }
-        }
-        private Control GetTaskTOAddSubTask(string butTag)
-        {
-            for (int i = 0; i < _taskControls.Count; i++)
-            {
-                if (_taskControls[i].Name == butTag)
-                {
-                    return _taskControls[i];
-                }
-            }
-            return null;
+            return _table.GetSubTask(taskName.Text, subTaskNameLB.Text,
+                int.Parse(subTaskPanel.Tag.ToString()));
         }
         private Panel CreateSubTask(string subTaskName, Control taskToAddSubTask)
         {
@@ -694,38 +433,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 subTask.BorderStyle = BorderStyle.None;
             }
         }
-        private void GetLocationForNewSubTask(Panel newSubTask, Control taskToAddSubTask)
-        {
-            //get button (which adds new subTask)
-            Control butControl = GetButtonControl(taskToAddSubTask);
-
-            //getting Location of this button (this loc is new sbus loc)
-            Point butLoc = butControl.Location;
-
-            //Init Location for new subTask
-            newSubTask.Location = butLoc;
-
-            //count new loc for button 
-            //Y - butLoc.Y, newSubTask.Height + distBetweenSubTasks 
-            butControl.Location = new Point(butControl.Location.X,
-                butLoc.Y + newSubTask.Height + _distanceBetweenSubTasks);
-
-            //change size for taskPanel
-            //Y - taskToAddSubTask.Height + newSubTask.Height + _distanceBetweenSubTasks
-            taskToAddSubTask.Size = new Size(taskToAddSubTask.Width,
-                taskToAddSubTask.Height + newSubTask.Height + _distanceBetweenSubTasks);
-        }
-        private Control GetButtonControl(Control taskControl)
-        {
-            for (int i = 0; i < taskControl.Controls.Count; i++)
-            {
-                if (taskControl.Controls[i] is Button)
-                {
-                    return taskControl.Controls[i];
-                }
-            }
-            return null;
-        }
         private static int GetTransfersAmount(string str)
         {
             int count = 1;
@@ -755,29 +462,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             }
             return res;
         }
-        public void SwapTasksInTaskList(Control first, Control second)
-        {
-            int firstControl = GetTaskControlIndexByName(first.Name);
-            int secondControl = GetTaskControlIndexByName(second.Name);
-
-            MaterialListBox temp = (MaterialListBox)_taskControls[secondControl];
-
-            _taskControls[secondControl] = _taskControls[firstControl];
-            _taskControls[firstControl] = temp;
-
-            //int firstAfterIndex = GetTaskControlIndexByName(first.Name);
-            //int secondAfterIndex = GetTaskControlIndexByName(second.Name);
-
-            // Console.WriteLine();
-        }
-        public void SwapLocsForControls(Control first, Control second)
-        {
-            Point temp = first.Location;
-
-            first.Location = second.Location;
-            second.Location = temp;
-        }
-
         private void BGImage_Click(object sender, EventArgs e)
         {
 
