@@ -292,7 +292,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 attachmentLinkPanel.Location = new Point(0, 0);
                 attachmentLinkPanel.Size = new Size(attachmentWidth, 10);
 
-                attachmentLinkPanel.BackgroundImage = _table.BGImage;
+                //attachmentLinkPanel.BackgroundImage = _table.BgColor;
                 attachmentLinkPanel.BackgroundImageLayout = ImageLayout.Stretch;
 
                 Label subTaskLB = new Label();

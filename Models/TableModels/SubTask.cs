@@ -34,7 +34,7 @@ namespace TrelloCopyWinForms.Models.TableModels
             Comments = new List<Comment>();
             History = new List<Comment>();
             Attachments = new List<Attachment>();
-            Cover = new Cover();
+            Cover = null;
             UsersIdsInSuBTask = new List<int>();
         }
         public SubTask(string name, int uniqueIndex, int globalSubTaskIndex)
@@ -48,7 +48,7 @@ namespace TrelloCopyWinForms.Models.TableModels
             Comments = new List<Comment>();
             History = new List<Comment>();
             Attachments = new List<Attachment>();
-            Cover = new Cover();
+            Cover = null;
             UsersIdsInSuBTask = new List<int>();
         }
         public int GetTransfersAmount()

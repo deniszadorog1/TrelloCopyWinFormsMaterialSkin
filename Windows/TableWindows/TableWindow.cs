@@ -37,8 +37,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
         private bool _addTaskEventCorrection = true;
 
-        //private TransparentFlowLayoutPanel TablePanel = new TransparentFlowLayoutPanel();
-
+        private FlagsViewOnTableWindowType _type = FlagsViewOnTableWindowType.Line;
         public TableWindow(Table table)
         {
             _table = table;
@@ -55,12 +54,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
         public void InitBackGroundColor()
         {
-            //TablePanel.BackgroundImage = _table.BGImage;
+            TablePanel.BackColor = (Color)_table.BgColor;
         }
 
         public void InitTable()
         {
             TablePanel.Controls.Clear();
+
 
             for (int i = 0; i < _table.Tasks.Count; i++)
             {
@@ -70,7 +70,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 Point loc = new Point(GetLabelFormMaterialListBox(taskBox).Location.X, taskBox.Location.Y + taskBox.Height + _distanceBetweenSubTasks);
                 for (int j = 0; j < _table.Tasks[i].SubTasks.Count; j++)
                 {
-                    Panel newSubTask = CreateSubTask(_table.Tasks[i].SubTasks[j].Name, taskBox);
+                    Panel newSubTask = CreateSubTask(_table.Tasks[i].SubTasks[j], taskBox);
                     newSubTask.Tag = _table.Tasks[i].SubTasks[j].UniqueIndex;
 
                     newSubTask.MouseDown += SubTask_MouseDown;
@@ -79,13 +79,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                     newSubTask.DragLeave += SubTask_DragLeave;
                     newSubTask.DragDrop += SubTask_DragDrop;
 
+
+                    newSubTask.Click -= EnterSubTaskMenu_Click;
                     newSubTask.Click += EnterSubTaskMenu_Click;
                     taskBox.Controls.Add(newSubTask);
 
                     newSubTask.Location = loc;
 
                     loc = new Point(loc.X, loc.Y + newSubTask.Height + _distanceBetweenSubTasks);
-                    taskBox.Height += newSubTask.Height + _distanceBetweenSubTasks * 2;
+                    taskBox.Height += newSubTask.Height + _distanceBetweenSubTasks;
                 }
                 //init add subtask button
                 MaterialButton but = new MaterialButton();
@@ -128,17 +130,36 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private void EnterSubTaskMenu_Click(object sender, EventArgs e)
         {
-            int subTaskUniqueIndex = int.Parse(((Panel)sender).Tag.ToString());
+            Control subTaskControl = (Control)sender;
+            if(!(sender is Panel) || ((Control)sender).Tag is null) subTaskControl = subTaskControl.Parent;
 
-            Control control = ((Panel)sender).Parent;
+
+            int subTaskUniqueIndex = int.Parse(((Panel)subTaskControl).Tag.ToString());
+
+            Control control = ((Panel)subTaskControl).Parent;
             Control taskNameLb = GetLabelNameFromPanel(control);
 
-            Control subTaskNameLB = GetLabelNameFromPanel(((Panel)sender));
+            Control subTaskNameLB = GetLabelNameFromPanel(((Panel)subTaskControl));
+            string deleteTransfersSubName = RemoveTransfers(subTaskNameLB.Text);
 
-
-            SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskNameLb.Text, subTaskNameLB.Text,
+            SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskNameLb.Text, deleteTransfersSubName,
                 subTaskUniqueIndex), _table, _table.GetTaskByName(taskNameLb.Text));
             subTaskMenu.ShowDialog();
+
+            InitTable();
+        }
+       
+        public string RemoveTransfers(string text)
+        {
+            string res = "";
+            for(int i = 0; i < text.Length; i++)
+            {
+                if (text[i] != '\n')
+                {
+                    res += text[i];
+                }
+            }
+            return res;
         }
         private void AddTask_Click(object sender, EventArgs e)
         {
@@ -392,33 +413,180 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             return _table.GetSubTask(taskName.Text, subTaskNameLB.Text,
                 int.Parse(subTaskPanel.Tag.ToString()));
         }
-        private Panel CreateSubTask(string subTaskName, Control taskToAddSubTask)
+        private Panel CreateSubTask(SubTask subTaskOBJ, Control taskToAddSubTask)
         {
-            string deviderInRows = DevideStringInRows(subTaskName);
-            int amountOfTransfers = GetTransfersAmount(deviderInRows);
-
             Panel subTask = new Panel();
-
-            subTask.Name = subTaskName;
-
-            Label subTaskNameLb = new Label();
-            subTaskNameLb.AutoSize = true;
-            subTaskNameLb.Text = DevideStringInRows(subTaskName);
-            subTaskNameLb.Location = new Point(_distanceBetweenSubTaskName, _distanceBetweenSubTaskName);
-
+            subTask.Name = subTaskOBJ.Name;
+            subTask.Size = new Size(taskToAddSubTask.Width - _distanceBetweenSubTasks * 2, 0);
             subTask.AutoSize = false;
-            subTask.Size = new Size(taskToAddSubTask.Width - _distanceBetweenSubTasks * 2,
-                subTaskNameLb.Height * amountOfTransfers + _distanceBetweenSubTasks * 2);
+            subTask.BorderStyle = BorderStyle.FixedSingle;
+            BackColor = SystemColors.ControlLight;
 
-            subTask.BackColor = SystemColors.ControlLight;
 
-            subTask.Controls.Add(subTaskNameLb);
 
-            subTask.MouseEnter += SubTask_MouseEnter;
-            subTask.MouseLeave += SubTask_MouseLeave;
+            //Cover
+            PictureBox coverBox = GetSubTaskCoverPictureBox(subTask, subTaskOBJ);
+            subTask.Controls.Add(coverBox);
+
+            coverBox.Click -= EnterSubTaskMenu_Click;
+            coverBox.Click += EnterSubTaskMenu_Click;
+
+            //Name
+            Label nameLabel = InitNameLBInSUbTasksaPanel(subTask, subTaskOBJ, coverBox.Location.Y + subTask.Height);
+            subTask.Controls.Add(nameLabel);
+
+            nameLabel.Click -= EnterSubTaskMenu_Click;
+            nameLabel.Click += EnterSubTaskMenu_Click;
+
+            //Flags
+            Panel flgsPanel = InitFlags(subTask, subTaskOBJ, nameLabel.Location.Y + nameLabel.Height);
+            if(!(flgsPanel is null))subTask.Controls.Add(flgsPanel);
+
+            //Other stuf attribs
 
             return subTask;
         }
+
+        public Panel InitFlags(Panel subTaskPanel, SubTask subTask, int positionToPlace)
+        {
+            Panel flagsPanel = new Panel();
+
+
+            flagsPanel.Click -= EnterSubTaskMenu_Click;
+            flagsPanel.Click += EnterSubTaskMenu_Click;
+
+            int panelHeight = _type == FlagsViewOnTableWindowType.Line ? 10 : 40;
+            panelHeight += _distanceBetweenSubTaskName * 2;
+
+            flagsPanel.Size = new Size(subTaskPanel.Width, panelHeight);
+
+            flagsPanel.BorderStyle = BorderStyle.FixedSingle;
+
+            if (subTask.Flags.Count == 0) return null;
+
+            Point loc = new Point(_distanceBetweenSubTaskName, _distanceBetweenSubTaskName);
+            for (int i = 0; i < subTask.Flags.Count; i++)
+            {
+                Panel oneFlagPanel = new Panel();
+                oneFlagPanel.BackColor = subTask.Flags[i].FlagColor;
+                oneFlagPanel.Size = new Size(60, 10);
+
+                oneFlagPanel.Click += ChecngeFlagsViewType_Click;
+
+                if (_type == FlagsViewOnTableWindowType.Whole )
+                {
+                    oneFlagPanel.Size = new Size(60, 40);
+
+                    if (subTask.Flags[i].FlagTag != string.Empty)
+                    {
+                        Label flagTag = new Label();
+                        flagTag.Location = new Point(0, 0);
+                        flagTag.Text = subTask.Flags[i].FlagTag;
+                        flagTag.Font = new Font("Times New Roman", 12);
+                        flagTag.TextAlign = ContentAlignment.MiddleLeft;
+
+                        flagTag.Click += ChecngeFlagsViewType_Click;
+
+                        Size textSize = TextRenderer.MeasureText(flagTag.Text, flagTag.Font, new Size(flagTag.Width, 0), TextFormatFlags.WordBreak);
+
+
+                        if (textSize.Width > oneFlagPanel.Width)
+                        {
+                            oneFlagPanel.Width = flagTag.Width;
+                        }
+
+                        oneFlagPanel.Controls.Add(flagTag);
+                    }
+                }
+
+                if(i == 0)
+                {
+                    oneFlagPanel.Location = loc;
+                }
+                else if(loc.X + flagsPanel.Controls[flagsPanel.Controls.Count - 1].Width + oneFlagPanel.Width + _distanceBetweenSubTaskName * 2 > flagsPanel.Width)
+                {
+                    loc = new Point(flagsPanel.Controls[0].Location.X, flagsPanel.Controls[flagsPanel.Controls.Count - 1].Location.Y + oneFlagPanel.Height + _distanceBetweenSubTaskName * 2);
+                    flagsPanel.Height += oneFlagPanel.Height + _distanceBetweenSubTaskName * 2;
+                    oneFlagPanel.Location = loc;
+
+                }
+                else
+                {
+                    loc = new Point(loc.X + flagsPanel.Controls[flagsPanel.Controls.Count - 1].Width + _distanceBetweenSubTaskName, loc.Y);
+                    oneFlagPanel.Location = loc;
+                }
+                flagsPanel.Controls.Add(oneFlagPanel);
+
+            }
+
+            Control control = subTaskPanel.Controls[subTaskPanel.Controls.Count - 1];
+
+            flagsPanel.Location = new Point(subTaskPanel.Location.X, control.Location.Y + control.Height);
+            subTaskPanel.Controls.Add(flagsPanel);
+
+            subTaskPanel.Size = new Size(subTaskPanel.Width, subTaskPanel.Height + flagsPanel.Height + _distanceBetweenSubTaskName * 2);
+
+            return flagsPanel;
+        }
+
+        private void ChecngeFlagsViewType_Click(object sender, EventArgs e)
+        {
+            _type = _type == FlagsViewOnTableWindowType.Line ? FlagsViewOnTableWindowType.Whole : FlagsViewOnTableWindowType.Line;
+
+            InitTable();
+        }
+
+
+        public Label InitNameLBInSUbTasksaPanel(Panel subTask, SubTask subTaskOBJ, int yLocToPlace)
+        {
+            string deviderInRows = DevideStringInRows(subTaskOBJ.Name);
+            int amountOfTransfers = GetTransfersAmount(deviderInRows);
+
+            Label _subTaskName = new Label();
+            _subTaskName.AutoSize = true;
+            _subTaskName.BorderStyle = BorderStyle.FixedSingle;
+
+            _subTaskName.Text = DevideStringInRows(subTaskOBJ.Name);
+            _subTaskName.Location = new Point(_distanceBetweenSubTaskName, yLocToPlace);
+            _subTaskName.AutoSize = false;
+            _subTaskName.Size = new Size(subTask.Width - _distanceBetweenSubTaskName * 2, 20 * amountOfTransfers + 1);
+
+
+            subTask.Size = new Size(subTask.Width,
+                subTask.Height + _subTaskName.Height + _distanceBetweenSubTaskName * 2);
+
+            return _subTaskName;
+        }
+        public PictureBox GetSubTaskCoverPictureBox(Panel subTask, SubTask subTaskOBJ)
+        {
+            const int heightBgColorPartTypeCover = 25;
+
+            PictureBox _subTaskCover = new PictureBox();
+            _subTaskCover.Size = new Size(subTask.Width, 0);
+            if (!(subTaskOBJ.Cover is null))
+            {
+                if (subTaskOBJ.Cover.Type == CoverType.PartSizeCover)
+                {
+                    _subTaskCover.Height = heightBgColorPartTypeCover;
+                    _subTaskCover.BackColor = (Color)subTaskOBJ.Cover.BGColor;
+                }
+                else
+                {
+                    subTask.BackColor = (Color)subTaskOBJ.Cover.BGColor;
+                }
+                _subTaskCover.Location = new Point(0, 0);
+                _subTaskCover.Height = heightBgColorPartTypeCover;
+
+                subTask.Height += _subTaskCover.Height;
+            }
+            else
+            {
+                subTask.BackColor = Color.Empty;
+            }
+
+            return _subTaskCover;
+        }
+
         private void SubTask_MouseEnter(object sender, EventArgs e)
         {
             if (sender is Panel subTask)
@@ -430,7 +598,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         {
             if (sender is Panel subTask)
             {
-                subTask.BorderStyle = BorderStyle.None;
+                subTask.BorderStyle = BorderStyle.FixedSingle;
             }
         }
         private static int GetTransfersAmount(string str)
@@ -449,7 +617,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private string DevideStringInRows(string row)
         {
-            const int charsInRow = 15;
+            const int charsInRow = 17;
             string res = "";
 
             for (int i = 0; i < row.Length; i++)

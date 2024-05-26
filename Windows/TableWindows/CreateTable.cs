@@ -31,47 +31,6 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
             RenameBGImages();
             InitBGImagesInList();
 
-            FillImageIn();
-        }
-
-        private void FillImageIn()
-        {
-            int width = BackgroundTypes.Width / 2 - _backGroundPicSize.Item1 / 2;
-            int height = 0;
-            (int, int) location = (width, height);
-            for (int i = 0; i < _images.Count; i++)
-            {
-                AddPictureBox(_images[i], location);
-                location.Item2 += _backGroundPicSize.Item2 + _distanceBetweenPossiableBGs;
-            }
-        }
-        private void AddPictureBox(Image img, (int, int) location)
-        {
-            PictureBox pic = new PictureBox();
-            pic.Size = new Size(_backGroundPicSize.Item1, _backGroundPicSize.Item2);
-            pic.Location = new Point(location.Item1, location.Item2);
-            pic.Image = img;
-            pic.SizeMode = PictureBoxSizeMode.StretchImage;
-
-            pic.Click += ChosePic_Click;
-
-            BackgroundTypes.Controls.Add(pic);
-        }
-
-        private void ChosePic_Click(object sender, EventArgs e)
-        {
-            if (sender is PictureBox pic)
-            {
-                if (pic.Image is null)
-                {
-
-                }
-                else
-                {
-                    ChosenBG.Image = pic.Image;
-                    _chosenImage = pic.Image;
-                }
-            }
         }
         private void RenameBGImages()
         {
@@ -107,7 +66,6 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                 }
             }
         }
-
         private void InitBGImagesInList()
         {
             string[] fileNames = Directory.GetFiles(_pathToBackGroundImages);
@@ -126,7 +84,6 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                 }
             }
         }
-
         private string GetFileExtension(string filePath)
         {
             string res = "";
@@ -158,28 +115,32 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
             }
             return fileName;
         }
-
-
         private void BackBut_Click(object sender, EventArgs e)
         {
             Close();
         }
-
         private void CreateBut_Click(object sender, EventArgs e)
         {
-            if (TableNameBox.Text == "" || ChosenBG.Image is null)
+            if (TableNameBox.Text == "" || ChosenBG.BackColor == Color.Empty)
             {
                 MessageBox.Show("Smth went wrong");
                 return;
             }
 
-            Table newTable = new Table(new List<TableTask>(), TableNameBox.Text, _chosenImage);
+            Table newTable = new Table(new List<TableTask>(), TableNameBox.Text, ChosenBG.BackColor);
             Hide();         
             TableWindow window = new TableWindow(newTable);
             window.ShowDialog();
             Show();
-
         }
-        
+        private void ChooseBGBut_Click(object sender, EventArgs e)
+        {
+            tableBgColor.ShowDialog();
+
+            if(tableBgColor.Color != Color.Empty)
+            {
+                ChosenBG.BackColor = tableBgColor.Color;
+            }
+        }
     }
 }

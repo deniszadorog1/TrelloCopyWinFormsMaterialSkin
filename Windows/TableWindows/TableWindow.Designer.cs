@@ -38,9 +38,10 @@
             // 
             this.TablePanel.AllowDrop = true;
             this.TablePanel.AutoScroll = true;
-            this.TablePanel.Location = new System.Drawing.Point(6, 79);
+            this.TablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TablePanel.Location = new System.Drawing.Point(3, 64);
             this.TablePanel.Name = "TablePanel";
-            this.TablePanel.Size = new System.Drawing.Size(788, 302);
+            this.TablePanel.Size = new System.Drawing.Size(794, 383);
             this.TablePanel.TabIndex = 1;
             this.TablePanel.WrapContents = false;
             // 
