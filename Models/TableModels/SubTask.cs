@@ -14,6 +14,8 @@ namespace TrelloCopyWinForms.Models.TableModels
         public string Name { get; set; }
         public int UniqueIndex { get; set; }
         public int GlobalSubTaskIndex { get; set; }
+        public int TaskId { get; set; }
+        public int Id { get; set; }
         public List<Flag> Flags { get; set; }
         public DeadLineDate DeadLine { get; set; }
         public List<CheckListModel> CheckLists { get; set; }
@@ -22,6 +24,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         public List<Attachment> Attachments { get; set; }
         public Cover Cover { get; set; }
         public List<int> UsersIdsInSuBTask { get; set; }
+        public string Description { get; set; }
 
         public SubTask()
         {

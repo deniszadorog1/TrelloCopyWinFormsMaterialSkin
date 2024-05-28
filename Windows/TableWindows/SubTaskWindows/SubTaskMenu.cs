@@ -242,8 +242,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         public void InitCover()
         {
+            _coverPanel.Controls.Clear();
+            _coverPanel.BorderStyle = BorderStyle.FixedSingle;
             const int coverHeight = 90;
-            if (_subTask.Cover is null || _subTask.Cover.BGColor is null)
+            if (_subTask.Cover is null || (_subTask.Cover.BGColor is null && _subTask.Cover.BGImage is null) )
             {
                 _coverPanel.Size = new Size(_coverPanel.Width, 0);
                 _coverPanel.BackColor = Color.Empty;
@@ -252,11 +254,24 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 return;
             }
             _coverPanel.Size = new Size(_coverPanel.Width, coverHeight);
-            _coverPanel.BackColor = (Color)_subTask.Cover.BGColor;
+            if (!(_subTask.Cover.BGColor is null))
+            {
+                _coverPanel.BackColor = (Color)_subTask.Cover.BGColor;
+            }
+            else if (!(_subTask.Cover.BGImage is null))
+            {
+                PictureBox box = new PictureBox(); 
+                box.Image = _subTask.Cover.BGImage.Image;
+                box.Size = new Size(200, _coverPanel.Height);
+                box.Location = new Point(_coverPanel.Width / 2 - box.Width / 2, 0);
+                box.SizeMode = PictureBoxSizeMode.StretchImage;
+                _coverPanel.Controls.Add(box);
+            }
 
             ReintiLocsForMainBlocks();
             _coverPanel.Location = new Point(0, 0);
         }
+
         public void ReintiLocsForMainBlocks()
         {
             MainPanel.AutoScrollPosition = new Point(0, 0);

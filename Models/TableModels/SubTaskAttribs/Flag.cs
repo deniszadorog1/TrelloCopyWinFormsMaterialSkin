@@ -11,6 +11,7 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
     {
         public Color FlagColor { get; set; }
         public string FlagTag { get; set; }
+        public int Id { get; set; }
         public Flag()
         {
             FlagColor = Color.Empty;

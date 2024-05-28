@@ -80,6 +80,7 @@
     <Compile Include="Models\TableModels\SubTaskAttribs\CheckListModel.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\Comment.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\Cover.cs" />
+    <Compile Include="Models\TableModels\SubTaskAttribs\CoverImageAttributes.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\DeadLineDate.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\Flag.cs" />
     <Compile Include="Models\TableModels\Table.cs" />

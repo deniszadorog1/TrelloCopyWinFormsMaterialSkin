@@ -17,8 +17,9 @@ namespace TrelloCopyWinForms.Models.TableModels
         public Color? BgColor { get; set; }
         public int LastSubTaskIndex { get; set; }
         public List<User> UserInTable { get; set; }
+        public List<Flag> _allFlags = new List<Flag>();
+        public int Id { get; set; }
 
-        private List<Flag> _allFlags = new List<Flag>();
         public Table()
         {
             Name = "";
@@ -65,7 +66,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         private string DeleteStrTransfersInString(string str)
         {
             string res = "";
-            for(int i = 0; i < str.Length; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 if (str[i] != '\n')
                 {
@@ -115,7 +116,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         }
         public void UpdateSubTasksIndexes(int tableIndex)
         {
-            for(int i = 0; i < Tasks[tableIndex].SubTasks.Count; i++)
+            for (int i = 0; i < Tasks[tableIndex].SubTasks.Count; i++)
             {
                 Tasks[tableIndex].SubTasks[i].UniqueIndex = i;
             }
@@ -126,7 +127,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         }
         public string GetTaskNameWitchContainsSubTaskByGlobalIndex(int index)
         {
-            for(int i = 0; i < Tasks.Count; i++)
+            for (int i = 0; i < Tasks.Count; i++)
             {
                 if (Tasks[i].IfSubTaskContainsAttachmentWhitchContainsGlobalIndex(index))
                 {
@@ -154,7 +155,7 @@ namespace TrelloCopyWinForms.Models.TableModels
             TableTask task = GetTaskByName(taskName);
             SubTask subTask = task.GetSubTaskByIndex(subTaskGlobalIndex);
 
-            for(int i = 0; i < subTask.Attachments.Count; i++)
+            for (int i = 0; i < subTask.Attachments.Count; i++)
             {
                 if (subTask.Attachments[i].UniqueIndex == uniqueIndex)
                 {
@@ -166,7 +167,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         }
         public string GetUserLoginById(int userId)
         {
-            for(int i = 0; i < UserInTable.Count; i++)
+            for (int i = 0; i < UserInTable.Count; i++)
             {
                 if (UserInTable[i].Id == userId)
                 {
@@ -183,7 +184,7 @@ namespace TrelloCopyWinForms.Models.TableModels
 
         public void SwapTwoLastTasks()
         {
-            if(Tasks.Count >= 2)
+            if (Tasks.Count >= 2)
             {
                 TableTask task = Tasks.Last();
 
@@ -199,7 +200,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         }
         public int GetTaskIndexByName(string name)
         {
-            for(int i = 0; i < Tasks.Count; i++)
+            for (int i = 0; i < Tasks.Count; i++)
             {
                 if (Tasks[i].Name == name)
                 {

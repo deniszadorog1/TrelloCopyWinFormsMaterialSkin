@@ -10,6 +10,9 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
     {
         public string Value { get; set; }
         public int UniqueIndex { get; set; }
+        public int Id { get; set; }
+        public int MessagerId { get; set; }
+        public DateTime Date { get; set; }
 
         public Comment()
         {
@@ -24,6 +27,7 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
         {
             Value = value;
             UniqueIndex = uniqueIndex;
+            Date = DateTime.Now;
         }
     }
 }

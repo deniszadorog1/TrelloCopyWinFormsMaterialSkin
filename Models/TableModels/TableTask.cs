@@ -10,7 +10,7 @@ namespace TrelloCopyWinForms.Models.TableModels
     {
         public string Name { get; set; }
         public List<SubTask> SubTasks { get; set; }
-        
+        public int PlaceingTableId { get; set; }
         public TableTask()
         {
             Name = "";

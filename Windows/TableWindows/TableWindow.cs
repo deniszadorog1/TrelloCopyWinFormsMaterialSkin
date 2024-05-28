@@ -131,8 +131,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         private void EnterSubTaskMenu_Click(object sender, EventArgs e)
         {
             Control subTaskControl = (Control)sender;
-            if(!(sender is Panel) || ((Control)sender).Tag is null) subTaskControl = subTaskControl.Parent;
-
+            if (!(sender is Panel) || ((Control)sender).Tag is null) subTaskControl = subTaskControl.Parent;
 
             int subTaskUniqueIndex = int.Parse(((Panel)subTaskControl).Tag.ToString());
 
@@ -148,11 +147,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             InitTable();
         }
-       
+
         public string RemoveTransfers(string text)
         {
             string res = "";
-            for(int i = 0; i < text.Length; i++)
+            for (int i = 0; i < text.Length; i++)
             {
                 if (text[i] != '\n')
                 {
@@ -270,7 +269,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 e.Effect = DragDropEffects.None;
             }
-        }     
+        }
         private void RenameTask_Click(object sender, EventArgs e)
         {
             if (sender is Label taskName)
@@ -286,7 +285,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
                 InitTable();
             }
-        }     
+        }
         private Control GetLabelNameFromPanel(Control panel)
         {
             for (int i = 0; i < panel.Controls.Count; i++)
@@ -404,7 +403,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 }
             }
             return lastpanelIndex != -1 ? lastpanelIndex + 1 : 0;
-        }       
+        }
         public SubTask GetSubTasksBySubTaskPanek(Panel subTaskPanel)
         {
             Control taskName = GetLabelNameFromPanel(subTaskPanel.Parent);
@@ -422,8 +421,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             subTask.BorderStyle = BorderStyle.FixedSingle;
             BackColor = SystemColors.ControlLight;
 
-
-
             //Cover
             PictureBox coverBox = GetSubTaskCoverPictureBox(subTask, subTaskOBJ);
             subTask.Controls.Add(coverBox);
@@ -440,7 +437,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             //Flags
             Panel flgsPanel = InitFlags(subTask, subTaskOBJ, nameLabel.Location.Y + nameLabel.Height);
-            if(!(flgsPanel is null))subTask.Controls.Add(flgsPanel);
+            if (!(flgsPanel is null)) subTask.Controls.Add(flgsPanel);
 
             //Other stuf attribs
 
@@ -473,7 +470,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
                 oneFlagPanel.Click += ChecngeFlagsViewType_Click;
 
-                if (_type == FlagsViewOnTableWindowType.Whole )
+                if (_type == FlagsViewOnTableWindowType.Whole)
                 {
                     oneFlagPanel.Size = new Size(60, 40);
 
@@ -499,11 +496,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                     }
                 }
 
-                if(i == 0)
+                if (i == 0)
                 {
                     oneFlagPanel.Location = loc;
                 }
-                else if(loc.X + flagsPanel.Controls[flagsPanel.Controls.Count - 1].Width + oneFlagPanel.Width + _distanceBetweenSubTaskName * 2 > flagsPanel.Width)
+                else if (loc.X + flagsPanel.Controls[flagsPanel.Controls.Count - 1].Width + oneFlagPanel.Width + _distanceBetweenSubTaskName * 2 > flagsPanel.Width)
                 {
                     loc = new Point(flagsPanel.Controls[0].Location.X, flagsPanel.Controls[flagsPanel.Controls.Count - 1].Location.Y + oneFlagPanel.Height + _distanceBetweenSubTaskName * 2);
                     flagsPanel.Height += oneFlagPanel.Height + _distanceBetweenSubTaskName * 2;
@@ -560,22 +557,36 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         public PictureBox GetSubTaskCoverPictureBox(Panel subTask, SubTask subTaskOBJ)
         {
             const int heightBgColorPartTypeCover = 25;
+            const int heightBgImagePartTypeCover = 125;
 
             PictureBox _subTaskCover = new PictureBox();
+            _subTaskCover.SizeMode = PictureBoxSizeMode.StretchImage;
+
             _subTaskCover.Size = new Size(subTask.Width, 0);
             if (!(subTaskOBJ.Cover is null))
             {
                 if (subTaskOBJ.Cover.Type == CoverType.PartSizeCover)
                 {
-                    _subTaskCover.Height = heightBgColorPartTypeCover;
-                    _subTaskCover.BackColor = (Color)subTaskOBJ.Cover.BGColor;
+
+                    if (!(subTaskOBJ.Cover.BGColor is null))
+                    {
+                        _subTaskCover.Height = heightBgColorPartTypeCover;
+                        _subTaskCover.BackColor = (Color)subTaskOBJ.Cover.BGColor;
+                    }
+                    else if(!(subTaskOBJ.Cover.BGImage is null))
+                    {
+                        _subTaskCover.Height = heightBgImagePartTypeCover;
+                        _subTaskCover.Image = subTaskOBJ.Cover.BGImage.Image;
+                    }
                 }
                 else
                 {
-                    subTask.BackColor = (Color)subTaskOBJ.Cover.BGColor;
+
+                    if (!(subTaskOBJ.Cover.BGColor is null)) subTask.BackColor = (Color)subTaskOBJ.Cover.BGColor;
+                    else if (!(subTaskOBJ.Cover.BGImage is null)) subTask.BackgroundImage = subTaskOBJ.Cover.BGImage.Image;
                 }
                 _subTaskCover.Location = new Point(0, 0);
-                _subTaskCover.Height = heightBgColorPartTypeCover;
+                //_subTaskCover.Height = heightBgColorPartTypeCover;
 
                 subTask.Height += _subTaskCover.Height;
             }
@@ -586,7 +597,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             return _subTaskCover;
         }
-
+        private void BackgroundPanel_Paint(object sender, PaintEventArgs e)
+        {
+            if (sender is PictureBox picBox && picBox.BackgroundImage != null)
+            {
+                e.Graphics.DrawImage(picBox.BackgroundImage, new Rectangle(0, 0, picBox.Width, picBox.Height));
+            }
+        }
         private void SubTask_MouseEnter(object sender, EventArgs e)
         {
             if (sender is Panel subTask)
