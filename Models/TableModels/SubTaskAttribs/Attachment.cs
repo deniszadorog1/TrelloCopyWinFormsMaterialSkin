@@ -11,7 +11,19 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
         public int SubTaskGlobalIndex { get; set; }
         public string Sign { get; set; }
         public int UniqueIndex { get; set; }
+        public int Id { get; set; }
+        public int SubTaskPlacingId { get; set; }
+        public int SubTaskLinkId { get; set; }
 
+        public Attachment()
+        {
+            SubTaskGlobalIndex = -1;
+            Sign = "";
+            UniqueIndex = -1;
+            Id = -1;
+            SubTaskPlacingId = -1;
+            SubTaskLinkId = -1;
+        }
         public Attachment(int index, string sign, int uniqueIndex)
         {
             SubTaskGlobalIndex = index;

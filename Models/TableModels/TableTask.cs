@@ -11,6 +11,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         public string Name { get; set; }
         public List<SubTask> SubTasks { get; set; }
         public int PlaceingTableId { get; set; }
+        public int Id { get; set; }
         public TableTask()
         {
             Name = "";
@@ -129,6 +130,18 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
         }
 
+        public int GetTheMostSubTAskGlobalIndex()
+        {
+            int mostNum = 0;
+            for(int i = 0; i < SubTasks.Count; i++)
+            {
+                if (SubTasks[i].GlobalSubTaskIndex > mostNum)
+                {
+                    mostNum = SubTasks[i].GlobalSubTaskIndex;
+                }
+            }
+            return mostNum;
+        }
        
     }
 }

@@ -11,7 +11,7 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
         public string Value { get; set; }
         public int UniqueIndex { get; set; }
         public int Id { get; set; }
-        public int MessagerId { get; set; }
+        public int UserId { get; set; }
         public DateTime Date { get; set; }
 
         public Comment()

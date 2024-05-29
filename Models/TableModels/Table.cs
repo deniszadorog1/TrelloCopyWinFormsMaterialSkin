@@ -243,7 +243,15 @@ namespace TrelloCopyWinForms.Models.TableModels
 
 
             Tasks[tableIndex].UpdateSubTasksUniqueIndexes();
-
+        }
+        public void InitLastSubTaskIndex()
+        {
+            int theMostNum = 0;
+            for(int i = 0; i < Tasks.Count; i++)
+            {
+                theMostNum = Tasks[i].GetTheMostSubTAskGlobalIndex();
+            }
+            LastSubTaskIndex = theMostNum;
         }
     }
 }

@@ -13,13 +13,14 @@ using MaterialSkin.Controls;
 using TrelloCopyWinForms.Models.UserModel;
 using TrelloCopyWinForms.Models.DataBase;
 using TrelloCopyWinForms.Windows.CreateTableWindow;
-
+using TrelloCopyWinForms.Models.TableModels;
 
 namespace TrelloCopyWinForms.Windows.UserMainMenu
 {
     public partial class UserMenu : MaterialForm
     {
         private User _chosenUser = null;
+        private List<Table> _tables = DBUsage.GetAllTables();
         public UserMenu(User user)
         {
             _chosenUser = user;
@@ -33,6 +34,29 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             InitEyeImage();
             FillCorrectionBoxes();
         }
+        private void FillTablesList()
+        {
+            Size accessTableSize = new Size(100, 100);
+            for(int i = 0; i < _tables.Count; i++)
+            {
+                if (IfUserContrinsInTable(_tables[i]))
+                {
+                    Panel panel = new Panel();
+                    panel.Size = accessTableSize;
+                    //etc
+
+                }
+            }
+        }
+        public bool IfUserContrinsInTable(Table table)
+        {
+            for(int i = 0; i < table.UserInTable.Count; i++)
+            {
+                if (table.UserInTable[i].Id == _chosenUser.Id) return true;
+            }
+            return false;
+        }
+
         private void FillUserInfoPage()
         {
             LoginInfo.Text = _chosenUser.Login;

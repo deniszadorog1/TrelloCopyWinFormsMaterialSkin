@@ -12,6 +12,8 @@ using MaterialSkin.Controls;
 
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Windows.TableWindows;
+using TrelloCopyWinForms.Models.DataBase;
+
 
 namespace TrelloCopyWinForms.Windows.CreateTableWindow
 {
@@ -128,6 +130,11 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
             }
 
             Table newTable = new Table(new List<TableTask>(), TableNameBox.Text, ChosenBG.BackColor);
+
+            DBUsage.InsertColor(ChosenBG.BackColor.R, ChosenBG.BackColor.G, ChosenBG.BackColor.B);
+            DBUsage.InsertTable(newTable);
+            newTable.Id = DBUsage.GetTableLastId();
+
             Hide();         
             TableWindow window = new TableWindow(newTable);
             window.ShowDialog();
