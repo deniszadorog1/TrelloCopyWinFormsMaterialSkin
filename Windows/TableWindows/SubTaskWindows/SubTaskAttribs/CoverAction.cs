@@ -71,6 +71,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 _subTask.Cover.Type = CoverType.PartSizeCover;
             }
 
+
+
             Close();
         }
 

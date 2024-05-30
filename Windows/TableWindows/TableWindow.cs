@@ -13,6 +13,8 @@ using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow;
 using TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows;
 using TrelloCopyWinForms.Models.Enums;
+using TrelloCopyWinForms.Models.DataBase;
+
 
 namespace TrelloCopyWinForms.Windows.TableWindows
 {
@@ -51,7 +53,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             InitTable();
         }
-
         public void InitBackGroundColor()
         {
             TablePanel.BackColor = (Color)_table.BgColor;
@@ -61,12 +62,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         {
             TablePanel.Controls.Clear();
 
-
+            _table.SortTaskByPlaceingOnTable();
             for (int i = 0; i < _table.Tasks.Count; i++)
             {
                 MaterialListBox taskBox = CreateTaskPanel(_table.Tasks[i].Name);
                 TablePanel.Controls.Add(taskBox);
 
+                _table.Tasks[i].SortSubTaskForPlaceing();
                 Point loc = new Point(GetLabelFormMaterialListBox(taskBox).Location.X, taskBox.Location.Y + taskBox.Height + _distanceBetweenSubTasks);
                 for (int j = 0; j < _table.Tasks[i].SubTasks.Count; j++)
                 {
@@ -78,7 +80,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                     newSubTask.DragEnter += SubTask_DragEnter;
                     newSubTask.DragLeave += SubTask_DragLeave;
                     newSubTask.DragDrop += SubTask_DragDrop;
-
 
                     newSubTask.Click -= EnterSubTaskMenu_Click;
                     newSubTask.Click += EnterSubTaskMenu_Click;
@@ -170,9 +171,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             if (create._task is null) return;
             if (!_table.IfTaskIsExist(create._task.Name))
             {
-                //AddNewTaskBoxInTable(create._task.Name);
-                //AddAllControlsForLastTaskInList();
+                
                 _table.AddTask(create._task.Name);
+                InsertTaskInTableDB(_table.Tasks.Last());
 
                 _addTaskEventCorrection = false;
                 InitTable();
@@ -180,6 +181,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 return;
             }
             MessageBox.Show("task with is name is already exist!");
+        }
+        public void InsertTaskInTableDB(TableTask task)
+        {
+            task.PlaceingTableId = _table.Tasks.Count;
+            task.TableId = _table.Id;
+            DBUsage.InsertTask(task);
+            task.Id = DBUsage.GetTaskLastId();
         }
         private MaterialListBox CreateTaskPanel(string taskName)
         {
@@ -240,6 +248,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 Control from = subTaskPan.Parent;
                 ReassingDraggedTask(from, (MaterialListBox)sender, subTaskPan, dropLocation);
 
+                _table.UpdateSUbTasksInDB();
+
                 return;
             }
 
@@ -250,8 +260,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             //Swap tables in logic 
             SwapTableInLogic(panel, (MaterialListBox)sender);
+
+            _table.UpdateTasks();
+
             InitTable();
         }
+
+
         public void SwapTableInLogic(MaterialListBox first, MaterialListBox second)
         {
             Label firstNameLB = GetLabelFormMaterialListBox(first);
@@ -277,11 +292,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 TableTask resTask = _table.GetTaskByName(taskName.Text);
                 if (resTask is null) return;
 
-                //Control controlToRename = GetTaskControlByName(resTask.Name);
-                // Control taskNameLabel = GetLabelNameFromTask(controlToRename);
-
                 RenameTask rename = new RenameTask(resTask, _table.Tasks);
                 rename.ShowDialog();
+
+                DBUsage.UpdateTask(resTask);
 
                 InitTable();
             }
@@ -303,10 +317,21 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             create.ShowDialog();
 
             if (create._subTaskName == "") return;
-            _table.AddSubTask(((Button)sender).Tag.ToString(), create._subTaskName);
+
+            SubTask subTask = _table.AddSubTask(((Button)sender).Tag.ToString(), create._subTaskName);
+            subTask.TaskId = _table.GetTaskByName(((Button)sender).Tag.ToString()).Id;
+            
+            InsertSubTaskInDB(subTask);
 
             InitTable();
         }
+        private void InsertSubTaskInDB(SubTask subTask)
+        {
+            DBUsage.InsertSubTask(subTask);
+            subTask.Id = DBUsage.GetSubTasksLastId();
+        }
+
+
         private void SubTask_MouseDown(object sender, MouseEventArgs e)
         {
             if (!(sender is Panel)) return;
@@ -338,7 +363,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private void SubTask_DragDrop(object sender, DragEventArgs e)
         {
-            //sender - place(or control) where we dropped
+            /*//sender - place(or control) where we dropped
             Panel panel = (Panel)e.Data.GetData(typeof(Panel)); //that was dragged
             Point dropLocation = this.PointToClient(new Point(e.X, e.Y));
 
@@ -361,7 +386,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             _table.MoveSubTaskToAnoutherTask(gettingFromLB.Text, draggingIntoLB.Text, subTaskNameLB.Text, int.Parse(panel.Tag.ToString()), newSubTaskPosition);
 
-            InitTable();
+
+            _table.UpdateSUbTasksInDB();
+
+
+            InitTable();*/
         }
         public void ReassingDraggedTask(Control from, Control into, Panel draggedPanel, Point droppedPosition)
         {
@@ -384,8 +413,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 _table.MoveSubTaskToAnoutherTask(gettingFromLB.Text, draggingIntoLB.Text, subTaskNameLB.Text, int.Parse(draggedPanel.Tag.ToString()), newSubTaskPosition);
             }
+
+
             InitTable();
         }
+
+
         public int GetNewPositionInDraggedTaskPanel(Point droppedPoint, MaterialListBox newTaskBox)
         {
             int lastpanelIndex = -1;
@@ -402,7 +435,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                     }
                 }
             }
-            return lastpanelIndex != -1 ? lastpanelIndex + 1 : 0;
+            return lastpanelIndex != -1 ? lastpanelIndex : 0;
         }
         public SubTask GetSubTasksBySubTaskPanek(Panel subTaskPanel)
         {

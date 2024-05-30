@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using TrelloCopyWinForms.Models.DataBase;
+
 namespace TrelloCopyWinForms.Models.TableModels
 {
     public class TableTask
@@ -11,6 +13,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         public string Name { get; set; }
         public List<SubTask> SubTasks { get; set; }
         public int PlaceingTableId { get; set; }
+        public int TableId { get; set; }
         public int Id { get; set; }
         public TableTask()
         {
@@ -21,6 +24,9 @@ namespace TrelloCopyWinForms.Models.TableModels
         {
             Name = name;
             SubTasks = new List<SubTask>();
+            PlaceingTableId = -1;
+            TableId = -1;
+            Id = -1;
         }
         public TableTask(string name, List<SubTask> subTasks)
         {
@@ -30,7 +36,7 @@ namespace TrelloCopyWinForms.Models.TableModels
 
         public SubTask GetSubTaskByName(string subTaskName)
         {
-            for(int i = 0; i < SubTasks.Count; i++)
+            for (int i = 0; i < SubTasks.Count; i++)
             {
                 if (SubTasks[i].Name == subTaskName)
                 {
@@ -55,7 +61,7 @@ namespace TrelloCopyWinForms.Models.TableModels
 
         public SubTask GetSubTaskByIndex(int index)
         {
-            for(int i = 0; i < SubTasks.Count; i++)
+            for (int i = 0; i < SubTasks.Count; i++)
             {
                 if (SubTasks[i].GlobalSubTaskIndex == index)
                 {
@@ -68,7 +74,7 @@ namespace TrelloCopyWinForms.Models.TableModels
 
         public bool IfSubTaskContainsAttachmentWhitchContainsGlobalIndex(int index)
         {
-            for(int i = 0; i < SubTasks.Count; i++)
+            for (int i = 0; i < SubTasks.Count; i++)
             {
                 if (SubTasks[i].IfSubTaskContainsAttachmentWithGlobalIndex(index))
                 {
@@ -102,7 +108,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                 }
             }
             throw new Exception("Cant find subTasks with such params");
-        }        
+        }
         public void RemoveSubTask(string name, int uniqueIndex)
         {
             int subTasksIndex = GetSubTaskIndexByNameAndUniqueIndex(name, uniqueIndex);
@@ -115,25 +121,26 @@ namespace TrelloCopyWinForms.Models.TableModels
             if (insertPlace < SubTasks.Count)
             {
                 SubTasks.Insert(insertPlace, subTask);
+                subTask.UniqueIndex = insertPlace;
             }
             else
             {
                 SubTasks.Add(subTask);
+                subTask.UniqueIndex = SubTasks.Count;
             }
         }
 
         public void UpdateSubTasksUniqueIndexes()
         {
-            for(int i = 0; i < SubTasks.Count; i++)
+            for (int i = 0; i < SubTasks.Count; i++)
             {
                 SubTasks[i].UniqueIndex = i;
             }
         }
-
         public int GetTheMostSubTAskGlobalIndex()
         {
             int mostNum = 0;
-            for(int i = 0; i < SubTasks.Count; i++)
+            for (int i = 0; i < SubTasks.Count; i++)
             {
                 if (SubTasks[i].GlobalSubTaskIndex > mostNum)
                 {
@@ -142,6 +149,27 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return mostNum;
         }
-       
+        public void UpdateSubTasksInDb()
+        {
+            for (int i = 0; i < SubTasks.Count; i++)
+            {
+                DBUsage.UpdateSubTask(SubTasks[i]);
+            }
+        }
+        public void SortSubTaskForPlaceing()
+        {
+            for (int i = 0; i < SubTasks.Count - 1; i++)
+            {
+                for (int j = 0; j < SubTasks.Count - i - 1; j++)
+                {
+                    if (SubTasks[j].UniqueIndex > SubTasks[j + 1].UniqueIndex)
+                    {
+                        SubTask temp = SubTasks[j];
+                        SubTasks[j] = SubTasks[j + 1];
+                        SubTasks[j + 1] = temp;
+                    }
+                }
+            }
+        }
     }
 }

@@ -10,9 +10,9 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
     {
         public string Name { get; set; }
         public List<CheckListCase> Cases { get; set; }
-
         public int Id { get; set; }
-
+        public int SubTaskId { get; set; }
+        public int LineParam { get; set; }
         public CheckListModel()
         {
             Name = "";

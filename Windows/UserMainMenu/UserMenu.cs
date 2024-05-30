@@ -14,6 +14,7 @@ using TrelloCopyWinForms.Models.UserModel;
 using TrelloCopyWinForms.Models.DataBase;
 using TrelloCopyWinForms.Windows.CreateTableWindow;
 using TrelloCopyWinForms.Models.TableModels;
+using TrelloCopyWinForms.Windows.TableWindows;
 
 namespace TrelloCopyWinForms.Windows.UserMainMenu
 {
@@ -33,24 +34,78 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             FillUserInfoPage();
             InitEyeImage();
             FillCorrectionBoxes();
+            FillTablesList();
         }
         private void FillTablesList()
         {
+            AccessableTablesPanel.Controls.Clear();
+            const int _deistanceBetweenTables = 5;
             Size accessTableSize = new Size(100, 100);
-            for(int i = 0; i < _tables.Count; i++)
+            Point tempPoint = new Point(0, _deistanceBetweenTables);
+            for (int i = 0; i < _tables.Count; i++)
             {
                 if (IfUserContrinsInTable(_tables[i]))
                 {
                     Panel panel = new Panel();
+                    panel.Tag = i;
                     panel.Size = accessTableSize;
-                    //etc
+                    panel.BackColor = _tables[i].BgColor is null ?
+                        Color.Transparent : (Color)_tables[i].BgColor;
+                    panel.BorderStyle = BorderStyle.FixedSingle;
+                    panel.Click += ChooseTable_Click;
 
+                    Label label = new Label();
+                    label.Dock = DockStyle.Fill;
+                    label.Text = _tables[i].Name;
+                    label.TextAlign = ContentAlignment.MiddleCenter;
+                    label.Click += ChooseTable_Click;
+                    panel.Controls.Add(label);
+
+                    tempPoint = new Point(AccessableTablesPanel.Width / 2 - panel.Width / 2, tempPoint.Y);
+                    panel.Location = tempPoint;
+                    AccessableTablesPanel.Controls.Add(panel);
+                    tempPoint = new Point(tempPoint.X, tempPoint.Y + panel.Height + _deistanceBetweenTables);
                 }
             }
         }
+        private void ChooseTable_Click(object sender, EventArgs e)
+        {
+            if (sender is Label label)
+            {
+                Panel panel = (Panel)label.Parent;
+                ReinitChosenTable(panel);
+                return;
+            }
+            ReinitChosenTable((Panel)sender);
+        }
+        public void ReinitChosenTable(Panel panel)
+        {
+            ChosenTablePanel.Controls.Clear();
+
+            ChosenTablePanel.BackColor = panel.BackColor;
+            ChosenTablePanel.Tag = panel.Tag;
+            for (int i = 0; i < panel.Controls.Count; i++)
+            {
+                if (panel.Controls[i] is Label)
+                {
+                    Label label = new Label();
+                    label.Text = ((Label)panel.Controls[i]).Text;
+                    label.Dock = ((Label)panel.Controls[i]).Dock;
+                    label.TextAlign = ((Label)panel.Controls[i]).TextAlign;
+
+                    ChosenTablePanel.Controls.Add(label);
+                }
+            }
+        }
+        public void ClearChosenTablePanel()
+        {
+            ChosenTablePanel.Controls.Clear();
+            ChosenTablePanel.Tag = null;
+            ChosenTablePanel.BackColor = Color.Empty;
+        }
         public bool IfUserContrinsInTable(Table table)
         {
-            for(int i = 0; i < table.UserInTable.Count; i++)
+            for (int i = 0; i < table.UserInTable.Count; i++)
             {
                 if (table.UserInTable[i].Id == _chosenUser.Id) return true;
             }
@@ -84,9 +139,9 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
                 MessageBox.Show("Somthing went wrong!", "Mistake!");
                 return;
             }
-            
+
             //Compare old password
-            if(DBUsage.ComparePassHashes(_chosenUser.Login, OldPassCorBox.Text))
+            if (DBUsage.ComparePassHashes(_chosenUser.Login, OldPassCorBox.Text))
             {
                 //Assign param
                 string oldUserLogin = _chosenUser.Login;
@@ -127,12 +182,30 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
 
         private void CreateTableBut_Click(object sender, EventArgs e)
         {
-
             Hide();
-            CreateTable create = new CreateTable();
+            CreateTable create = new CreateTable(_chosenUser);
             create.ShowDialog();
             Show();
 
+            FillTablesList();
+            ClearChosenTablePanel();
+        }
+
+        private void ChooseTableBut_Click(object sender, EventArgs e)
+        {
+            if(ChosenTablePanel.Controls.Count == 0)
+            {
+                MessageBox.Show("Need to chosoe table");
+                return;
+            }
+
+            Table chosenTable = _tables[(int)ChosenTablePanel.Tag];
+
+            Hide();
+            TableWindow window = new TableWindow(chosenTable);
+            window.ShowDialog();
+            Show();
+            ClearChosenTablePanel();
         }
     }
 }

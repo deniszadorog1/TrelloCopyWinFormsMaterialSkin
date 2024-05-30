@@ -7,6 +7,7 @@ using System.Drawing;
 
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
 using TrelloCopyWinForms.Models.UserModel;
+using TrelloCopyWinForms.Models.DataBase;
 
 namespace TrelloCopyWinForms.Models.TableModels
 {
@@ -47,9 +48,9 @@ namespace TrelloCopyWinForms.Models.TableModels
 
             UserInTable = new List<User>();
 
-            _allFlags.Add(new Flag(Color.Red, string.Empty));
+/*            _allFlags.Add(new Flag(Color.Red, string.Empty));
             _allFlags.Add(new Flag(Color.Green, string.Empty));
-            _allFlags.Add(new Flag(Color.Blue, string.Empty));
+            _allFlags.Add(new Flag(Color.Blue, string.Empty));*/
         }
         public TableTask GetTaskByName(string name)
         {
@@ -79,11 +80,13 @@ namespace TrelloCopyWinForms.Models.TableModels
         {
             Tasks.Add(new TableTask(name, new List<SubTask>()));
         }
-        public void AddSubTask(string tasksName, string subTaskName)
+        public SubTask AddSubTask(string tasksName, string subTaskName)
         {
             TableTask task = GetTaskByName(tasksName);
-            task.SubTasks.Add(new SubTask(subTaskName, task.SubTasks.Count, LastSubTaskIndex));
+            task.SubTasks.Add(new SubTask(subTaskName, task.SubTasks.Count, LastSubTaskIndex, task.Id));          
             LastSubTaskIndex++;
+
+            return task.SubTasks.Last();
         }
         public int GetUniqueNumForLastSubTask(string tasksName)
         {
@@ -218,6 +221,10 @@ namespace TrelloCopyWinForms.Models.TableModels
 
             Tasks[firstIndex] = Tasks[secondIndex];
             Tasks[secondIndex] = temp;
+
+            int placeIndex = Tasks[firstIndex].PlaceingTableId;
+            Tasks[firstIndex].PlaceingTableId = Tasks[secondIndex].PlaceingTableId;
+            Tasks[secondIndex].PlaceingTableId = placeIndex;
         }
         public void MoveSubTaskToAnoutherTask(string gettingFromName, string initIntoName, string subTaskName, int subTaskUniqueIndex, int insertionPosition)
         {
@@ -241,17 +248,55 @@ namespace TrelloCopyWinForms.Models.TableModels
             Tasks[tableIndex].SubTasks.Remove(draggingSubTask);
             Tasks[tableIndex].InserDraggedSubTask(draggingSubTask, insertIndex);
 
-
             Tasks[tableIndex].UpdateSubTasksUniqueIndexes();
+        }
+
+        public void UpdateTasksInDb()
+        {
+            for (int i = 0; i < Tasks.Count; i++)
+            {
+                DBUsage.UpdateTask(Tasks[i]);
+            }
+        }
+
+        public void UpdateSUbTasksInDB()
+        {
+            for (int i = 0; i < Tasks.Count; i++)
+            {
+                Tasks[i].UpdateSubTasksInDb();
+            }
+        }
+        public void UpdateTasks()
+        {
+            for (int i = 0; i < Tasks.Count; i++)
+            {
+                DBUsage.UpdateTask(Tasks[i]);
+            }
         }
         public void InitLastSubTaskIndex()
         {
             int theMostNum = 0;
-            for(int i = 0; i < Tasks.Count; i++)
+            for (int i = 0; i < Tasks.Count; i++)
             {
                 theMostNum = Tasks[i].GetTheMostSubTAskGlobalIndex();
             }
             LastSubTaskIndex = theMostNum;
+        }
+
+        public void SortTaskByPlaceingOnTable()
+        {
+            for (int i = 0; i < Tasks.Count - 1; i++)
+            {
+                for (int j = 0; j < Tasks.Count - i - 1; j++)
+                {
+                    if (Tasks[j].PlaceingTableId > Tasks[j + 1].PlaceingTableId)
+                    {
+                        TableTask task = Tasks[j];
+                        Tasks[j] = Tasks[j + 1];
+                        Tasks[j + 1] = task;
+                    }
+                }
+            }
         }
     }
 }

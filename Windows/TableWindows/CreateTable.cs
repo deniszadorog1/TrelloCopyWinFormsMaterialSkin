@@ -13,7 +13,7 @@ using MaterialSkin.Controls;
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Windows.TableWindows;
 using TrelloCopyWinForms.Models.DataBase;
-
+using TrelloCopyWinForms.Models.UserModel;
 
 namespace TrelloCopyWinForms.Windows.CreateTableWindow
 {
@@ -26,8 +26,10 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         private const int _distanceBetweenPossiableBGs = 5;
         private string _pathToBackGroundImages = "";
 
-        public CreateTable()
+        private User _user;
+        public CreateTable(User chosenUser)
         {
+            _user = chosenUser;
             InitializeComponent();
 
             RenameBGImages();
@@ -62,6 +64,7 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                         newName += fileExtension;
 
                         string newPath = Path.Combine(_pathToBackGroundImages, newName);
+
 
                         File.Move(pathToPic, newPath);
                     }
@@ -133,6 +136,11 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
 
             DBUsage.InsertColor(ChosenBG.BackColor.R, ChosenBG.BackColor.G, ChosenBG.BackColor.B);
             DBUsage.InsertTable(newTable);
+            newTable.Id = DBUsage.GetTableLastId();
+
+            newTable.UserInTable.Add(_user);
+            DBUsage.InsertUserTables(newTable, _user);
+
             newTable.Id = DBUsage.GetTableLastId();
 
             Hide();         

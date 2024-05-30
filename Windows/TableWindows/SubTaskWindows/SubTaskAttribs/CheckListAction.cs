@@ -11,6 +11,7 @@ using MaterialSkin.Controls;
 
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
+using TrelloCopyWinForms.Models.DataBase;
 
 namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 {
@@ -162,11 +163,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                     MessageBox.Show("Check list with such name is exist!", "Mistake!");
                     return;
                 }
+
+                InsertModelInDb(model);
                 _chosenSubTask.CheckLists.Add(model);
+
                 Close();
                 return;
             }
-
             CheckListModel boxToCopy = new CheckListModel(GetCheckBox());
             boxToCopy.Name = CheckName.Text != "" ? CheckName.Text : boxToCopy.Name;
 
@@ -175,8 +178,16 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 MessageBox.Show("Check list with such name is exist!", "Mistake!");
                 return;
             }
+
+            InsertModelInDb(boxToCopy);
             _chosenSubTask.CheckLists.Add(boxToCopy);
+
             Close();
+        }
+        public void InsertModelInDb(CheckListModel model)
+        {
+            DBUsage.InsertCheckList(model, _chosenSubTask);
+            _chosenSubTask.Id = DBUsage.GetCheckListLastId();
         }
         private bool IfCheckListIsAlreadyExist(CheckListModel model)
         {

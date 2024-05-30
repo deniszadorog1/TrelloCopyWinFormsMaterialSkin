@@ -42,7 +42,8 @@
             this.LoginCorBox = new MaterialSkin.Controls.MaterialTextBox();
             this.LoginLB = new System.Windows.Forms.Label();
             this.Tables = new System.Windows.Forms.TabPage();
-            this.materialButton1 = new MaterialSkin.Controls.MaterialButton();
+            this.AccessableTablesPanel = new System.Windows.Forms.Panel();
+            this.ChooseTableBut = new MaterialSkin.Controls.MaterialButton();
             this.CreateTableBut = new MaterialSkin.Controls.MaterialButton();
             this.UserInfoTab = new System.Windows.Forms.TabPage();
             this.label5 = new System.Windows.Forms.Label();
@@ -52,7 +53,8 @@
             this.LoginInfo = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.MatTab = new MaterialSkin.Controls.MaterialTabControl();
-            this.AccessableTablesPanel = new System.Windows.Forms.Panel();
+            this.ChosenTablePanel = new System.Windows.Forms.Panel();
+            this.ChosenTableLB = new MaterialSkin.Controls.MaterialLabel();
             this.CorrectAccount.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.OldPassEyeImg)).BeginInit();
@@ -245,8 +247,11 @@
             // 
             // Tables
             // 
+            this.Tables.BackColor = System.Drawing.SystemColors.Control;
+            this.Tables.Controls.Add(this.ChosenTableLB);
+            this.Tables.Controls.Add(this.ChosenTablePanel);
             this.Tables.Controls.Add(this.AccessableTablesPanel);
-            this.Tables.Controls.Add(this.materialButton1);
+            this.Tables.Controls.Add(this.ChooseTableBut);
             this.Tables.Controls.Add(this.CreateTableBut);
             this.Tables.Location = new System.Drawing.Point(4, 27);
             this.Tables.Name = "Tables";
@@ -254,27 +259,36 @@
             this.Tables.Size = new System.Drawing.Size(719, 352);
             this.Tables.TabIndex = 1;
             this.Tables.Text = "Tables";
-            this.Tables.UseVisualStyleBackColor = true;
             // 
-            // materialButton1
+            // AccessableTablesPanel
             // 
-            this.materialButton1.AutoSize = false;
-            this.materialButton1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.materialButton1.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.materialButton1.Depth = 0;
-            this.materialButton1.HighEmphasis = true;
-            this.materialButton1.Icon = null;
-            this.materialButton1.Location = new System.Drawing.Point(401, 115);
-            this.materialButton1.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.materialButton1.MouseState = MaterialSkin.MouseState.HOVER;
-            this.materialButton1.Name = "materialButton1";
-            this.materialButton1.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.materialButton1.Size = new System.Drawing.Size(231, 44);
-            this.materialButton1.TabIndex = 2;
-            this.materialButton1.Text = "Chose Table";
-            this.materialButton1.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.materialButton1.UseAccentColor = false;
-            this.materialButton1.UseVisualStyleBackColor = true;
+            this.AccessableTablesPanel.AutoScroll = true;
+            this.AccessableTablesPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.AccessableTablesPanel.Location = new System.Drawing.Point(19, 18);
+            this.AccessableTablesPanel.Name = "AccessableTablesPanel";
+            this.AccessableTablesPanel.Size = new System.Drawing.Size(257, 328);
+            this.AccessableTablesPanel.TabIndex = 3;
+            // 
+            // ChooseTableBut
+            // 
+            this.ChooseTableBut.AutoSize = false;
+            this.ChooseTableBut.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ChooseTableBut.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.ChooseTableBut.Depth = 0;
+            this.ChooseTableBut.HighEmphasis = true;
+            this.ChooseTableBut.Icon = null;
+            this.ChooseTableBut.Location = new System.Drawing.Point(383, 230);
+            this.ChooseTableBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.ChooseTableBut.MouseState = MaterialSkin.MouseState.HOVER;
+            this.ChooseTableBut.Name = "ChooseTableBut";
+            this.ChooseTableBut.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.ChooseTableBut.Size = new System.Drawing.Size(231, 44);
+            this.ChooseTableBut.TabIndex = 2;
+            this.ChooseTableBut.Text = "Chose Table";
+            this.ChooseTableBut.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.ChooseTableBut.UseAccentColor = false;
+            this.ChooseTableBut.UseVisualStyleBackColor = true;
+            this.ChooseTableBut.Click += new System.EventHandler(this.ChooseTableBut_Click);
             // 
             // CreateTableBut
             // 
@@ -284,7 +298,7 @@
             this.CreateTableBut.Depth = 0;
             this.CreateTableBut.HighEmphasis = true;
             this.CreateTableBut.Icon = null;
-            this.CreateTableBut.Location = new System.Drawing.Point(401, 171);
+            this.CreateTableBut.Location = new System.Drawing.Point(383, 286);
             this.CreateTableBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.CreateTableBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.CreateTableBut.Name = "CreateTableBut";
@@ -385,14 +399,26 @@
             this.MatTab.Size = new System.Drawing.Size(727, 383);
             this.MatTab.TabIndex = 0;
             // 
-            // AccessableTablesPanel
+            // ChosenTablePanel
             // 
-            this.AccessableTablesPanel.AutoScroll = true;
-            this.AccessableTablesPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.AccessableTablesPanel.Location = new System.Drawing.Point(19, 18);
-            this.AccessableTablesPanel.Name = "AccessableTablesPanel";
-            this.AccessableTablesPanel.Size = new System.Drawing.Size(257, 328);
-            this.AccessableTablesPanel.TabIndex = 3;
+            this.ChosenTablePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.ChosenTablePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ChosenTablePanel.Location = new System.Drawing.Point(431, 93);
+            this.ChosenTablePanel.Name = "ChosenTablePanel";
+            this.ChosenTablePanel.Size = new System.Drawing.Size(100, 100);
+            this.ChosenTablePanel.TabIndex = 4;
+            // 
+            // ChosenTableLB
+            // 
+            this.ChosenTableLB.AutoSize = true;
+            this.ChosenTableLB.Depth = 0;
+            this.ChosenTableLB.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.ChosenTableLB.Location = new System.Drawing.Point(428, 71);
+            this.ChosenTableLB.MouseState = MaterialSkin.MouseState.HOVER;
+            this.ChosenTableLB.Name = "ChosenTableLB";
+            this.ChosenTableLB.Size = new System.Drawing.Size(93, 19);
+            this.ChosenTableLB.TabIndex = 5;
+            this.ChosenTableLB.Text = "Chosen table";
             // 
             // UserMenu
             // 
@@ -410,6 +436,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.OldPassEyeImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NewPassEyeImg)).EndInit();
             this.Tables.ResumeLayout(false);
+            this.Tables.PerformLayout();
             this.UserInfoTab.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -434,7 +461,7 @@
         private MaterialSkin.Controls.MaterialTextBox LoginCorBox;
         private System.Windows.Forms.Label LoginLB;
         private System.Windows.Forms.TabPage Tables;
-        private MaterialSkin.Controls.MaterialButton materialButton1;
+        private MaterialSkin.Controls.MaterialButton ChooseTableBut;
         private MaterialSkin.Controls.MaterialButton CreateTableBut;
         private System.Windows.Forms.TabPage UserInfoTab;
         private System.Windows.Forms.Label label5;
@@ -445,5 +472,7 @@
         private System.Windows.Forms.Label label1;
         private MaterialSkin.Controls.MaterialTabControl MatTab;
         private System.Windows.Forms.Panel AccessableTablesPanel;
+        private MaterialSkin.Controls.MaterialLabel ChosenTableLB;
+        private System.Windows.Forms.Panel ChosenTablePanel;
     }
 }

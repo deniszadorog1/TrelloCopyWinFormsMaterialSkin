@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
 using TrelloCopyWinForms.Models.UserModel;
+using TrelloCopyWinForms.Models.DataBase;
 
 namespace TrelloCopyWinForms.Models.TableModels
 {
@@ -39,12 +40,14 @@ namespace TrelloCopyWinForms.Models.TableModels
             Attachments = new List<Attachment>();
             Cover = null;
             UsersIdsInSuBTask = new List<int>();
+            Description = "";
         }
-        public SubTask(string name, int uniqueIndex, int globalSubTaskIndex)
+        public SubTask(string name, int uniqueIndex, int globalSubTaskIndex, int taskId)
         {
             Name = name;
             UniqueIndex = uniqueIndex;
             GlobalSubTaskIndex = globalSubTaskIndex;
+            TaskId = taskId;
             Flags = new List<Flag>();
             DeadLine = null;
             CheckLists = new List<CheckListModel>();
@@ -53,6 +56,7 @@ namespace TrelloCopyWinForms.Models.TableModels
             Attachments = new List<Attachment>();
             Cover = null;
             UsersIdsInSuBTask = new List<int>();
+            Description = "";
         }
         public int GetTransfersAmount()
         {
@@ -114,8 +118,11 @@ namespace TrelloCopyWinForms.Models.TableModels
         public void DeleteSubTask(string checkListName, string caseName)
         {
             CheckListModel model = CheckLists.Find(x => x.Name == checkListName);
+            CheckListCase removeCase = model.Cases.Find(x => x.Name == caseName);
 
-            model.Cases.Remove(model.Cases.Find(x => x.Name == caseName));
+            model.Cases.Remove(removeCase);
+
+            DBUsage.DeleteCheckListParam(removeCase);
         }
         public void AddComment(string comment)
         {

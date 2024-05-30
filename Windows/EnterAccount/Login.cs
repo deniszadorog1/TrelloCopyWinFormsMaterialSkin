@@ -97,7 +97,7 @@ namespace TrelloCopyWinForms
 
             task.SubTasks.Add(testSubTask);*/
 
-            SubTask secondSubTask = new SubTask("second SubTask", 0, 1);
+            SubTask secondSubTask = new SubTask("second SubTask", 0, 1, task.Id);
             //secondSubTask.Attachments.Add(new Attachment(1, "sdf"));
             task.SubTasks.Add(secondSubTask);
 
@@ -144,7 +144,7 @@ namespace TrelloCopyWinForms
 
             for(int i = 0; i < subTasksName.Count; i++)
             {
-                SubTask newSubTask = new SubTask(subTasksName[i], i + 1, i + 2);
+                SubTask newSubTask = new SubTask(subTasksName[i], i + 1, i + 2, task.Id);
                 task.SubTasks.Add(newSubTask);
                 toAddAttachs.Attachments.Add(new Attachment(i + 2, subTasksName[i], i));
             }

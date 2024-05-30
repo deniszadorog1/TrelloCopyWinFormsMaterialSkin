@@ -20,7 +20,6 @@ namespace TrelloCopyWinForms.Windows.EnterAccount
         {
             InitializeComponent();
         }
-
         private void CreateBut_Click(object sender, EventArgs e)
         {
             if(LoginBox.Text == "" || EmailBox.Text == "")
@@ -35,12 +34,10 @@ namespace TrelloCopyWinForms.Windows.EnterAccount
             else MessageBox.Show("smth went wrong!", "Mistake!");
             Close();
         }
-
         private void materialButton1_Click(object sender, EventArgs e)
         {
             Close();
         }
-
         private void ShowHidePass_Click(object sender, EventArgs e)
         {
             PasswordBox.Password = !PasswordBox.Password;

@@ -11,6 +11,7 @@ using MaterialSkin.Controls;
 
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
+using TrelloCopyWinForms.Models.DataBase;
 
 namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 {
@@ -33,7 +34,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 MessageBox.Show("Smth went wrong!", "Mistake!");
                 return;
             }
-            _checkList.Cases.Add(new CheckListCase(CaseNameBox.Text));
+            CheckListCase newCase = new CheckListCase(CaseNameBox.Text);
+
+            DBUsage.InsertCheckListCase(newCase, _checkList, _subTask);
+            newCase.Id = DBUsage.GetCheckListLastId();            
+
+            _checkList.Cases.Add(newCase);
+
             Close();
         }
 

@@ -284,7 +284,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 command.Parameters.AddWithValue("@g", ((Color)color).G);
                 command.Parameters.AddWithValue("@b", ((Color)color).B);
 
-                SqlDataReader reader = command.ExecuteReader();
                 res = int.Parse(command.ExecuteScalar().ToString());
 
                 connection.Close();
@@ -316,11 +315,12 @@ namespace TrelloCopyWinForms.Models.DataBase
             {
                 connection.Open();
 
-                string query = "INSER INTO [Tasks]([Name], [TableId]) VALUES (@name, @tableId)";
+                string query = "INSERT INTO [Tasks]([Name], [TableId], [PlaceInTableId]) VALUES (@name, @tableId, @placeInTable)";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@name", task.Name);
                 command.Parameters.AddWithValue("@tableId", GetTableId(task));
+                command.Parameters.AddWithValue("@placeInTable", task.PlaceingTableId);
 
                 command.ExecuteNonQuery();
 
@@ -336,7 +336,7 @@ namespace TrelloCopyWinForms.Models.DataBase
                 string query = "SELECT [Id] FROM [Tables] WHERE [Id] = @tableId";
 
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("tableId", task.PlaceingTableId);
+                command.Parameters.AddWithValue("tableId", task.TableId);
 
                 return int.Parse(command.ExecuteScalar().ToString());
 
@@ -461,7 +461,7 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-        public static void InsertSubTaskFlag(SubTask subTask, Flag flag)
+        public static void InsertSubTaskTag(SubTask subTask, Flag flag)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -478,7 +478,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         public static void InsertUserTables(Table table, User user)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -555,23 +554,47 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-        public static void InitCheckList(CheckListModel checkList, SubTask subtask)
+        public static void InsertCheckList(CheckListModel checkList, SubTask subtask)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                string query = "INSERT INTO [CheckList]([SubTaskId], [Name]) " +
-                    "VALUES(@subtaskId, @name)";
+                string query = "INSERT INTO [CheckList]([SubTaskId], [Name], [LineParam]) " +
+                    "VALUES(@subtaskId, @name, @lineParam)";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@subtaskId", subtask.Id);
                 command.Parameters.AddWithValue("@name", checkList.Name);
+                command.Parameters.AddWithValue("@lineParam", checkList.LineParam);
+
+                command.ExecuteNonQuery();
 
                 connection.Close();
             }
         }
-        public static void InitCheckList(CheckListCase listCase, SubTask subtask)
+        public static void UpdateCheckList(CheckListModel model)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "UPDATE [CheckList] SET [SubTaskId] = @subTaskId, " +
+                    "[Name] = @name, [LineParam] = @linePar WHERE [Id] = @id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@subTaskId", model.SubTaskId);
+                command.Parameters.AddWithValue("@name", model.Name);
+                command.Parameters.AddWithValue("@linePar", model.LineParam);
+                command.Parameters.AddWithValue("@id", model.Id);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
+        public static void InsertCheckListCase(CheckListCase listCase,  CheckListModel model, SubTask subtask)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -582,10 +605,11 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@name", listCase.Name);
-                command.Parameters.AddWithValue("@listId", listCase.ListId);
+                command.Parameters.AddWithValue("@listId", model.Id);
                 command.Parameters.AddWithValue("@subTaskId", subtask.Id);
                 command.Parameters.AddWithValue("@ststus", listCase.IfCaseDone ? 1 : 0);
 
+                command.ExecuteNonQuery();
                 connection.Close();
             }
         }
@@ -706,23 +730,19 @@ namespace TrelloCopyWinForms.Models.DataBase
                     task.Name = reader["Name"].ToString();
                     task.PlaceingTableId = int.Parse(reader["PlaceInTableId"].ToString());
 
-
                     //Init subTasks for task
                     task.SubTasks = GetSubTasksForTask(task.Id);
 
                     tasks.Add(task);
                 }
 
-
                 connection.Close();
             }
-
             return tasks;
         }
         private static List<SubTask> GetSubTasksForTask(int taskId)
         {
             List<SubTask> res = new List<SubTask>();
-
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -759,11 +779,97 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                     //User Ids on subtask
                     subTask.UsersIdsInSuBTask = GetUserIdsForSubTask(subTask.Id);
+
+                    subTask.CheckLists = GetCehckLists(subTask.Id);
+
+                    res.Add(subTask);
                 }
                 connection.Close();
             }
 
             return res;
+        }
+        private static List<CheckListModel> GetCehckLists(int subtaskId)
+        {
+            List<CheckListModel> res = new List<CheckListModel>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM [CheckList] WHERE [SubTaskId] = @id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", subtaskId);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    CheckListModel model = new CheckListModel();
+                    model.Name = reader["Name"].ToString();
+                    model.SubTaskId = (int)reader["SubTaskId"];
+                    model.Id = (int)reader["Id"];
+                    model.LineParam = (int)reader["LineParam"];
+
+                    model.Cases = GetCheckListCases(model.Id);
+
+                    res.Add(model);
+                }
+                connection.Close();
+            }
+
+            return res;
+        }
+        private static List<CheckListCase> GetCheckListCases(int checkListId)
+        {
+            List<CheckListCase> res = new List<CheckListCase>();
+
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM [CheckListParam] WHERE [CheckListId] = @id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", checkListId);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    CheckListCase model = new CheckListCase();
+
+                    model.Name = reader["Name"].ToString();
+                    model.ListId = (int)reader["CheckListId"];
+                    model.Id = (int)reader["Id"];
+                    model.IfCaseDone = (bool)reader["Status"];
+
+                    res.Add(model);
+                }
+                connection.Close();
+            }
+            return res;
+        }
+        public static void UpdateCheckListCase(CheckListModel model, CheckListCase listCase)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "UPDATE [CheckListParam] SET [Name] = @name, " +
+                    "[CheckListId] = @checkListId, [Status] = @status WHERE [Id] = @id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@name", listCase.Name);
+                command.Parameters.AddWithValue("@checkListId", listCase.ListId);
+                command.Parameters.AddWithValue("@status", listCase.IfCaseDone);
+                command.Parameters.AddWithValue("@id", listCase.Id);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
         }
         private static List<Attachment> GetAttachmentsForSubTask(int subTaskId)
         {
@@ -773,7 +879,7 @@ namespace TrelloCopyWinForms.Models.DataBase
             {
                 connection.Open();
 
-                string query = "SELECT * FROM [SubTaskAttachments] WHERE [SubTaskId] = @id";
+                string query = "SELECT * FROM [Attachments] WHERE [SubTaskPlaceingId] = @id";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", subTaskId);
@@ -798,7 +904,6 @@ namespace TrelloCopyWinForms.Models.DataBase
 
             return res;
         }
-
         private static List<int> GetUserIdsForSubTask(int subTaskId)
         {
             List<int> res = new List<int>();
@@ -806,7 +911,7 @@ namespace TrelloCopyWinForms.Models.DataBase
             {
                 connection.Open();
 
-                string query = "SELCT * FROM [SubTaskParticipants] WHERE [SubtaskId] = @id";
+                string query = "SELECT * FROM [SubTaskParticipants] WHERE [SubtaskId] = @id";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", subTaskId);
@@ -1100,17 +1205,28 @@ namespace TrelloCopyWinForms.Models.DataBase
                     "[DeadLine] = @endDate, [CoverId] = @coverId WHERE [Id] = @id";
 
                 SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@name", subTask.Name);
                 command.Parameters.AddWithValue("@taskId", subTask.TaskId);
                 command.Parameters.AddWithValue("@desc", subTask.Description);
                 command.Parameters.AddWithValue("@placeInTask", subTask.UniqueIndex);
                 command.Parameters.AddWithValue("@subTaskOnTable", subTask.GlobalSubTaskIndex);
 
-
                 command.Parameters.AddWithValue("@startDate", GetStartTime(subTask.DeadLine));
                 command.Parameters.AddWithValue("@endDate", GetEndTime(subTask.DeadLine));
 
-                command.Parameters.AddWithValue("@endDate", GetCoverIdForSubTask(subTask));
+                command.Parameters.AddWithValue("@coverId", DBNull.Value);
 
+                command.Parameters.AddWithValue("@id", subTask.Id);
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine();
+                }
                 connection.Close();
             }
         }
@@ -1302,8 +1418,9 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-        public static void DeleteCheckLis(CheckListModel model)
+        public static void DeleteCheckList(CheckListModel model)
         {
+            DeleteCheckListParamsFromCheckList(model.Id);
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -1312,6 +1429,24 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", model.Id);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
+        private static void DeleteCheckListParamsFromCheckList(int checkListId)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "DELETE FROM [CheckListParam] WHERE [CheckListId] = @id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", checkListId);
+
+                command.ExecuteNonQuery();
 
                 connection.Close();
             }

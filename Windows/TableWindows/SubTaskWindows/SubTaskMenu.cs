@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+
 using TrelloCopyWinForms.Models.Enums;
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
 using TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs;
-
+using TrelloCopyWinForms.Models.DataBase;
 
 namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 {
@@ -680,6 +681,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             for (int i = 0; i < _subTask.CheckLists.Count; i++)
             {
                 Panel panel = new Panel();
+                panel.Tag = i;
                 panel.Name = _subTask.CheckLists[i].Name;
                 panel.BorderStyle = BorderStyle.FixedSingle;
                 panel.AutoSize = false;
@@ -695,12 +697,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 panel.Size = new Size(panel.Width, panel.Height + checkListName.Height + _distanceBetweenSubBlocks);
 
                 MaterialButton deleteCheckList = new MaterialButton();
+                deleteCheckList.Tag = i;
                 deleteCheckList.Text = "Delete";
                 deleteCheckList.AutoSize = false;
                 deleteCheckList.Size = new Size(deleteButtonWidth, checkListName.Height);
                 deleteCheckList.Location = new Point(panel.Width - deleteCheckList.Width - distanceFromBorders, checkListName.Location.Y);
                 deleteCheckList.Click += DeleteCheckList_Click;
                 panel.Controls.Add(deleteCheckList);
+
                 panel.Size = new Size(panel.Width, panel.Height + deleteCheckList.Height + _distanceBetweenSubBlocks);
 
 
@@ -708,6 +712,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 progressBar.Location = new Point(checkListName.Location.X, checkListName.Location.Y + checkListName.Height + distanceFromBorders);
                 progressBar.Size = new Size(deleteCheckList.Location.X - checkListName.Location.X, 5);
                 progressBar.Maximum = 100;
+                progressBar.Value = _subTask.CheckLists[i].LineParam;
 
                 panel.Controls.Add(progressBar);
 
@@ -726,8 +731,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                         lastControl.Location.Y + lastControl.Height + _distanceBetweenSubBlocks);
 
                     MaterialCheckbox box = new MaterialCheckbox();
+                    box.Tag = i;
                     box.Text = "";
                     box.Size = new Size(checkBoxSizeParam, checkBoxSizeParam);
+                    box.Checked = _subTask.CheckLists[i].Cases[j].IfCaseDone;
                     box.CheckedChanged += CaseIsDoneOrNotDone_CheckedChanged;
 
                     listCase.Controls.Add(box);
@@ -740,6 +747,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     listCase.Controls.Add(lb);
 
                     MaterialButton deleteCaseBut = new MaterialButton();
+                    deleteCaseBut.Tag = i;
                     deleteCaseBut.AutoSize = false;
                     deleteCaseBut.Size = new Size(100, 30);
                     deleteCaseBut.Text = "Delete case";
@@ -809,12 +817,17 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             if (checkListName is null) throw new Exception("Cant find checkList name");
 
             _subTask.DeleteSubTask(checkListName.Text, checkListCaseName.Text);
+
             InitCheckLists();
         }
         private void CaseIsDoneOrNotDone_CheckedChanged(object sender, EventArgs e)
         {
             Panel checkList = (Panel)((MaterialCheckbox)sender).Parent.Parent;
             Panel caseInCheckList = (Panel)((MaterialCheckbox)sender).Parent;
+
+            CheckListModel model = _subTask.CheckLists[(int)checkList.Tag];
+            CheckListCase checkCase = model.Cases[(int)((MaterialCheckbox)sender).Tag];
+            
 
             //Get progress bar 
             MaterialProgressBar progressBar = GetProgressBarFromPanel(checkList);
@@ -824,8 +837,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             Label checkListNameLB = GetLabelFromPanel(checkList);
             Label caseNameLB = GetLabelFromPanel(caseInCheckList);
 
+
             //Change case check Value in listCheck 
             _subTask.CheckCheckSignForCase(checkListNameLB.Text, caseNameLB.Text);
+
 
             int amountOfCases = _subTask.GetAmountOfCasesOfCheckBox(checkListNameLB.Text, caseNameLB.Text);
             int amountOfTurnedCheckCases = _subTask.GetAmountOfTurnedOnCasesOfCheckBox(checkListNameLB.Text, caseNameLB.Text);
@@ -833,6 +848,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             double percent = (double)amountOfTurnedCheckCases / amountOfCases * 100;
 
             progressBar.Value = (int)percent;
+            model.LineParam = (int)percent;
+
+            DBUsage.UpdateCheckListCase(model, checkCase);
+            DBUsage.UpdateCheckList(model);
         }
         public MaterialProgressBar GetProgressBarFromPanel(Panel panel)
         {
@@ -853,7 +872,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             Label checkListName = GetLabelFromPanel(checkListPanel);
             if (checkListName is null) throw new Exception("Cant find checkList name");
 
-            AddCase newCase = new AddCase(_subTask, _subTask.GetCheckListByName(checkListName.Text));
+            CheckListModel listCheck = _subTask.GetCheckListByName(checkListName.Text);
+            AddCase newCase = new AddCase(_subTask, listCheck);
             newCase.ShowDialog();
 
             InitCheckLists();
@@ -873,6 +893,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         {
             if (sender is Button button)
             {
+                DBUsage.DeleteCheckList(_subTask.CheckLists[(int)button.Tag]);
                 Control control = button.Parent; //CheckList Panel
 
                 bool deleteRes = _subTask.DeleteCheckListByName(control.Name);
@@ -1022,11 +1043,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 }
                 else if ((SubTaskButType)i == SubTaskButType.Tags)
                 {
-                    but.Click += AddTag_Click;
+                    but.Click += AddTag_Click;//
                 }
                 else if ((SubTaskButType)i == SubTaskButType.CheckList)
                 {
-                    but.Click += AddCheckList_Click;
+                    but.Click += AddCheckList_Click;//
                 }
                 else if ((SubTaskButType)i == SubTaskButType.Date)
                 {
@@ -1082,7 +1103,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         private void AddTag_Click(object sender, EventArgs e)
         {
-            AddSubTaskFlag addFlag = new AddSubTaskFlag(_table.GetAllFlags(), _subTask);
+            AddSubTaskFlag addFlag = new AddSubTaskFlag(_subTask, _table);
             addFlag.ShowDialog();
 
             InitFlags();
