@@ -8,11 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MaterialSkin.Controls;
+using System.IO;
 
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Models.Enums;
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
-using System.IO;
+using TrelloCopyWinForms.Models.DataBase;
 
 namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 {
@@ -71,11 +72,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 _subTask.Cover.Type = CoverType.PartSizeCover;
             }
 
+            DBUsage.UpdateCover(_subTask.Cover);
+            DBUsage.UpdateSubTask(_subTask);
+
+            DBUsage.DeleteCoversWhichDoesntContainsInSubTasks();
 
 
             Close();
         }
-
         private void AddColorBut_Click(object sender, EventArgs e)
         {
             ChooseColor.ShowDialog();
@@ -88,6 +92,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             _subTask.Cover = new Cover(ChooseColor.Color);
             _subTask.Cover.Type = FullSizeTypeRadio.Checked ? CoverType.FullSizeCover : CoverType.PartSizeCover;
+
+
+            DBUsage.DeleteCover(_subTask);
+            DBUsage.InsertColor(ChooseColor.Color.R, ChooseColor.Color.G, ChooseColor.Color.B);
+            DBUsage.InsertCover(_subTask.Cover);
+            _subTask.Cover.Id = DBUsage.GetCoverLastId();
         }
         private void ClearCoverBut_Click(object sender, EventArgs e)
         {
@@ -113,6 +123,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 ImagesPanel.Controls.Add(box);
 
                 loc = new Point(loc.X, loc.Y + box.Height + distBetweenImages);
+
+                DBUsage.InsertCoverPhoto(_bgImages[i].Tag.ToString());
             }
         }
         private void ChooseBGImage_Click(object sender, EventArgs e)
@@ -123,6 +135,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 BgPanel.BackgroundImage = picBox.Image;
 
                 _subTask.Cover = new Cover(new CoverImageAttributes(BgPanel.BackgroundImage, BgPanel.BackgroundImage.Tag.ToString()));
+                _subTask.Cover.Type = CoverType.PartSizeCover;
+
+                DBUsage.DeleteCover(_subTask);
+                DBUsage.InsertCover(_subTask.Cover);
+                _subTask.Cover.Id = DBUsage.GetCoverLastId();
             }
         }
         private void CoverAction_Load(object sender, EventArgs e)
@@ -237,22 +254,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 fileName += filePath[i];
             }
             return fileName;
-        }
-        private string GetFileExtension(string filePath)
-        {
-            string res = "";
-            for (int i = filePath.Length - 1; i >= 0; i--)
-            {
-                if (filePath[i] == '.')
-                {
-                    res += filePath[i];
-                    res = new string(res.Reverse().ToArray());
-
-                    return res;
-                }
-                res += filePath[i];
-            }
-            return res;
         }
         private void BackgroundPanel_Paint(object sender, PaintEventArgs e)
         {

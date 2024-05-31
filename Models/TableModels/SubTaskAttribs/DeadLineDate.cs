@@ -11,6 +11,7 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string PrintString { get; set; }
+        public bool IfDone { get; set; }
 
         public DeadLineDate()
         {

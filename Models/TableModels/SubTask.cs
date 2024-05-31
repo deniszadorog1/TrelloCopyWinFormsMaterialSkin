@@ -124,13 +124,16 @@ namespace TrelloCopyWinForms.Models.TableModels
 
             DBUsage.DeleteCheckListParam(removeCase);
         }
-        public void AddComment(string comment)
+        public void AddComment(string comment, User user, SubTask subTask)
         {
-            Comments.Insert(0, new Comment(comment, Comments.Count));
+            Comments.Insert(0, new Comment(comment, Comments.Count, user.Id, subTask.Id));
         }
         public void DeleteComment(string commentValue, int commentIndex)
         {
-            Comments.Remove(Comments.Find(x => x.Value == commentValue && x.UniqueIndex == commentIndex));
+            Comment comm = Comments.Find(x => x.Value == commentValue && x.UniqueIndex == commentIndex);
+            DBUsage.DeleteComment(comm);
+
+            Comments.Remove(comm);
         }
         public Comment GetComment(string commentValue, int commentIndex)
         {
@@ -138,7 +141,11 @@ namespace TrelloCopyWinForms.Models.TableModels
         }
         public void UpdateComment(string newValue, int commentIndex)
         {
-            Comments.Find(x => x.UniqueIndex == commentIndex).Value = newValue;
+            Comment comm = Comments.Find(x => x.UniqueIndex == commentIndex);
+            comm.Value = newValue;
+
+            DBUsage.UpdateComment(comm);
+
         }
         public bool IfSubTaskContainsAttachmentWithGlobalIndex(int index)
         {
@@ -156,11 +163,11 @@ namespace TrelloCopyWinForms.Models.TableModels
             return GlobalSubTaskIndex == index ? this.Name : string.Empty;
         }
 
-        public void DeleteAttachmentGyUniqueIndex(int index)
+        public void DeleteAttachmentById(int id)
         {
             for(int i = 0; i < Attachments.Count; i++)
             {
-                if (Attachments[i].UniqueIndex == index)
+                if (Attachments[i].Id == id)
                 {
                     Attachments.RemoveAt(i);
                     return;

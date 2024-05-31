@@ -18,7 +18,9 @@ namespace TrelloCopyWinForms.Models.TableModels
         public Color? BgColor { get; set; }
         public int LastSubTaskIndex { get; set; }
         public List<User> UserInTable { get; set; }
+        public string EnterTag { get; set; }
         public List<Flag> _allFlags = new List<Flag>();
+        
         public int Id { get; set; }
 
         public Table()
@@ -40,12 +42,12 @@ namespace TrelloCopyWinForms.Models.TableModels
             BgColor = null;
             UserInTable = new List<User>();
         }
-        public Table(List<TableTask> tasks, string name, Color bgColor)
+        public Table(List<TableTask> tasks, string name, Color bgColor, string enterTag)
         {
             Tasks = tasks;
             Name = name;
             BgColor = bgColor;
-
+            EnterTag = enterTag;
             UserInTable = new List<User>();
 
 /*            _allFlags.Add(new Flag(Color.Red, string.Empty));
@@ -295,6 +297,17 @@ namespace TrelloCopyWinForms.Models.TableModels
                         Tasks[j] = Tasks[j + 1];
                         Tasks[j + 1] = task;
                     }
+                }
+            }
+        }
+        public void InitReintTableUsers(List<Table> tables)
+        {
+            for(int i = 0; i < tables.Count; i++)
+            {
+                if (tables[i].Id == Id)
+                {
+                    tables[i].UserInTable = UserInTable;
+                    return;
                 }
             }
         }

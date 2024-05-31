@@ -108,7 +108,7 @@ namespace TrelloCopyWinForms
 
             InitSubTaskToCheckAttAchmentsTEST(table, task, secondSubTask);
 
-            SubTaskMenu menu = new SubTaskMenu(secondSubTask, table, task);
+            SubTaskMenu menu = new SubTaskMenu(secondSubTask, table, task, null);
             menu.ShowDialog();
         }
 

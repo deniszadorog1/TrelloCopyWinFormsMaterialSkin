@@ -29,33 +29,27 @@
         private void InitializeComponent()
         {
             this.TablePanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.BGImage = new System.Windows.Forms.PictureBox();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            ((System.ComponentModel.ISupportInitialize)(this.BGImage)).BeginInit();
+            this.LeftTablesPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.SuspendLayout();
             // 
             // TablePanel
             // 
             this.TablePanel.AllowDrop = true;
             this.TablePanel.AutoScroll = true;
-            this.TablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TablePanel.Location = new System.Drawing.Point(3, 64);
+            this.TablePanel.Location = new System.Drawing.Point(147, 67);
             this.TablePanel.Name = "TablePanel";
-            this.TablePanel.Size = new System.Drawing.Size(794, 383);
+            this.TablePanel.Size = new System.Drawing.Size(650, 380);
             this.TablePanel.TabIndex = 1;
             this.TablePanel.WrapContents = false;
+            this.TablePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.TablePanel_Paint);
             // 
-            // BGImage
+            // LeftTablesPanel
             // 
-            this.BGImage.BackColor = System.Drawing.SystemColors.Control;
-            this.BGImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.BGImage.Location = new System.Drawing.Point(6, 116);
-            this.BGImage.Name = "BGImage";
-            this.BGImage.Size = new System.Drawing.Size(788, 328);
-            this.BGImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.BGImage.TabIndex = 0;
-            this.BGImage.TabStop = false;
-            this.BGImage.Click += new System.EventHandler(this.BGImage_Click);
+            this.LeftTablesPanel.Location = new System.Drawing.Point(0, 67);
+            this.LeftTablesPanel.Name = "LeftTablesPanel";
+            this.LeftTablesPanel.Size = new System.Drawing.Size(145, 318);
+            this.LeftTablesPanel.TabIndex = 0;
             // 
             // TableWindow
             // 
@@ -63,18 +57,17 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.LeftTablesPanel);
             this.Controls.Add(this.TablePanel);
-            this.Controls.Add(this.BGImage);
             this.Name = "TableWindow";
             this.Text = "TableWindow";
-            ((System.ComponentModel.ISupportInitialize)(this.BGImage)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.PictureBox BGImage;
         private System.Windows.Forms.FlowLayoutPanel TablePanel;
         private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.FlowLayoutPanel LeftTablesPanel;
     }
 }

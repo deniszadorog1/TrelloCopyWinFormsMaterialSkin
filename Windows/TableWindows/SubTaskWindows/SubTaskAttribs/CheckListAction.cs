@@ -187,7 +187,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         public void InsertModelInDb(CheckListModel model)
         {
             DBUsage.InsertCheckList(model, _chosenSubTask);
-            _chosenSubTask.Id = DBUsage.GetCheckListLastId();
+            model.Id = DBUsage.GetCheckListLastId();
         }
         private bool IfCheckListIsAlreadyExist(CheckListModel model)
         {

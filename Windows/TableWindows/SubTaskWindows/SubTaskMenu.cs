@@ -10,6 +10,7 @@ using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
 using TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs;
 using TrelloCopyWinForms.Models.DataBase;
+using TrelloCopyWinForms.Models.UserModel;
 
 namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 {
@@ -18,6 +19,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         private SubTask _subTask;
         private Table _table;
         private TableTask _task;
+        private User _user;
+
         private Point _startNameLoc = new Point(5, 5);
 
 
@@ -65,11 +68,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             "Cover",
             "Exit"
         };
-        public SubTaskMenu(SubTask subTask, Table table, TableTask tempTask)
+        public SubTaskMenu(SubTask subTask, Table table, TableTask tempTask, User user)
         {
             _subTask = subTask;
             _table = table;
             _task = tempTask;
+            _user = user;
 
             InitializeComponent();
 
@@ -104,7 +108,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             //History || comments
 
       
-
             //Cover 
             InitCover();
 
@@ -336,7 +339,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 attachmnetPanel.Controls.Add(attachmentLinkPanel);
 
                 MaterialButton deleteBut = new MaterialButton();
-                deleteBut.Tag = _subTask.Attachments[i].SubTaskGlobalIndex;
+                deleteBut.Tag = _subTask.Attachments[i].Id;
                 deleteBut.Text = "Delete";
                 deleteBut.Location = new Point(attachmentLinkPanel.Location.X + _distanceBetweenSubBlocks, attachmentLinkPanel.Location.Y + attachmentLinkPanel.Height + _distanceBetweenSubBlocks);
 
@@ -378,13 +381,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         {
             Panel attachPanel = (Panel)((MaterialButton)sender).Parent;
             Panel panel = GetPanelControlFormPanel(attachPanel);
-
+/*
             Control taskNameLB = GetLabelFromPanelByName(panel, "TaskName");
             Control subTaskNameLB = GetLabelFromPanelByName(panel, "SubTaskName");
             int attachIndex = int.Parse(attachPanel.Tag.ToString());
-            int subTaskIndex = int.Parse(((MaterialButton)sender).Tag.ToString());
+            int subTaskIndex = int.Parse(((MaterialButton)sender).Tag.ToString());*/
 
-            _subTask.DeleteAttachmentGyUniqueIndex(attachIndex);
+            _subTask.DeleteAttachmentById((int)((MaterialButton)sender).Tag);
+            DBUsage.DeleteAttachmnet((int)((MaterialButton)sender).Tag);
 
             InitAttachments();
         }
@@ -457,7 +461,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 MaterialLabel writer = new MaterialLabel();
                 writer.BorderStyle = BorderStyle.FixedSingle;
                 writer.Size = new Size(commentPanel.Width, writer.Height);
-                writer.Text = "there will be userLogin";
+                writer.Text = _user.Login;
                 writer.Location = new Point(0, 0);
                 commentPanel.Controls.Add(writer);
 
@@ -503,17 +507,18 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             {
                 Panel historyPanel = new Panel();
                 historyPanel.BorderStyle = BorderStyle.FixedSingle;
-
+                historyPanel.Size = new Size(historyHeader.Width, historyPanel.Height);
+                
                 Label writer = new Label();
                 writer.BorderStyle = BorderStyle.FixedSingle;
-                writer.Text = "there will be userLogin";
+                writer.Text =_user.Login;
                 writer.Location = new Point(0, 0);
                 historyPanel.Controls.Add(writer);
 
                 Label comment = new Label();
-                comment.Text = _subTask.Comments[i].Value;
+                comment.Text = _subTask.History[i].Value;
                 comment.Location = new Point(writer.Location.X, writer.Location.Y + writer.Height + _distBetweenBlocks);
-                historyPanel.Controls.Add(writer);
+                historyPanel.Controls.Add(comment);
 
                 historyPanel.Location = tempLoc;
                 tempLoc = new Point(tempLoc.X, tempLoc.Y + historyPanel.Height + _distBetweenBlocks);
@@ -523,6 +528,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             MainPanel.VerticalScroll.Value = 0;
 
             ReintiLocsForMainBlocks();
+        }
+        public void AddCommentInHistory(string toWrite)
+        {
+            Comment historyComm = new Comment(toWrite, _subTask.History.Count, _user.Id, _subTask.Id);
+            _subTask.History.Add(historyComm);
+
+            DBUsage.InsertHistoryMessage(historyComm, _subTask, _user);
+
+            InitHistoryComments();
         }
         private void ChangeComment_Click(object sender, EventArgs e)
         {
@@ -546,6 +560,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             Control label = GetLabelFromPanelByName(commentPanel, "CommentValue");
 
             _subTask.DeleteComment(label.Text, commentIndex);
+
             InitHistoryComments();
         }
         private Control GetLabelFromPanelByName(Panel panel, string name)
@@ -564,7 +579,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             Panel panel = (Panel)((MaterialButton)sender).Parent;
             MaterialTextBox2 textBox = GetTextBoxFromPaenl(panel);
 
-            _subTask.AddComment(textBox.Text);
+            _subTask.AddComment(textBox.Text, _user, _subTask);
+            DBUsage.InsertCommentMessage(_subTask.Comments[0], _subTask, _user);
+            _subTask.Comments[0].Id = DBUsage.GetLastCommentId();
 
             InitHistoryComments();
         }
@@ -594,7 +611,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             descTextPanel.Location = new Point(descLB.Location.X, descLB.Location.Y + descLB.Height + _distanceBetweenBlocks);
             descTextPanel.Size = new Size(_descriptionPanel.Width - _distanceBetweenBlocks, _descriptionPanel.Height - descLB.Height - _distanceBetweenBlocks * 2);
 
-            descTextPanel.Text = "";
 
             descTextPanel.TextChanged += (sender, e) =>
             {
@@ -608,7 +624,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 descTextPanel.Invalidate();
                 _descriptionPanel.Invalidate();
                 ReintiLocsForMainBlocks();
+
+                _subTask.Description = descTextPanel.Text;
+                DBUsage.UpdateSubTask(_subTask);
             };
+            descTextPanel.Text = _subTask.Description;
 
             _descriptionPanel.Controls.Add(descLB);
             _descriptionPanel.Controls.Add(descTextPanel);
@@ -631,6 +651,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 box.Size = boxSize;
                 box.Text = "";
                 box.Location = new Point(borderDist, borderDist);
+                box.Checked = _subTask.DeadLine.IfDone;
+
+                box.CheckedChanged += (sender, e) =>
+                {
+                    _subTask.DeadLine.IfDone = !_subTask.DeadLine.IfDone;
+                    DBUsage.UpdateSubTask(_subTask);
+                };
 
                 Label printLB = new Label();
                 printLB.BorderStyle = BorderStyle.FixedSingle;
@@ -1051,15 +1078,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 }
                 else if ((SubTaskButType)i == SubTaskButType.Date)
                 {
-                    but.Click += AddDeadLine_Click;
+                    but.Click += AddDeadLine_Click;//
                 }
                 else if ((SubTaskButType)i == SubTaskButType.Attachment)
                 {
-                    but.Click += AddAttachment_Click;
+                    but.Click += AddAttachment_Click;//
                 }
                 else if ((SubTaskButType)i == SubTaskButType.Cover)
                 {
-                    but.Click += AddCover_Click;
+                    but.Click += AddCover_Click;//
                 }
                 else if ((SubTaskButType)i == SubTaskButType.Exit)
                 {
@@ -1076,12 +1103,16 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             ParticipantsAction partAction = new ParticipantsAction(_subTask, _table);
             partAction.ShowDialog();
 
+            AddCommentInHistory("Entered In participants menu");
+
             InitParticipants();
         }
         private void AddCover_Click(object sender, EventArgs e)
         {
             CoverAction coverAction = new CoverAction(_subTask);
             coverAction.ShowDialog();
+
+            AddCommentInHistory("Entered in cover menu");
 
             InitCover();
         }
@@ -1090,14 +1121,18 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             AddAttachment addAtt = new AddAttachment(_table, _subTask, _task);
             addAtt.ShowDialog();
 
+            AddCommentInHistory("Entered in attachment menu");
+
             InitAttachments();
         }
         private void AddDeadLine_Click(object sender, EventArgs e)
         {
-            AddDeadLine deadLine = new AddDeadLine();
+            AddDeadLine deadLine = new AddDeadLine(_subTask);
             deadLine.ShowDialog();
 
             _subTask.DeadLine = deadLine._deadLine;
+
+            AddCommentInHistory("Entered In DeadLine menu");
 
             InitDeadLine();
         }
@@ -1105,6 +1140,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         {
             AddSubTaskFlag addFlag = new AddSubTaskFlag(_subTask, _table);
             addFlag.ShowDialog();
+
+            AddCommentInHistory("Entered In Tag menu");
+
 
             InitFlags();
         }
@@ -1123,6 +1161,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             addCheckList.ShowDialog();
 
             InitCheckLists();
+            AddCommentInHistory("Entered In Check List menu");
+
         }
         private Control GetButtonFromMenuList(SubTaskButType type)
         {

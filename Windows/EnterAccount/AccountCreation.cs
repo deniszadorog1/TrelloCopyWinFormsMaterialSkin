@@ -22,17 +22,21 @@ namespace TrelloCopyWinForms.Windows.EnterAccount
         }
         private void CreateBut_Click(object sender, EventArgs e)
         {
-            if(LoginBox.Text == "" || EmailBox.Text == "")
+            if (LoginBox.Text == "" || EmailBox.Text == "")
             {
-                MessageBox.Show("smth went wrong!", "Mistake!");
+                MessageBox.Show("You didnt enter the login!", "Mistake!");
             }
-            if (!DBUsage.IfUserParamsExistInDB(LoginBox.Text, EmailBox.Text))
+            else if (EmailBox.Text == "")
+            {
+                MessageBox.Show("Email doesnt enter!", "Mistake!");
+            }
+            else if (!DBUsage.IfUserParamsExistInDB(LoginBox.Text, EmailBox.Text))
             {
                 DBUsage.InserUser(new User(LoginBox.Text, EmailBox.Text, PasswordBox.Text));
                 MessageBox.Show("Created!", "Success!");
+                return;
             }
-            else MessageBox.Show("smth went wrong!", "Mistake!");
-            Close();
+            else MessageBox.Show("login or email is Exist!", "Mistake!");
         }
         private void materialButton1_Click(object sender, EventArgs e)
         {

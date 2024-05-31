@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MaterialSkin.Controls;
 
 using TrelloCopyWinForms.Models.TableModels;
+using TrelloCopyWinForms.Models.DataBase;
 
 namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 {
@@ -59,12 +60,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 MessageBox.Show("Nothing to delete!", "Mistake!");
                 return;
             }
+            DBUsage.DeleteFromUserSubTask(_subTask.UsersIdsInSuBTask[UsersInSubTaskBox.SelectedIndex], _subTask);
+
             _subTask.UsersIdsInSuBTask.Remove(_subTask.UsersIdsInSuBTask.Find(x => x ==
             _subTask.UsersIdsInSuBTask[UsersInSubTaskBox.SelectedIndex]));
+
             FillBoxes();
             UsersInSubTaskBox.Text = string.Empty;
             UsersInSubTaskBox.SelectedItem = null;
-
         }
         private void AddBut_Click(object sender, EventArgs e)
         {
@@ -74,6 +77,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 return;
             }
             _subTask.UsersIdsInSuBTask.Add(_usersIndexesToAdd[UsersToAddBox.SelectedIndex]);
+
+            DBUsage.InsertUserSubTask(_usersIndexesToAdd[UsersToAddBox.SelectedIndex], _subTask);
+
             FillBoxes();
             UsersToAddBox.Text = string.Empty;
             UsersToAddBox.SelectedItem = null;

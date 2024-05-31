@@ -86,13 +86,14 @@
             this.PasswordBox.AnimateReadOnly = false;
             this.PasswordBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.PasswordBox.Depth = 0;
-            this.PasswordBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.PasswordBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.PasswordBox.LeadingIcon = null;
             this.PasswordBox.Location = new System.Drawing.Point(20, 282);
             this.PasswordBox.MaxLength = 32;
             this.PasswordBox.MouseState = MaterialSkin.MouseState.OUT;
             this.PasswordBox.Multiline = false;
             this.PasswordBox.Name = "PasswordBox";
+            this.PasswordBox.Password = true;
             this.PasswordBox.Size = new System.Drawing.Size(345, 50);
             this.PasswordBox.TabIndex = 9;
             this.PasswordBox.Text = "";
@@ -116,7 +117,7 @@
             this.LoginBox.AnimateReadOnly = false;
             this.LoginBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.LoginBox.Depth = 0;
-            this.LoginBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.LoginBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.LoginBox.LeadingIcon = null;
             this.LoginBox.Location = new System.Drawing.Point(20, 195);
             this.LoginBox.MaxLength = 32;
@@ -146,7 +147,7 @@
             this.EmailBox.AnimateReadOnly = false;
             this.EmailBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.EmailBox.Depth = 0;
-            this.EmailBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.EmailBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.EmailBox.LeadingIcon = null;
             this.EmailBox.Location = new System.Drawing.Point(20, 110);
             this.EmailBox.MaxLength = 32;

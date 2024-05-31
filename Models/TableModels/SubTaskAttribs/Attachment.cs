@@ -30,6 +30,15 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
             Sign = sign;
             UniqueIndex = uniqueIndex;
         }
+        public Attachment(int subTaskGlobalIndex, string sign, int uniqueIndex, int subTaskPaceingId, int subTaskLinkId)
+        {
+            SubTaskGlobalIndex = subTaskGlobalIndex;
+            Sign = sign;
+            UniqueIndex = uniqueIndex;
+            SubTaskPlacingId = subTaskPaceingId;
+            SubTaskLinkId = subTaskLinkId;
+        }
+
         public bool IfGlobalIndexesAreEqual(int index)
         {
             return SubTaskGlobalIndex == index;

@@ -14,13 +14,15 @@ using TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow;
 using TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows;
 using TrelloCopyWinForms.Models.Enums;
 using TrelloCopyWinForms.Models.DataBase;
-
+using TrelloCopyWinForms.Models.UserModel;
 
 namespace TrelloCopyWinForms.Windows.TableWindows
 {
     public partial class TableWindow : MaterialForm
     {
         private Table _table;
+        private User _user;
+        private List<Table> _tables;
 
         private MaterialButton _addTaskBut = new MaterialButton();
         private const string _addTaskButName = "AddTaskBut";
@@ -40,22 +42,60 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         private bool _addTaskEventCorrection = true;
 
         private FlagsViewOnTableWindowType _type = FlagsViewOnTableWindowType.Line;
-        public TableWindow(Table table)
+        public TableWindow(Table table, User user, List<Table> tables)
         {
             _table = table;
+            _user = user;
+            _tables = tables;
+
             InitializeComponent();
 
             TablePanel.AllowDrop = true;
-
-            //InitAddTaskBut();
             InitBackGroundColor();
-            //UnusualPanel();
 
             InitTable();
         }
         public void InitBackGroundColor()
         {
             TablePanel.BackColor = (Color)_table.BgColor;
+        }
+        public void CreateLeftPanel()
+        {
+            Point loc = new Point(_distanceBetweenSubTaskName, _distanceBetweenSubTasks);
+            const int tablePanelHeight = 50;
+            for (int i = 0; i < _tables.Count; i++)
+            {
+                Panel tablePanel = new Panel();
+                tablePanel.Tag = _tables[i].Id;
+                tablePanel.Location = loc;
+                tablePanel.Size = new Size(LeftTablesPanel.Width - _distanceBetweenSubTasks * 2, tablePanelHeight);
+
+
+                PictureBox tableColor = new PictureBox();
+                tableColor.BackColor = (Color)_tables[i].BgColor;
+                tableColor.Size = new Size(tablePanelHeight / 2, tablePanelHeight / 2);
+                tableColor.Location = new Point(tablePanel.Height / 2 - tableColor.Height / 2, 0);
+                tablePanel.Controls.Add(tableColor);
+
+                Label label = new Label();
+                label.Text = _tables[i].Name;
+                label.Location = new Point(tableColor.Location.X + tableColor.Width + _distanceBetweenSubTasks);
+                tablePanel.Controls.Add(label);
+
+
+                LeftTablesPanel.Controls.Add(tablePanel);
+
+                loc = new Point(loc.X, loc.Y + tablePanel.Height + _distanceBetweenSubTasks);
+            }
+        }
+        private void ChangeTable_Click(object sender, EventArgs e)
+        {
+            if(sender is Panel panel)
+            {
+                Table table = _tables.Find(x => x.Id == (int)((Panel)sender).Tag);
+
+
+            }
         }
 
         public void InitTable()
@@ -143,7 +183,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             string deleteTransfersSubName = RemoveTransfers(subTaskNameLB.Text);
 
             SubTaskMenu subTaskMenu = new SubTaskMenu(_table.GetSubTask(taskNameLb.Text, deleteTransfersSubName,
-                subTaskUniqueIndex), _table, _table.GetTaskByName(taskNameLb.Text));
+                subTaskUniqueIndex), _table, _table.GetTaskByName(taskNameLb.Text), _user);
             subTaskMenu.ShowDialog();
 
             InitTable();
@@ -171,7 +211,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             if (create._task is null) return;
             if (!_table.IfTaskIsExist(create._task.Name))
             {
-                
+
                 _table.AddTask(create._task.Name);
                 InsertTaskInTableDB(_table.Tasks.Last());
 
@@ -320,7 +360,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             SubTask subTask = _table.AddSubTask(((Button)sender).Tag.ToString(), create._subTaskName);
             subTask.TaskId = _table.GetTaskByName(((Button)sender).Tag.ToString()).Id;
-            
+
             InsertSubTaskInDB(subTask);
 
             InitTable();
@@ -606,7 +646,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                         _subTaskCover.Height = heightBgColorPartTypeCover;
                         _subTaskCover.BackColor = (Color)subTaskOBJ.Cover.BGColor;
                     }
-                    else if(!(subTaskOBJ.Cover.BGImage is null))
+                    else if (!(subTaskOBJ.Cover.BGImage is null))
                     {
                         _subTaskCover.Height = heightBgImagePartTypeCover;
                         _subTaskCover.Image = subTaskOBJ.Cover.BGImage.Image;
@@ -681,6 +721,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             return res;
         }
         private void BGImage_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TablePanel_Paint(object sender, PaintEventArgs e)
         {
 
         }

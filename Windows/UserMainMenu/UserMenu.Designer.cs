@@ -55,6 +55,9 @@
             this.MatTab = new MaterialSkin.Controls.MaterialTabControl();
             this.ChosenTablePanel = new System.Windows.Forms.Panel();
             this.ChosenTableLB = new MaterialSkin.Controls.MaterialLabel();
+            this.EnterTagBox = new MaterialSkin.Controls.MaterialTextBox();
+            this.EnterTagLB = new MaterialSkin.Controls.MaterialLabel();
+            this.AddTableBut = new MaterialSkin.Controls.MaterialButton();
             this.CorrectAccount.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.OldPassEyeImg)).BeginInit();
@@ -248,6 +251,9 @@
             // Tables
             // 
             this.Tables.BackColor = System.Drawing.SystemColors.Control;
+            this.Tables.Controls.Add(this.AddTableBut);
+            this.Tables.Controls.Add(this.EnterTagLB);
+            this.Tables.Controls.Add(this.EnterTagBox);
             this.Tables.Controls.Add(this.ChosenTableLB);
             this.Tables.Controls.Add(this.ChosenTablePanel);
             this.Tables.Controls.Add(this.AccessableTablesPanel);
@@ -277,7 +283,7 @@
             this.ChooseTableBut.Depth = 0;
             this.ChooseTableBut.HighEmphasis = true;
             this.ChooseTableBut.Icon = null;
-            this.ChooseTableBut.Location = new System.Drawing.Point(383, 230);
+            this.ChooseTableBut.Location = new System.Drawing.Point(285, 240);
             this.ChooseTableBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.ChooseTableBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.ChooseTableBut.Name = "ChooseTableBut";
@@ -298,14 +304,14 @@
             this.CreateTableBut.Depth = 0;
             this.CreateTableBut.HighEmphasis = true;
             this.CreateTableBut.Icon = null;
-            this.CreateTableBut.Location = new System.Drawing.Point(383, 286);
+            this.CreateTableBut.Location = new System.Drawing.Point(285, 296);
             this.CreateTableBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.CreateTableBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.CreateTableBut.Name = "CreateTableBut";
             this.CreateTableBut.NoAccentTextColor = System.Drawing.Color.Empty;
             this.CreateTableBut.Size = new System.Drawing.Size(231, 44);
             this.CreateTableBut.TabIndex = 0;
-            this.CreateTableBut.Text = "Create button ";
+            this.CreateTableBut.Text = "Create Table ";
             this.CreateTableBut.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.CreateTableBut.UseAccentColor = false;
             this.CreateTableBut.UseVisualStyleBackColor = true;
@@ -403,7 +409,7 @@
             // 
             this.ChosenTablePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ChosenTablePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ChosenTablePanel.Location = new System.Drawing.Point(431, 93);
+            this.ChosenTablePanel.Location = new System.Drawing.Point(591, 136);
             this.ChosenTablePanel.Name = "ChosenTablePanel";
             this.ChosenTablePanel.Size = new System.Drawing.Size(100, 100);
             this.ChosenTablePanel.TabIndex = 4;
@@ -413,12 +419,62 @@
             this.ChosenTableLB.AutoSize = true;
             this.ChosenTableLB.Depth = 0;
             this.ChosenTableLB.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.ChosenTableLB.Location = new System.Drawing.Point(428, 71);
+            this.ChosenTableLB.Location = new System.Drawing.Point(588, 114);
             this.ChosenTableLB.MouseState = MaterialSkin.MouseState.HOVER;
             this.ChosenTableLB.Name = "ChosenTableLB";
             this.ChosenTableLB.Size = new System.Drawing.Size(93, 19);
             this.ChosenTableLB.TabIndex = 5;
             this.ChosenTableLB.Text = "Chosen table";
+            // 
+            // EnterTagBox
+            // 
+            this.EnterTagBox.AnimateReadOnly = false;
+            this.EnterTagBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.EnterTagBox.Depth = 0;
+            this.EnterTagBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.EnterTagBox.LeadingIcon = null;
+            this.EnterTagBox.Location = new System.Drawing.Point(282, 40);
+            this.EnterTagBox.MaxLength = 50;
+            this.EnterTagBox.MouseState = MaterialSkin.MouseState.OUT;
+            this.EnterTagBox.Multiline = false;
+            this.EnterTagBox.Name = "EnterTagBox";
+            this.EnterTagBox.Size = new System.Drawing.Size(234, 50);
+            this.EnterTagBox.TabIndex = 6;
+            this.EnterTagBox.Text = "";
+            this.EnterTagBox.TrailingIcon = null;
+            // 
+            // EnterTagLB
+            // 
+            this.EnterTagLB.AutoSize = true;
+            this.EnterTagLB.Depth = 0;
+            this.EnterTagLB.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.EnterTagLB.Location = new System.Drawing.Point(282, 18);
+            this.EnterTagLB.MouseState = MaterialSkin.MouseState.HOVER;
+            this.EnterTagLB.Name = "EnterTagLB";
+            this.EnterTagLB.Size = new System.Drawing.Size(103, 19);
+            this.EnterTagLB.TabIndex = 7;
+            this.EnterTagLB.Text = "Enter table tag";
+            // 
+            // AddTableBut
+            // 
+            this.AddTableBut.AutoSize = false;
+            this.AddTableBut.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.AddTableBut.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.AddTableBut.Depth = 0;
+            this.AddTableBut.HighEmphasis = true;
+            this.AddTableBut.Icon = null;
+            this.AddTableBut.Location = new System.Drawing.Point(283, 99);
+            this.AddTableBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.AddTableBut.MouseState = MaterialSkin.MouseState.HOVER;
+            this.AddTableBut.Name = "AddTableBut";
+            this.AddTableBut.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.AddTableBut.Size = new System.Drawing.Size(231, 44);
+            this.AddTableBut.TabIndex = 8;
+            this.AddTableBut.Text = "Add Table";
+            this.AddTableBut.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.AddTableBut.UseAccentColor = false;
+            this.AddTableBut.UseVisualStyleBackColor = true;
+            this.AddTableBut.Click += new System.EventHandler(this.AddTableBut_Click);
             // 
             // UserMenu
             // 
@@ -474,5 +530,8 @@
         private System.Windows.Forms.Panel AccessableTablesPanel;
         private MaterialSkin.Controls.MaterialLabel ChosenTableLB;
         private System.Windows.Forms.Panel ChosenTablePanel;
+        private MaterialSkin.Controls.MaterialButton AddTableBut;
+        private MaterialSkin.Controls.MaterialLabel EnterTagLB;
+        private MaterialSkin.Controls.MaterialTextBox EnterTagBox;
     }
 }

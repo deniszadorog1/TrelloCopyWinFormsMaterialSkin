@@ -14,6 +14,7 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
         public CoverImageAttributes BGImage { get; set; }
         public Color? BGColor { get; set; }
         public CoverType? Type { get; set; }
+        public int Id { get; set; }
 
         public Cover()
         {

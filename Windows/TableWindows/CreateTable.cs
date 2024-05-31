@@ -126,13 +126,13 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         }
         private void CreateBut_Click(object sender, EventArgs e)
         {
-            if (TableNameBox.Text == "" || ChosenBG.BackColor == Color.Empty)
+            if (TableNameBox.Text == "" || TableEnterTagBox.Text == "" ||  ChosenBG.BackColor == Color.Empty)
             {
                 MessageBox.Show("Smth went wrong");
                 return;
             }
 
-            Table newTable = new Table(new List<TableTask>(), TableNameBox.Text, ChosenBG.BackColor);
+            Table newTable = new Table(new List<TableTask>(), TableNameBox.Text, ChosenBG.BackColor, TableEnterTagBox.Text);
 
             DBUsage.InsertColor(ChosenBG.BackColor.R, ChosenBG.BackColor.G, ChosenBG.BackColor.B);
             DBUsage.InsertTable(newTable);
@@ -144,7 +144,7 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
             newTable.Id = DBUsage.GetTableLastId();
 
             Hide();         
-            TableWindow window = new TableWindow(newTable);
+            TableWindow window = new TableWindow(newTable, _user);
             window.ShowDialog();
             Show();
         }

@@ -13,6 +13,7 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
         public int Id { get; set; }
         public int UserId { get; set; }
         public DateTime Date { get; set; }
+        public int SubTaskId { get; set; }
 
         public Comment()
         {
@@ -23,11 +24,13 @@ namespace TrelloCopyWinForms.Models.TableModels.SubTaskAttribs
         {
             Value = value;
         }
-        public Comment(string value, int uniqueIndex)
+        public Comment(string value, int uniqueIndex, int userId, int subTaskId)
         {
             Value = value;
             UniqueIndex = uniqueIndex;
             Date = DateTime.Now;
+            UserId = userId;
+            SubTaskId = subTaskId;
         }
     }
 }

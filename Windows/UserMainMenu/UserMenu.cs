@@ -174,12 +174,6 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
                 }
             }
         }
-
-        private void CreateTableTab_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void CreateTableBut_Click(object sender, EventArgs e)
         {
             Hide();
@@ -187,8 +181,9 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             create.ShowDialog();
             Show();
 
-            FillTablesList();
             ClearChosenTablePanel();
+            _tables = DBUsage.GetAllTables();
+            FillTablesList();
         }
 
         private void ChooseTableBut_Click(object sender, EventArgs e)
@@ -202,10 +197,42 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             Table chosenTable = _tables[(int)ChosenTablePanel.Tag];
 
             Hide();
-            TableWindow window = new TableWindow(chosenTable);
+            TableWindow window = new TableWindow(chosenTable, _chosenUser);
             window.ShowDialog();
             Show();
+
             ClearChosenTablePanel();
+            FillTablesList();
         }
+
+        private void AddTableBut_Click(object sender, EventArgs e)
+        {
+            string tableTag = EnterTagBox.Text;
+
+            if(tableTag == "")
+            {
+                MessageBox.Show("Mistake!");
+                return;
+            }
+
+            Table table = DBUsage.AddTableByTag(tableTag);
+
+            if(table is null)
+            {
+                MessageBox.Show("No table with such tag");
+                return;
+            }
+
+            table.UserInTable.Add(_chosenUser);
+
+            table.InitReintTableUsers(_tables);
+
+            DBUsage.InsertUserTables(table, _chosenUser);
+
+
+            _tables = DBUsage.GetAllTables();
+            FillTablesList();
+        }
+        
     }
 }

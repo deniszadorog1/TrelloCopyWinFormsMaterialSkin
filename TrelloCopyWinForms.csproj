@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\DataBase\DBUsage.cs" />
+    <Compile Include="Models\Enums\AccountType.cs" />
     <Compile Include="Models\Enums\CoverType.cs" />
     <Compile Include="Models\Enums\FlagsViewOnTableWindowType.cs" />
     <Compile Include="Models\Enums\SubTaskTypes.cs" />

@@ -36,6 +36,8 @@
             this.BackBut = new MaterialSkin.Controls.MaterialButton();
             this.tableBgColor = new System.Windows.Forms.ColorDialog();
             this.ChooseBGBut = new MaterialSkin.Controls.MaterialButton();
+            this.TableEnterTagBox = new MaterialSkin.Controls.MaterialTextBox();
+            this.EnterTagLb = new MaterialSkin.Controls.MaterialLabel();
             ((System.ComponentModel.ISupportInitialize)(this.ChosenBG)).BeginInit();
             this.SuspendLayout();
             // 
@@ -44,7 +46,7 @@
             this.ChosenBG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ChosenBG.Location = new System.Drawing.Point(340, 111);
             this.ChosenBG.Name = "ChosenBG";
-            this.ChosenBG.Size = new System.Drawing.Size(215, 125);
+            this.ChosenBG.Size = new System.Drawing.Size(223, 139);
             this.ChosenBG.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.ChosenBG.TabIndex = 1;
             this.ChosenBG.TabStop = false;
@@ -66,7 +68,7 @@
             this.TableNameLB.AutoSize = true;
             this.TableNameLB.Depth = 0;
             this.TableNameLB.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.TableNameLB.Location = new System.Drawing.Point(76, 89);
+            this.TableNameLB.Location = new System.Drawing.Point(13, 89);
             this.TableNameLB.MouseState = MaterialSkin.MouseState.HOVER;
             this.TableNameLB.Name = "TableNameLB";
             this.TableNameLB.Size = new System.Drawing.Size(87, 19);
@@ -98,7 +100,7 @@
             this.CreateBut.Depth = 0;
             this.CreateBut.HighEmphasis = true;
             this.CreateBut.Icon = null;
-            this.CreateBut.Location = new System.Drawing.Point(16, 268);
+            this.CreateBut.Location = new System.Drawing.Point(7, 268);
             this.CreateBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.CreateBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.CreateBut.Name = "CreateBut";
@@ -119,12 +121,12 @@
             this.BackBut.Depth = 0;
             this.BackBut.HighEmphasis = true;
             this.BackBut.Icon = null;
-            this.BackBut.Location = new System.Drawing.Point(298, 268);
+            this.BackBut.Location = new System.Drawing.Point(7, 327);
             this.BackBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.BackBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.BackBut.Name = "BackBut";
             this.BackBut.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.BackBut.Size = new System.Drawing.Size(274, 47);
+            this.BackBut.Size = new System.Drawing.Size(556, 47);
             this.BackBut.TabIndex = 6;
             this.BackBut.Text = "Back";
             this.BackBut.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
@@ -140,7 +142,7 @@
             this.ChooseBGBut.Depth = 0;
             this.ChooseBGBut.HighEmphasis = true;
             this.ChooseBGBut.Icon = null;
-            this.ChooseBGBut.Location = new System.Drawing.Point(16, 209);
+            this.ChooseBGBut.Location = new System.Drawing.Point(289, 268);
             this.ChooseBGBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.ChooseBGBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.ChooseBGBut.Name = "ChooseBGBut";
@@ -153,11 +155,42 @@
             this.ChooseBGBut.UseVisualStyleBackColor = true;
             this.ChooseBGBut.Click += new System.EventHandler(this.ChooseBGBut_Click);
             // 
+            // TableEnterTagBox
+            // 
+            this.TableEnterTagBox.AnimateReadOnly = false;
+            this.TableEnterTagBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TableEnterTagBox.Depth = 0;
+            this.TableEnterTagBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.TableEnterTagBox.LeadingIcon = null;
+            this.TableEnterTagBox.Location = new System.Drawing.Point(16, 199);
+            this.TableEnterTagBox.MaxLength = 32;
+            this.TableEnterTagBox.MouseState = MaterialSkin.MouseState.OUT;
+            this.TableEnterTagBox.Multiline = false;
+            this.TableEnterTagBox.Name = "TableEnterTagBox";
+            this.TableEnterTagBox.Size = new System.Drawing.Size(250, 50);
+            this.TableEnterTagBox.TabIndex = 9;
+            this.TableEnterTagBox.Text = "";
+            this.TableEnterTagBox.TrailingIcon = null;
+            // 
+            // EnterTagLb
+            // 
+            this.EnterTagLb.AutoSize = true;
+            this.EnterTagLb.Depth = 0;
+            this.EnterTagLb.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.EnterTagLb.Location = new System.Drawing.Point(23, 199);
+            this.EnterTagLb.MouseState = MaterialSkin.MouseState.HOVER;
+            this.EnterTagLb.Name = "EnterTagLb";
+            this.EnterTagLb.Size = new System.Drawing.Size(144, 19);
+            this.EnterTagLb.TabIndex = 8;
+            this.EnterTagLb.Text = "Table Enter Tag Box";
+            // 
             // CreateTable
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(587, 346);
+            this.ClientSize = new System.Drawing.Size(587, 393);
+            this.Controls.Add(this.TableEnterTagBox);
+            this.Controls.Add(this.EnterTagLb);
             this.Controls.Add(this.ChooseBGBut);
             this.Controls.Add(this.BackBut);
             this.Controls.Add(this.TableNameBox);
@@ -184,5 +217,7 @@
         private MaterialSkin.Controls.MaterialButton BackBut;
         private System.Windows.Forms.ColorDialog tableBgColor;
         private MaterialSkin.Controls.MaterialButton ChooseBGBut;
+        private MaterialSkin.Controls.MaterialTextBox TableEnterTagBox;
+        private MaterialSkin.Controls.MaterialLabel EnterTagLb;
     }
 }

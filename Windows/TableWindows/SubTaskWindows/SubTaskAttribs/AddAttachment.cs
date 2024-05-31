@@ -11,6 +11,7 @@ using MaterialSkin.Controls;
 
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Models.TableModels.SubTaskAttribs;
+using TrelloCopyWinForms.Models.DataBase;
 
 namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 {
@@ -64,8 +65,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             //init every subTask except temp subTask
             for (int i = 0; i < chosenTask.SubTasks.Count; i++)
             {
-                if (chosenTask.SubTasks[i].Name != _chosenSubTask.Name &&
-                    chosenTask.SubTasks[i].UniqueIndex != _chosenSubTask.UniqueIndex)
+                if (chosenTask.SubTasks[i].Id != _chosenSubTask.Id)
                 {
                     _listWithoutChosen.Add(chosenTask.SubTasks[i]);
                 }
@@ -81,9 +81,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 MessageBox.Show("Smth went wrong!", "Mistake!");
                 return;
             }
-            _newAttachment = new Attachment(_listWithoutChosen[SubTaskBox.SelectedIndex].GlobalSubTaskIndex, SignBox.Text, _chosenSubTask.Attachments.Count);
+            _newAttachment = new Attachment(_listWithoutChosen[SubTaskBox.SelectedIndex].GlobalSubTaskIndex,
+                SignBox.Text, _chosenSubTask.Attachments.Count, _chosenSubTask.Id, _listWithoutChosen[SubTaskBox.SelectedIndex].Id);
+
+
             _table.LastSubTaskIndex++;
             _chosenSubTask.Attachments.Add(_newAttachment);
+
+            DBUsage.InsertAttachment(_newAttachment);
+            _newAttachment.Id = DBUsage.GetLastAttachmentId();
 
             Close();
         }
