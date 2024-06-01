@@ -15,6 +15,8 @@ using TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows;
 using TrelloCopyWinForms.Models.Enums;
 using TrelloCopyWinForms.Models.DataBase;
 using TrelloCopyWinForms.Models.UserModel;
+using TrelloCopyWinForms.Windows.CreateTableWindow;
+using TrelloCopyWinForms.Windows.TableWindows.Codes;
 
 namespace TrelloCopyWinForms.Windows.TableWindows
 {
@@ -47,6 +49,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             _table = table;
             _user = user;
             _tables = tables;
+            _user.Type = DBUsage.GetUserTypeForTable(_table.Id, _user.Id);
 
             InitializeComponent();
 
@@ -54,6 +57,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             InitBackGroundColor();
 
             InitTable();
+            CreateLeftPanel();
         }
         public void InitBackGroundColor()
         {
@@ -61,15 +65,17 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         public void CreateLeftPanel()
         {
+            LeftTablesPanel.Controls.Clear();
             Point loc = new Point(_distanceBetweenSubTaskName, _distanceBetweenSubTasks);
             const int tablePanelHeight = 50;
             for (int i = 0; i < _tables.Count; i++)
             {
                 Panel tablePanel = new Panel();
+                tablePanel.BorderStyle = BorderStyle.FixedSingle;
                 tablePanel.Tag = _tables[i].Id;
                 tablePanel.Location = loc;
                 tablePanel.Size = new Size(LeftTablesPanel.Width - _distanceBetweenSubTasks * 2, tablePanelHeight);
-
+                tablePanel.Click += ChangeTable_Click;
 
                 PictureBox tableColor = new PictureBox();
                 tableColor.BackColor = (Color)_tables[i].BgColor;
@@ -82,25 +88,35 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 label.Location = new Point(tableColor.Location.X + tableColor.Width + _distanceBetweenSubTasks);
                 tablePanel.Controls.Add(label);
 
+                PictureBox starBox = new PictureBox();
+                starBox.Click += ChangeFavType_Click;
+
 
                 LeftTablesPanel.Controls.Add(tablePanel);
 
                 loc = new Point(loc.X, loc.Y + tablePanel.Height + _distanceBetweenSubTasks);
             }
         }
+        private void ChangeFavType_Click(object sender, EventArgs e)
+        {
+
+        }
         private void ChangeTable_Click(object sender, EventArgs e)
         {
-            if(sender is Panel panel)
+            if (sender is Panel panel)
             {
                 Table table = _tables.Find(x => x.Id == (int)((Panel)sender).Tag);
 
-
+                _table = table;
+                InitTable();
+                _user.Type = DBUsage.GetUserTypeForTable(table.Id, _user.Id);
             }
         }
-
         public void InitTable()
         {
             TablePanel.Controls.Clear();
+
+            TablePanel.BackColor = (Color)_table.BgColor;
 
             _table.SortTaskByPlaceingOnTable();
             for (int i = 0; i < _table.Tasks.Count; i++)
@@ -171,6 +187,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private void EnterSubTaskMenu_Click(object sender, EventArgs e)
         {
+            if (_user.Type == AccountType.Viewer) return;
+
             Control subTaskControl = (Control)sender;
             if (!(sender is Panel) || ((Control)sender).Tag is null) subTaskControl = subTaskControl.Parent;
 
@@ -203,6 +221,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private void AddTask_Click(object sender, EventArgs e)
         {
+            if (_user.Type == AccountType.Viewer) return;
             if (!_addTaskEventCorrection) return;
 
             CreateTask create = new CreateTask();
@@ -374,6 +393,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
         private void SubTask_MouseDown(object sender, MouseEventArgs e)
         {
+            if (_user.Type == AccountType.Viewer) return; 
             if (!(sender is Panel)) return;
             Panel box = sender as Panel;
 
@@ -728,6 +748,83 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         private void TablePanel_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void CreateInviteMessBut_Click(object sender, EventArgs e)
+        {
+            CreateInviteMessage createMessage = new CreateInviteMessage(_table);
+            createMessage.ShowDialog();
+        }
+
+        private void CreateTableBut_Click(object sender, EventArgs e)
+        {
+            if (_user.Type == AccountType.Viewer)
+            {
+                MessageBox.Show("You are viewer");
+                return;
+            }
+            CreateTable create = new CreateTable(_user);
+            create.ShowDialog();
+
+            _tables = DBUsage.GetAllTables();
+
+            _tables = GetTablesWhichUserCanUse();
+            CreateLeftPanel();
+        }
+        private List<Table> GetTablesWhichUserCanUse()
+        {
+            List<Table> res = new List<Table>();
+            for (int i = 0; i < _tables.Count; i++)
+            {
+                if (IfUserContrinsInTable(_tables[i]))
+                {
+                    res.Add(_tables[i]);
+                }
+            }
+            return res;
+        }
+        public bool IfUserContrinsInTable(Table table)
+        {
+            for (int i = 0; i < table.UserInTable.Count; i++)
+            {
+                if (table.UserInTable[i].Id == _user.Id) return true;
+            }
+            return false;
+        }
+
+        private void EnterCodeBut_Click(object sender, EventArgs e)
+        {
+            EnterCode code = new EnterCode(_user);
+            code.ShowDialog();
+
+            if (!(code._table is null))
+            {
+                _tables = DBUsage.GetAllTables();
+
+                _tables = GetTablesWhichUserCanUse();
+                CreateLeftPanel();
+            }
+        }
+        private void DeleteUsers_Click(object sender, EventArgs e)
+        {
+            if (_user.Type != AccountType.Admin)
+            {
+                MessageBox.Show("You are not admin");
+                return;
+            }
+            DeleteUsersFromTable delete = new DeleteUsersFromTable(_table);
+            delete.ShowDialog();
+
+            if (!DBUsage.IfUserContainsInTable(_table.Id, _user.Id))
+            {
+                TablePanel.Controls.Clear();
+                TablePanel.BackColor = SystemColors.Control;
+
+                _table.UserInTable = DBUsage.GetUsersForTable(_table.Id);
+
+                _tables = GetTablesWhichUserCanUse();
+                CreateLeftPanel();
+            }
         }
     }
 }

@@ -72,9 +72,11 @@
     <Compile Include="Models\DataBase\DBUsage.cs" />
     <Compile Include="Models\Enums\AccountType.cs" />
     <Compile Include="Models\Enums\CoverType.cs" />
+    <Compile Include="Models\Enums\FavoriteType.cs" />
     <Compile Include="Models\Enums\FlagsViewOnTableWindowType.cs" />
     <Compile Include="Models\Enums\SubTaskTypes.cs" />
     <Compile Include="Models\Enums\SubTaskButType.cs" />
+    <Compile Include="Models\Enums\TableStatus.cs" />
     <Compile Include="Models\TableModels\SubTask.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\Attachment.cs" />
     <Compile Include="Models\TableModels\SubTaskAttribs\CheckListCase.cs" />
@@ -87,6 +89,18 @@
     <Compile Include="Models\TableModels\Table.cs" />
     <Compile Include="Models\TableModels\TableTask.cs" />
     <Compile Include="Models\UserModel\User.cs" />
+    <Compile Include="Windows\TableWindows\Codes\CreateInviteMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\Codes\CreateInviteMessage.Designer.cs">
+      <DependentUpon>CreateInviteMessage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\Codes\EnterCode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\Codes\EnterCode.Designer.cs">
+      <DependentUpon>EnterCode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\TableWindows\CreateTable.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,6 +132,12 @@
     </Compile>
     <Compile Include="Windows\TableWindows\CreateTaskWindow\RenameTask.Designer.cs">
       <DependentUpon>RenameTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TableWindows\DeleteUsersFromTable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TableWindows\DeleteUsersFromTable.Designer.cs">
+      <DependentUpon>DeleteUsersFromTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.cs">
       <SubType>Form</SubType>
@@ -200,6 +220,12 @@
     <Compile Include="Windows\UserMainMenu\UserMenu.Designer.cs">
       <DependentUpon>UserMenu.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Windows\TableWindows\Codes\CreateInviteMessage.resx">
+      <DependentUpon>CreateInviteMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\Codes\EnterCode.resx">
+      <DependentUpon>EnterCode.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\CreateTable.resx">
       <DependentUpon>CreateTable.cs</DependentUpon>
     </EmbeddedResource>
@@ -224,6 +250,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\CreateTaskWindow\RenameTask.resx">
       <DependentUpon>RenameTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TableWindows\DeleteUsersFromTable.resx">
+      <DependentUpon>DeleteUsersFromTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\TableWindows\SubTaskWindows\CreateSubTask.resx">
       <DependentUpon>CreateSubTask.cs</DependentUpon>

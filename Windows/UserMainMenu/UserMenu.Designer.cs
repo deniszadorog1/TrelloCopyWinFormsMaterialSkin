@@ -30,8 +30,6 @@
         {
             this.CorrectAccount = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.OldPassEyeImg = new System.Windows.Forms.PictureBox();
-            this.NewPassEyeImg = new System.Windows.Forms.PictureBox();
             this.CorrectBut = new MaterialSkin.Controls.MaterialButton();
             this.NewPasCorBox = new MaterialSkin.Controls.MaterialTextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -55,17 +53,17 @@
             this.MatTab = new MaterialSkin.Controls.MaterialTabControl();
             this.ChosenTablePanel = new System.Windows.Forms.Panel();
             this.ChosenTableLB = new MaterialSkin.Controls.MaterialLabel();
-            this.EnterTagBox = new MaterialSkin.Controls.MaterialTextBox();
-            this.EnterTagLB = new MaterialSkin.Controls.MaterialLabel();
             this.AddTableBut = new MaterialSkin.Controls.MaterialButton();
+            this.OldPassEyeImg = new System.Windows.Forms.PictureBox();
+            this.NewPassEyeImg = new System.Windows.Forms.PictureBox();
             this.CorrectAccount.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.OldPassEyeImg)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NewPassEyeImg)).BeginInit();
             this.Tables.SuspendLayout();
             this.UserInfoTab.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.MatTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.OldPassEyeImg)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NewPassEyeImg)).BeginInit();
             this.SuspendLayout();
             // 
             // CorrectAccount
@@ -103,26 +101,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Account correction";
             // 
-            // OldPassEyeImg
-            // 
-            this.OldPassEyeImg.Location = new System.Drawing.Point(646, 78);
-            this.OldPassEyeImg.Name = "OldPassEyeImg";
-            this.OldPassEyeImg.Size = new System.Drawing.Size(49, 50);
-            this.OldPassEyeImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.OldPassEyeImg.TabIndex = 10;
-            this.OldPassEyeImg.TabStop = false;
-            this.OldPassEyeImg.Click += new System.EventHandler(this.NewPasEyeImg_Click);
-            // 
-            // NewPassEyeImg
-            // 
-            this.NewPassEyeImg.Location = new System.Drawing.Point(646, 179);
-            this.NewPassEyeImg.Name = "NewPassEyeImg";
-            this.NewPassEyeImg.Size = new System.Drawing.Size(49, 50);
-            this.NewPassEyeImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.NewPassEyeImg.TabIndex = 9;
-            this.NewPassEyeImg.TabStop = false;
-            this.NewPassEyeImg.Click += new System.EventHandler(this.NewPasEyeImg_Click);
-            // 
             // CorrectBut
             // 
             this.CorrectBut.AutoSize = false;
@@ -149,7 +127,7 @@
             this.NewPasCorBox.AnimateReadOnly = false;
             this.NewPasCorBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.NewPasCorBox.Depth = 0;
-            this.NewPasCorBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.NewPasCorBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.NewPasCorBox.LeadingIcon = null;
             this.NewPasCorBox.Location = new System.Drawing.Point(368, 179);
             this.NewPasCorBox.MaxLength = 32;
@@ -175,7 +153,7 @@
             this.OldPassCorBox.AnimateReadOnly = false;
             this.OldPassCorBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.OldPassCorBox.Depth = 0;
-            this.OldPassCorBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.OldPassCorBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.OldPassCorBox.LeadingIcon = null;
             this.OldPassCorBox.Location = new System.Drawing.Point(368, 78);
             this.OldPassCorBox.MaxLength = 32;
@@ -201,7 +179,7 @@
             this.EmailCorBox.AnimateReadOnly = false;
             this.EmailCorBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.EmailCorBox.Depth = 0;
-            this.EmailCorBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.EmailCorBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.EmailCorBox.LeadingIcon = null;
             this.EmailCorBox.Location = new System.Drawing.Point(26, 179);
             this.EmailCorBox.MaxLength = 32;
@@ -227,7 +205,7 @@
             this.LoginCorBox.AnimateReadOnly = false;
             this.LoginCorBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.LoginCorBox.Depth = 0;
-            this.LoginCorBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.LoginCorBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.LoginCorBox.LeadingIcon = null;
             this.LoginCorBox.Location = new System.Drawing.Point(26, 75);
             this.LoginCorBox.MaxLength = 32;
@@ -252,8 +230,6 @@
             // 
             this.Tables.BackColor = System.Drawing.SystemColors.Control;
             this.Tables.Controls.Add(this.AddTableBut);
-            this.Tables.Controls.Add(this.EnterTagLB);
-            this.Tables.Controls.Add(this.EnterTagBox);
             this.Tables.Controls.Add(this.ChosenTableLB);
             this.Tables.Controls.Add(this.ChosenTablePanel);
             this.Tables.Controls.Add(this.AccessableTablesPanel);
@@ -283,7 +259,7 @@
             this.ChooseTableBut.Depth = 0;
             this.ChooseTableBut.HighEmphasis = true;
             this.ChooseTableBut.Icon = null;
-            this.ChooseTableBut.Location = new System.Drawing.Point(285, 240);
+            this.ChooseTableBut.Location = new System.Drawing.Point(301, 147);
             this.ChooseTableBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.ChooseTableBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.ChooseTableBut.Name = "ChooseTableBut";
@@ -304,7 +280,7 @@
             this.CreateTableBut.Depth = 0;
             this.CreateTableBut.HighEmphasis = true;
             this.CreateTableBut.Icon = null;
-            this.CreateTableBut.Location = new System.Drawing.Point(285, 296);
+            this.CreateTableBut.Location = new System.Drawing.Point(301, 203);
             this.CreateTableBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.CreateTableBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.CreateTableBut.Name = "CreateTableBut";
@@ -409,7 +385,7 @@
             // 
             this.ChosenTablePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ChosenTablePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ChosenTablePanel.Location = new System.Drawing.Point(591, 136);
+            this.ChosenTablePanel.Location = new System.Drawing.Point(575, 113);
             this.ChosenTablePanel.Name = "ChosenTablePanel";
             this.ChosenTablePanel.Size = new System.Drawing.Size(100, 100);
             this.ChosenTablePanel.TabIndex = 4;
@@ -419,41 +395,12 @@
             this.ChosenTableLB.AutoSize = true;
             this.ChosenTableLB.Depth = 0;
             this.ChosenTableLB.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.ChosenTableLB.Location = new System.Drawing.Point(588, 114);
+            this.ChosenTableLB.Location = new System.Drawing.Point(572, 91);
             this.ChosenTableLB.MouseState = MaterialSkin.MouseState.HOVER;
             this.ChosenTableLB.Name = "ChosenTableLB";
             this.ChosenTableLB.Size = new System.Drawing.Size(93, 19);
             this.ChosenTableLB.TabIndex = 5;
             this.ChosenTableLB.Text = "Chosen table";
-            // 
-            // EnterTagBox
-            // 
-            this.EnterTagBox.AnimateReadOnly = false;
-            this.EnterTagBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.EnterTagBox.Depth = 0;
-            this.EnterTagBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.EnterTagBox.LeadingIcon = null;
-            this.EnterTagBox.Location = new System.Drawing.Point(282, 40);
-            this.EnterTagBox.MaxLength = 50;
-            this.EnterTagBox.MouseState = MaterialSkin.MouseState.OUT;
-            this.EnterTagBox.Multiline = false;
-            this.EnterTagBox.Name = "EnterTagBox";
-            this.EnterTagBox.Size = new System.Drawing.Size(234, 50);
-            this.EnterTagBox.TabIndex = 6;
-            this.EnterTagBox.Text = "";
-            this.EnterTagBox.TrailingIcon = null;
-            // 
-            // EnterTagLB
-            // 
-            this.EnterTagLB.AutoSize = true;
-            this.EnterTagLB.Depth = 0;
-            this.EnterTagLB.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.EnterTagLB.Location = new System.Drawing.Point(282, 18);
-            this.EnterTagLB.MouseState = MaterialSkin.MouseState.HOVER;
-            this.EnterTagLB.Name = "EnterTagLB";
-            this.EnterTagLB.Size = new System.Drawing.Size(103, 19);
-            this.EnterTagLB.TabIndex = 7;
-            this.EnterTagLB.Text = "Enter table tag";
             // 
             // AddTableBut
             // 
@@ -463,7 +410,7 @@
             this.AddTableBut.Depth = 0;
             this.AddTableBut.HighEmphasis = true;
             this.AddTableBut.Icon = null;
-            this.AddTableBut.Location = new System.Drawing.Point(283, 99);
+            this.AddTableBut.Location = new System.Drawing.Point(301, 91);
             this.AddTableBut.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.AddTableBut.MouseState = MaterialSkin.MouseState.HOVER;
             this.AddTableBut.Name = "AddTableBut";
@@ -475,6 +422,26 @@
             this.AddTableBut.UseAccentColor = false;
             this.AddTableBut.UseVisualStyleBackColor = true;
             this.AddTableBut.Click += new System.EventHandler(this.AddTableBut_Click);
+            // 
+            // OldPassEyeImg
+            // 
+            this.OldPassEyeImg.Location = new System.Drawing.Point(646, 78);
+            this.OldPassEyeImg.Name = "OldPassEyeImg";
+            this.OldPassEyeImg.Size = new System.Drawing.Size(49, 50);
+            this.OldPassEyeImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.OldPassEyeImg.TabIndex = 10;
+            this.OldPassEyeImg.TabStop = false;
+            this.OldPassEyeImg.Click += new System.EventHandler(this.NewPasEyeImg_Click);
+            // 
+            // NewPassEyeImg
+            // 
+            this.NewPassEyeImg.Location = new System.Drawing.Point(646, 179);
+            this.NewPassEyeImg.Name = "NewPassEyeImg";
+            this.NewPassEyeImg.Size = new System.Drawing.Size(49, 50);
+            this.NewPassEyeImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.NewPassEyeImg.TabIndex = 9;
+            this.NewPassEyeImg.TabStop = false;
+            this.NewPassEyeImg.Click += new System.EventHandler(this.NewPasEyeImg_Click);
             // 
             // UserMenu
             // 
@@ -489,14 +456,14 @@
             this.CorrectAccount.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.OldPassEyeImg)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NewPassEyeImg)).EndInit();
             this.Tables.ResumeLayout(false);
             this.Tables.PerformLayout();
             this.UserInfoTab.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.MatTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.OldPassEyeImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NewPassEyeImg)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -531,7 +498,5 @@
         private MaterialSkin.Controls.MaterialLabel ChosenTableLB;
         private System.Windows.Forms.Panel ChosenTablePanel;
         private MaterialSkin.Controls.MaterialButton AddTableBut;
-        private MaterialSkin.Controls.MaterialLabel EnterTagLB;
-        private MaterialSkin.Controls.MaterialTextBox EnterTagBox;
     }
 }

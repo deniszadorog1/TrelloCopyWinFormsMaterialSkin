@@ -408,6 +408,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _historyPanel.Size = new Size(_historyPanel.Width, 700);
             _historyPanel.Location = new Point();
             _historyPanel.BorderStyle = BorderStyle.FixedSingle;
+            _historyPanel.AutoScroll = true;
 
             const int _distBetweenBlocks = 5;
             Size commentButSize = new Size(100, 40);

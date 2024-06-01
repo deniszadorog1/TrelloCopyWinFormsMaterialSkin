@@ -11,9 +11,9 @@ using System.Windows.Forms;
 using MaterialSkin.Controls;
 
 using TrelloCopyWinForms.Models.TableModels;
-using TrelloCopyWinForms.Windows.TableWindows;
 using TrelloCopyWinForms.Models.DataBase;
 using TrelloCopyWinForms.Models.UserModel;
+using TrelloCopyWinForms.Models.Enums;
 
 namespace TrelloCopyWinForms.Windows.CreateTableWindow
 {
@@ -126,27 +126,28 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         }
         private void CreateBut_Click(object sender, EventArgs e)
         {
-            if (TableNameBox.Text == "" || TableEnterTagBox.Text == "" ||  ChosenBG.BackColor == Color.Empty)
+            if (TableNameBox.Text == "" ||  ChosenBG.BackColor == Color.Empty)
             {
                 MessageBox.Show("Smth went wrong");
                 return;
             }
 
-            Table newTable = new Table(new List<TableTask>(), TableNameBox.Text, ChosenBG.BackColor, TableEnterTagBox.Text);
+            Table newTable = new Table(new List<TableTask>(), TableNameBox.Text, ChosenBG.BackColor);
 
             DBUsage.InsertColor(ChosenBG.BackColor.R, ChosenBG.BackColor.G, ChosenBG.BackColor.B);
             DBUsage.InsertTable(newTable);
             newTable.Id = DBUsage.GetTableLastId();
 
             newTable.UserInTable.Add(_user);
-            DBUsage.InsertUserTables(newTable, _user);
+            DBUsage.InsertUserTables(newTable, _user, AccountType.Admin);
 
             newTable.Id = DBUsage.GetTableLastId();
-
-            Hide();         
-            TableWindow window = new TableWindow(newTable, _user);
-            window.ShowDialog();
-            Show();
+            /*
+                        Hide();         
+                        TableWindow window = new TableWindow(newTable, _user);
+                        window.ShowDialog();
+                        Show();*/
+            Close();
         }
         private void ChooseBGBut_Click(object sender, EventArgs e)
         {

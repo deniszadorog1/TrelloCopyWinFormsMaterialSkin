@@ -92,7 +92,7 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return res;
         }
-        public static Table AddTableByTag(string tag)
+/*        public static Table AddTableByTag(string tag)
         {
             Table res = null;
 
@@ -135,6 +135,50 @@ namespace TrelloCopyWinForms.Models.DataBase
                 }
 
 
+                connection.Close();
+            }
+
+            return res;
+        }*/
+        private static Table GetTableById(int id)
+        {
+            Table res = null;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM [Tables] WHERE [Id] = @id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", id);
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+
+                    res = new Table();
+
+                    res.Name = reader["Name"].ToString();
+                    if (reader["ColorId"] != DBNull.Value)
+                    {
+                        res.BgColor = GetColorById(int.Parse(reader["ColorId"].ToString()));
+                    }
+                    res.Id = int.Parse(reader["id"].ToString());
+
+                    //Init flags
+                    List<Flag> flags = GetTagsForTable(res);
+                    res._allFlags = flags;
+
+                    //Init Tasks
+                    res.Tasks = GetTasksForTable(res.Id);
+
+                    //Init Users
+                    res.UserInTable = GetUsersForTable(res.Id);
+
+                    //Init lastSubTask index
+                    res.InitLastSubTaskIndex();
+                }
                 connection.Close();
             }
 
@@ -365,14 +409,11 @@ namespace TrelloCopyWinForms.Models.DataBase
             {
                 connection.Open();
 
-                string query = "INSERT INTO [Tables]([Name], [ColorId], [EnterTag]) VALUES(@name, @colorId, @enterTag)";
+                string query = "INSERT INTO [Tables]([Name], [ColorId]) VALUES(@name, @colorId)";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@name", table.Name);
                 command.Parameters.AddWithValue("@colorId", GetColorId(table));
-
-                string passHash = BCrypt.Net.BCrypt.HashPassword(table.EnterTag);
-                command.Parameters.AddWithValue("@enterTag", passHash);
 
                 command.ExecuteNonQuery();
 
@@ -549,19 +590,37 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-        public static void InsertUserTables(Table table, User user)
+        public static void InsertUserTables(Table table, User user, AccountType type)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                string query = "INSERT INTO [UsersTable] ([UserId], [TableId]) VALUES(@userId, @tableId)";
+                string query = "INSERT INTO [UsersTable] ([UserId], [TableId], [UserTypeId]) VALUES(@userId, @tableId, @typeId)";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@userId", user.Id);
                 command.Parameters.AddWithValue("@tableId", table.Id);
+                command.Parameters.AddWithValue("@typeId", GetTypeIdByUserType(type));
 
                 command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
+        private static int GetTypeIdByUserType(AccountType type)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT [Id] FROM [Type] WHERE [Type] = @type";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@type", type.ToString());
+
+                return (int)command.ExecuteScalar();
+
 
                 connection.Close();
             }
@@ -648,7 +707,7 @@ namespace TrelloCopyWinForms.Models.DataBase
         }
         public static void DeleteFromUserSubTask(int userId, SubTask subTask)
         {
-            using(SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
@@ -748,7 +807,7 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return res;
         }
-        private static List<User> GetUsersForTable(int tableId)
+        public static List<User> GetUsersForTable(int tableId)
         {
             List<User> res = new List<User>();
 
@@ -1910,5 +1969,247 @@ namespace TrelloCopyWinForms.Models.DataBase
                 return res;
             }
         }
+        public static AccountType? GetUserTypeForTable(int tableId, int userId)
+        {
+            AccountType? type = null;
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM [UsersTable] WHERE [UserId] = @userId AND [TableId] = @tableId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@tableId", tableId);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    return GetTypeById((int)reader["UserTypeId"]);
+                }
+
+                connection.Close();
+            }
+            return type;
+        }
+
+        private static AccountType? GetTypeById(int typeId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM [Type] WHERE [Id] = @id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", typeId);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    return GetTypeByString(reader["Type"].ToString());
+                }
+
+                connection.Close();
+            }
+            return null;
+        }
+        private static AccountType GetTypeByString(string type)
+        {
+            for (int i = 0; i <= (int)AccountType.Viewer; i++)
+            {
+                if (((AccountType)i).ToString() == type)
+                {
+                    return (AccountType)i;
+                }
+            }
+            return AccountType.Viewer;
+        }
+        public static void AddCodeToAddUser(int tableId, string key, AccountType type)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "INSERT INTO [AddTableUserTypeKey]([TableId], [TypeId], [Key]) VALUES (@tableId, @typeId, @key)";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@tableId", tableId);
+                command.Parameters.AddWithValue("@typeId", GetTypeIdByUserType(type));
+                command.Parameters.AddWithValue("@key", key);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
+        public static bool IfCodeExist(string code)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM [AddTableUserTypeKey] WHERE [Key] = @code";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@code", code);
+
+                int count = (int)command.ExecuteScalar();
+                return count > 0;
+
+                // connection.Close();
+            }
+        }
+        public static void DeleteCodesInTable(int tableId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "DELETE FROM [AddTableUserTypeKey] WHERE [TableId] = @tableId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@tableId", tableId);
+
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+
+        public static Table GetTableByCode(string code)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT [TableId] FROM [AddTableUserTypeKey] WHERE [Key] = @key";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@key", code);
+
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    int tableId = (int)reader["TableId"];
+
+                    return GetTableById(tableId);
+                }
+
+
+                connection.Close();
+            }
+            return null;
+        }
+        public static bool IfUserContainsInTable(int tableId, int userId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM [UsersTable] WHERE [UserId] = @userId AND [TableId] = @tableId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@tableId", tableId);
+
+                int count = (int)command.ExecuteScalar();
+                return count > 0;
+                
+            }
+        }
+        public static void DeleteUserFromUsersTable(int userId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "DELETE FROM [UsersTable] WHERE [UserId] = @id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", userId);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
+        public static void MakeUserAnAdminInTable(int tableId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT TOP 1[UserId] FROM [UsersTable] WHERE [TableId] = @tableId";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@tableId", tableId);
+
+                MakeUserAnAdmin(tableId, (int)command.ExecuteScalar());
+
+                connection.Close();
+            }
+        }
+        private static void MakeUserAnAdmin(int tableId, int userId)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "UPDATE [UsersTable] SET [UserTypeId] = @typeId WHERE [TableId] = @tableId AND [UserId] = @userId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@tableId", tableId);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@typeId", 1);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
+
+        public static AccountType GetTypeByCode(string key)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT [TypeId] FROM [AddTableUserTypeKey] WHERE [Key] = @key";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@key", key);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int typeId = (int)reader["TypeId"];
+
+                    return (AccountType)GetTypeById(typeId);
+                }
+
+                connection.Close();
+            }
+            return AccountType.Viewer;
+        }
+        public static AccountType InitUserTypeToUser(int userId, int tableId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT [UserTypeId] FROM [UsersTable] WHERE [TableId] = @tableId AND [UserId] = @userId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@tableId", tableId);
+                command.Parameters.AddWithValue("@userId", userId);
+
+                return  (AccountType)GetTypeById((int)command.ExecuteScalar());
+
+                //connection.Close();
+            }
+        }
+
+
     }
 }

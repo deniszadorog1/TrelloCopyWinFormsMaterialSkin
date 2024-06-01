@@ -39,3 +39,6 @@ B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.S
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs.CoverAction.resources
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs.ParticipantsAction.resources
 B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs.ChangeName.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.CreateInviteMessage.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.Codes.EnterCode.resources
+B:\GitHub\TrelloCopyWinForms\obj\Debug\TrelloCopyWinForms.Windows.TableWindows.DeleteUsersFromTable.resources

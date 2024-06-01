@@ -15,6 +15,8 @@ using TrelloCopyWinForms.Models.DataBase;
 using TrelloCopyWinForms.Windows.CreateTableWindow;
 using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Windows.TableWindows;
+using TrelloCopyWinForms.Models.Enums;
+using TrelloCopyWinForms.Windows.TableWindows.Codes;
 
 namespace TrelloCopyWinForms.Windows.UserMainMenu
 {
@@ -52,13 +54,16 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
                     panel.BackColor = _tables[i].BgColor is null ?
                         Color.Transparent : (Color)_tables[i].BgColor;
                     panel.BorderStyle = BorderStyle.FixedSingle;
-                    panel.Click += ChooseTable_Click;
 
                     Label label = new Label();
                     label.Dock = DockStyle.Fill;
                     label.Text = _tables[i].Name;
                     label.TextAlign = ContentAlignment.MiddleCenter;
                     label.Click += ChooseTable_Click;
+                    label.DoubleClick += EnterTable_DoubleClick;
+                    label.ForeColor = GetColorForTableName(panel.BackColor);
+
+
                     panel.Controls.Add(label);
 
                     tempPoint = new Point(AccessableTablesPanel.Width / 2 - panel.Width / 2, tempPoint.Y);
@@ -67,6 +72,34 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
                     tempPoint = new Point(tempPoint.X, tempPoint.Y + panel.Height + _deistanceBetweenTables);
                 }
             }
+        }
+
+        public Color GetColorForTableName(Color bgColor)
+        {
+            
+            return bgColor == Color.Transparent || bgColor == Color.Transparent  ? Color.Black :
+                Color.FromArgb(GetChangedColorParam(bgColor.R), GetChangedColorParam(bgColor.G), GetChangedColorParam(bgColor.B));
+
+        }
+        public int GetChangedColorParam(int colorParam)
+        {
+            return colorParam <= 150 && colorParam >= 30 ? colorParam + 100 :
+                colorParam >= 150  ? colorParam - 30 :
+                colorParam >= 150 ? colorParam - 50 : 100;
+        }
+
+
+        private List<Table> GetTablesWhichUserCanUse()
+        {
+            List<Table> res = new List<Table>();
+            for(int i = 0; i < _tables.Count; i++)
+            {
+                if (IfUserContrinsInTable(_tables[i]))
+                {
+                    res.Add(_tables[i]);
+                }
+            }
+            return res;
         }
         private void ChooseTable_Click(object sender, EventArgs e)
         {
@@ -77,6 +110,19 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
                 return;
             }
             ReinitChosenTable((Panel)sender);
+        }
+        private void EnterTable_DoubleClick(object sender, EventArgs e)
+        {
+            Table chosenTable = _tables[(int)ChosenTablePanel.Tag];
+
+            Hide();
+            TableWindow window = new TableWindow(chosenTable, _chosenUser, GetTablesWhichUserCanUse());
+            window.ShowDialog();
+            Show();
+
+            _tables = GetTablesWhichUserCanUse();
+            ClearChosenTablePanel();
+            FillTablesList();
         }
         public void ReinitChosenTable(Panel panel)
         {
@@ -197,41 +243,28 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             Table chosenTable = _tables[(int)ChosenTablePanel.Tag];
 
             Hide();
-            TableWindow window = new TableWindow(chosenTable, _chosenUser);
+            TableWindow window = new TableWindow(chosenTable, _chosenUser, GetTablesWhichUserCanUse());
             window.ShowDialog();
             Show();
 
+
+            _tables = GetTablesWhichUserCanUse();
             ClearChosenTablePanel();
             FillTablesList();
         }
 
         private void AddTableBut_Click(object sender, EventArgs e)
         {
-            string tableTag = EnterTagBox.Text;
+            EnterCode code = new EnterCode(_chosenUser);
+            code.ShowDialog();
 
-            if(tableTag == "")
+            if (!(code._table is null))
             {
-                MessageBox.Show("Mistake!");
-                return;
+                _tables = DBUsage.GetAllTables();
+
+                _tables = GetTablesWhichUserCanUse();
+                FillTablesList();
             }
-
-            Table table = DBUsage.AddTableByTag(tableTag);
-
-            if(table is null)
-            {
-                MessageBox.Show("No table with such tag");
-                return;
-            }
-
-            table.UserInTable.Add(_chosenUser);
-
-            table.InitReintTableUsers(_tables);
-
-            DBUsage.InsertUserTables(table, _chosenUser);
-
-
-            _tables = DBUsage.GetAllTables();
-            FillTablesList();
         }
         
     }

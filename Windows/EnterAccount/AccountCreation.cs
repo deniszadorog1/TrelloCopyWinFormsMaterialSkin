@@ -24,22 +24,36 @@ namespace TrelloCopyWinForms.Windows.EnterAccount
         {
             if (LoginBox.Text == "" || EmailBox.Text == "")
             {
+                ClearBoxes();
+
                 MessageBox.Show("You didnt enter the login!", "Mistake!");
             }
             else if (EmailBox.Text == "")
             {
+                ClearBoxes();
+
                 MessageBox.Show("Email doesnt enter!", "Mistake!");
             }
             else if (!DBUsage.IfUserParamsExistInDB(LoginBox.Text, EmailBox.Text))
             {
                 DBUsage.InserUser(new User(LoginBox.Text, EmailBox.Text, PasswordBox.Text));
                 MessageBox.Show("Created!", "Success!");
+
+                ClearBoxes();
                 return;
             }
             else MessageBox.Show("login or email is Exist!", "Mistake!");
+            ClearBoxes();
+        }
+        private void ClearBoxes()
+        {
+            EmailBox.Clear();
+            LoginBox.Clear();
+            PasswordBox.Clear();
         }
         private void materialButton1_Click(object sender, EventArgs e)
         {
+            ClearBoxes();
             Close();
         }
         private void ShowHidePass_Click(object sender, EventArgs e)
