@@ -211,9 +211,6 @@
     <Compile Include="Windows\TableWindows\TableWindow.Designer.cs">
       <DependentUpon>TableWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Windows\TableWindows\TransparentFlowLayoutPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Windows\UserMainMenu\UserMenu.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -314,6 +311,8 @@
     <Content Include="Images\BackgroundTable\smthBg.jpg" />
     <Content Include="Images\BackgroundTable\winterForest.jpg" />
     <Content Include="Images\CorrectAccount\Eye.png" />
+    <Content Include="Images\FavStars\emptyStar.png" />
+    <Content Include="Images\FavStars\fullStar.png" />
     <Content Include="Images\LoginPage\LoginFace.png" />
   </ItemGroup>
   <ItemGroup />

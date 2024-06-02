@@ -14,16 +14,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 {
     public partial class CreateSubTask : MaterialForm
     {
-        public string _subTaskName = "";
+        public string _subTaskName = string.Empty;
     
         public CreateSubTask()
         {
             InitializeComponent();
         }
-
         private void CreateBut_Click(object sender, EventArgs e)
         {
-            if(NameBox.Text == "")
+            if(NameBox.Text == string.Empty)
             {
                 MessageBox.Show("Cant be add!", "Mistake!");
                 return;
@@ -31,7 +30,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _subTaskName = NameBox.Text;
             Close();
         }
-
         private void materialButton2_Click(object sender, EventArgs e)
         {
             Close();

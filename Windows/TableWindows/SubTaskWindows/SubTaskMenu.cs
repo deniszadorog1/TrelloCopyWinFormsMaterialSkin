@@ -47,8 +47,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
         private Panel _menuPanel = new Panel();
 
-
-        private const int _namePanelWidth = 500;
         private const int _onePointInNamePanelHeight = 40;
 
         private const int _distanceBetweenBlocks = 10;
@@ -107,7 +105,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             //Check Lists
             //History || comments
 
-      
+
             //Cover 
             InitCover();
 
@@ -137,15 +135,18 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         public void InitName()
         {
+            Font nameFont = new Font("Times New Roman", 16);
+            const int nameLBHeight = 40;
+
             _namePanel.Controls.Clear();
             Label nameLabel = new Label();
             nameLabel.Text = _subTask.Name;
-            nameLabel.Font = new Font("Times New Roman", 16);
+            nameLabel.Font = nameFont;
             nameLabel.AutoSize = false;
 
             nameLabel.MaximumSize = new Size(_namePanel.Width, 0);
             nameLabel.BorderStyle = BorderStyle.FixedSingle;
-            nameLabel.Size = new Size(_namePanel.Width, 40);
+            nameLabel.Size = new Size(_namePanel.Width, nameLBHeight);
 
             nameLabel.AutoEllipsis = true;
             nameLabel.AutoSize = true;
@@ -170,8 +171,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         public void InitParticipants()
         {
+            const int pasrtPanelHeight = 75;
+            Size userBoxSize = new Size(30, 30);
+
             _partisipentsPanel.Controls.Clear();
-            _partisipentsPanel.Size = new Size(_partisipentsPanel.Width, 75);
+            _partisipentsPanel.Size = new Size(_partisipentsPanel.Width, pasrtPanelHeight);
 
             MaterialLabel panelNameLB = new MaterialLabel();
             panelNameLB.Text = "Particepants";
@@ -183,12 +187,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             for (int i = 0; i < _subTask.UsersIdsInSuBTask.Count; i++)
             {
                 string userLogin = _table.GetUserLoginById(_subTask.UsersIdsInSuBTask[i]);
-                char firstLetter = userLogin[0]; 
+                char firstLetter = userLogin[0];
 
                 PictureBox box = new PictureBox();
                 box.BorderStyle = BorderStyle.FixedSingle;
-                box.Size = new Size(30, 30);
-                box.Tag = firstLetter; 
+                box.Size = userBoxSize;
+                box.Tag = firstLetter;
                 box.Paint += userCircles_Paint;
 
                 box.Location = point;
@@ -198,7 +202,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 point = new Point(point.X + box.Width + _distanceBetweenBlocks, point.Y);
             }
 
-            if(_subTask.UsersIdsInSuBTask.Count == 0)
+            if (_subTask.UsersIdsInSuBTask.Count == 0)
             {
                 _partisipentsPanel.Height = 0;
             }
@@ -220,7 +224,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             Graphics g = e.Graphics;
 
             // Настройки круга
-            int circleDiameter = 25;
+            const int circleDiameter = 25;
             int circleX = (box.Width - circleDiameter) / 2;
             int circleY = (box.Height - circleDiameter) / 2;
 
@@ -231,7 +235,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             }
 
             // Настройки текста
-            string symbol = box.Tag.ToString(); 
+            string symbol = box.Tag.ToString();
             Font font = new Font("Arial", 12, FontStyle.Bold);
             SizeF textSize = g.MeasureString(symbol, font);
 
@@ -249,7 +253,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _coverPanel.Controls.Clear();
             _coverPanel.BorderStyle = BorderStyle.FixedSingle;
             const int coverHeight = 90;
-            if (_subTask.Cover is null || (_subTask.Cover.BGColor is null && _subTask.Cover.BGImage is null) )
+            if (_subTask.Cover is null || (_subTask.Cover.BGColor is null && _subTask.Cover.BGImage is null))
             {
                 _coverPanel.Size = new Size(_coverPanel.Width, 0);
                 _coverPanel.BackColor = Color.Empty;
@@ -264,7 +268,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             }
             else if (!(_subTask.Cover.BGImage is null))
             {
-                PictureBox box = new PictureBox(); 
+                PictureBox box = new PictureBox();
                 box.Image = _subTask.Cover.BGImage.Image;
                 box.Size = new Size(200, _coverPanel.Height);
                 box.Location = new Point(_coverPanel.Width / 2 - box.Width / 2, 0);
@@ -275,7 +279,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             ReintiLocsForMainBlocks();
             _coverPanel.Location = new Point(0, 0);
         }
-
         public void ReintiLocsForMainBlocks()
         {
             MainPanel.AutoScrollPosition = new Point(0, 0);
@@ -283,8 +286,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         public void InitAttachments()
         {
+            const int attachHeight = 500;
+            const int attachLinkLbHeight = 10;
+            Size mainPanelSize = new Size(150, 30);
+
+
             _attachmentsPanel.Controls.Clear();
-            _attachmentsPanel.Size = new Size(_attachmentsPanel.Width, 500);
+            _attachmentsPanel.Size = new Size(_attachmentsPanel.Width, attachHeight);
 
             //Init main panel name
             Label mainPanelName = new Label();
@@ -293,11 +301,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             mainPanelName.Text = "Attachments";
             mainPanelName.Location = new Point(_distanceBetweenSubBlocks, _distanceBetweenSubBlocks);
             mainPanelName.AutoSize = false;
-            mainPanelName.Size = new Size(150, 30);
+            mainPanelName.Size = mainPanelSize;
             _attachmentsPanel.Controls.Add(mainPanelName);
 
             int attachmentWidth = _attachmentsPanel.Width / 2 - _distanceBetweenSubBlocks;
-            Point attatchLoc = new Point(mainPanelName.Location.X, mainPanelName.Location.Y + mainPanelName.Height + _distanceBetweenSubBlocks);
+            Point attatchLoc = new Point(mainPanelName.Location.X,
+                mainPanelName.Location.Y + mainPanelName.Height + _distanceBetweenSubBlocks);
             for (int i = 0; i < _subTask.Attachments.Count; i++)
             {
                 Panel attachmnetPanel = new Panel();
@@ -309,7 +318,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 Panel attachmentLinkPanel = new Panel();
                 attachmentLinkPanel.BorderStyle = BorderStyle.FixedSingle;
                 attachmentLinkPanel.Location = new Point(0, 0);
-                attachmentLinkPanel.Size = new Size(attachmentWidth, 10);
+                attachmentLinkPanel.Size = new Size(attachmentWidth, attachLinkLbHeight);
 
                 //attachmentLinkPanel.BackgroundImage = _table.BgColor;
                 attachmentLinkPanel.BackgroundImageLayout = ImageLayout.Stretch;
@@ -341,13 +350,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 MaterialButton deleteBut = new MaterialButton();
                 deleteBut.Tag = _subTask.Attachments[i].Id;
                 deleteBut.Text = "Delete";
-                deleteBut.Location = new Point(attachmentLinkPanel.Location.X + _distanceBetweenSubBlocks, attachmentLinkPanel.Location.Y + attachmentLinkPanel.Height + _distanceBetweenSubBlocks);
+                deleteBut.Location = new Point(attachmentLinkPanel.Location.X + _distanceBetweenSubBlocks,
+                    attachmentLinkPanel.Location.Y + attachmentLinkPanel.Height + _distanceBetweenSubBlocks);
 
                 deleteBut.Click += DeleteAttachment_Click;
 
 
                 attachmnetPanel.Controls.Add(deleteBut);
-                attachmnetPanel.Size = new Size(attachmnetPanel.Width, attachmentLinkPanel.Height + deleteBut.Height + _distanceBetweenSubBlocks * 2);
+                attachmnetPanel.Size = new Size(attachmnetPanel.Width, 
+                    attachmentLinkPanel.Height + deleteBut.Height + _distanceBetweenSubBlocks * 2);
 
                 _attachmentsPanel.Controls.Add(attachmnetPanel);
 
@@ -362,11 +373,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 }
                 else
                 {
-                    attatchLoc = new Point(attachmnetPanel.Location.X + attachmnetPanel.Width + _distanceBetweenBlocks, attachmnetPanel.Location.Y);
+                    attatchLoc = new Point(attachmnetPanel.Location.X + attachmnetPanel.Width +
+                        _distanceBetweenBlocks, attachmnetPanel.Location.Y);
                 }
             }
 
-            if(_subTask.Attachments.Count == 0)
+            if (_subTask.Attachments.Count == 0)
             {
                 _attachmentsPanel.Height = 0;
             }
@@ -380,38 +392,25 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         private void DeleteAttachment_Click(object sender, EventArgs e)
         {
             Panel attachPanel = (Panel)((MaterialButton)sender).Parent;
-            Panel panel = GetPanelControlFormPanel(attachPanel);
-/*
-            Control taskNameLB = GetLabelFromPanelByName(panel, "TaskName");
-            Control subTaskNameLB = GetLabelFromPanelByName(panel, "SubTaskName");
-            int attachIndex = int.Parse(attachPanel.Tag.ToString());
-            int subTaskIndex = int.Parse(((MaterialButton)sender).Tag.ToString());*/
 
             _subTask.DeleteAttachmentById((int)((MaterialButton)sender).Tag);
             DBUsage.DeleteAttachmnet((int)((MaterialButton)sender).Tag);
 
             InitAttachments();
         }
-        public Panel GetPanelControlFormPanel(Panel panel)
-        {
-            for (int i = 0; i < panel.Controls.Count; i++)
-            {
-                if (panel.Controls[i] is Panel)
-                {
-                    return (Panel)panel.Controls[i];
-                }
-            }
-            throw new Exception("cant find panel Control!");
-        }
         public void InitHistoryComments()
         {
-            _historyPanel.Size = new Size(_historyPanel.Width, 700);
+            const int historyPanelHeight = 700;
+            const int _distBetweenBlocks = 5;
+            const int commentMaxLength = 250;
+            const int histHeaderHeightMultiplier = 3;
+            Size commentButSize = new Size(100, 40);
+
+            _historyPanel.Size = new Size(_historyPanel.Width, historyPanelHeight);
             _historyPanel.Location = new Point();
             _historyPanel.BorderStyle = BorderStyle.FixedSingle;
             _historyPanel.AutoScroll = true;
 
-            const int _distBetweenBlocks = 5;
-            Size commentButSize = new Size(100, 40);
             _historyPanel.Controls.Clear();
 
 
@@ -433,25 +432,31 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             showHistBut.Size = new Size(150, 25);
             showHistBut.Text = "Show history";
 
-            showHistBut.Location = new Point(_historyPanel.Width - showHistBut.Width - _distBetweenBlocks, nameLB.Location.Y);
+            showHistBut.Location = new Point(_historyPanel.Width - showHistBut.Width - 
+                _distBetweenBlocks, nameLB.Location.Y);
             historyHeader.Controls.Add(showHistBut);
 
             MaterialTextBox2 commentBox = new MaterialTextBox2();
-            commentBox.Size = new Size(showHistBut.Location.X + showHistBut.Width - _distBetweenBlocks, showHistBut.Height);
-            commentBox.Location = new Point(nameLB.Location.X, nameLB.Location.Y + nameLB.Height + _distBetweenBlocks);
-            commentBox.MaxLength = 250;
+            commentBox.Size = new Size(showHistBut.Location.X + showHistBut.Width - 
+                _distBetweenBlocks, showHistBut.Height);
+            commentBox.Location = new Point(nameLB.Location.X, nameLB.Location.Y + 
+                nameLB.Height + _distBetweenBlocks);
+            commentBox.MaxLength = commentMaxLength;
             historyHeader.Controls.Add(commentBox);
 
             MaterialButton addComment = new MaterialButton();
             addComment.Text = "Add comment";
-            addComment.Location = new Point(nameLB.Location.X, commentBox.Location.Y + commentBox.Height + _distBetweenBlocks);
+            addComment.Location = new Point(nameLB.Location.X, 
+                commentBox.Location.Y + commentBox.Height + _distBetweenBlocks);
             addComment.Click += AddComment_Click;
             historyHeader.Controls.Add(addComment);
 
-            historyHeader.Height += nameLB.Height + commentBox.Height + addComment.Height + _distBetweenBlocks * 3;
+            historyHeader.Height += nameLB.Height + commentBox.Height + 
+                addComment.Height + _distBetweenBlocks * histHeaderHeightMultiplier;
             _historyPanel.Controls.Add(historyHeader);
 
-            Point tempLoc = new Point(historyHeader.Location.X, historyHeader.Location.Y + historyHeader.Height + _distBetweenBlocks);
+            Point tempLoc = new Point(historyHeader.Location.X, 
+                historyHeader.Location.Y + historyHeader.Height + _distBetweenBlocks);
             for (int i = 0; i < _subTask.Comments.Count; i++)
             {
                 Panel commentPanel = new Panel();
@@ -477,7 +482,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                 comment.BorderStyle = BorderStyle.FixedSingle;
                 //comment.Size = new Size(commentPanel.Width, comment.Height);
-                comment.Location = new Point(writer.Location.X, writer.Location.Y + writer.Height + _distBetweenBlocks);
+                comment.Location = new Point(writer.Location.X, writer.Location.Y + 
+                    writer.Height + _distBetweenBlocks);
 
                 comment.AutoSize = true;
                 commentPanel.Controls.Add(comment);
@@ -486,7 +492,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 changeComment.AutoSize = false;
                 changeComment.Size = commentButSize;
                 changeComment.Text = "change comment";
-                changeComment.Location = new Point(writer.Location.X, comment.Location.Y + comment.Height + _distBetweenBlocks);
+                changeComment.Location = new Point(writer.Location.X, comment.Location.Y +
+                    comment.Height + _distBetweenBlocks);
                 changeComment.Click += ChangeComment_Click;
                 commentPanel.Controls.Add(changeComment);
 
@@ -494,12 +501,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 deleteBut.AutoSize = false;
                 deleteBut.Size = commentButSize;
                 deleteBut.Text = "delete comment";
-                deleteBut.Location = new Point(changeComment.Location.X + changeComment.Width + _distBetweenBlocks, changeComment.Location.Y);
+                deleteBut.Location = new Point(changeComment.Location.X + changeComment.Width + 
+                    _distBetweenBlocks, changeComment.Location.Y);
                 deleteBut.Click += DeleteComment_Click;
                 commentPanel.Controls.Add(deleteBut);
 
                 commentPanel.Location = tempLoc;
-                commentPanel.Size = new Size(historyHeader.Width, writer.Height + comment.Height + changeComment.Height + _distBetweenBlocks * 3);
+                commentPanel.Size = new Size(historyHeader.Width, writer.Height + 
+                    comment.Height + changeComment.Height + _distBetweenBlocks * histHeaderHeightMultiplier);
                 tempLoc = new Point(tempLoc.X, tempLoc.Y + commentPanel.Height + _distBetweenBlocks);
 
                 _historyPanel.Controls.Add(commentPanel);
@@ -509,20 +518,22 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 Panel historyPanel = new Panel();
                 historyPanel.BorderStyle = BorderStyle.FixedSingle;
                 historyPanel.Size = new Size(historyHeader.Width, historyPanel.Height);
-                
+
                 Label writer = new Label();
                 writer.BorderStyle = BorderStyle.FixedSingle;
-                writer.Text =_user.Login;
+                writer.Text = _user.Login;
                 writer.Location = new Point(0, 0);
                 historyPanel.Controls.Add(writer);
 
                 Label comment = new Label();
                 comment.Text = _subTask.History[i].Value;
-                comment.Location = new Point(writer.Location.X, writer.Location.Y + writer.Height + _distBetweenBlocks);
+                comment.Location = new Point(writer.Location.X, 
+                    writer.Location.Y + writer.Height + _distBetweenBlocks);
                 historyPanel.Controls.Add(comment);
 
                 historyPanel.Location = tempLoc;
-                tempLoc = new Point(tempLoc.X, tempLoc.Y + historyPanel.Height + _distBetweenBlocks);
+                tempLoc = new Point(tempLoc.X, tempLoc.Y + 
+                    historyPanel.Height + _distBetweenBlocks);
                 _historyPanel.Controls.Add(historyPanel);
             }
 
@@ -536,7 +547,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _subTask.History.Add(historyComm);
 
             DBUsage.InsertHistoryMessage(historyComm, _subTask, _user);
-
             InitHistoryComments();
         }
         private void ChangeComment_Click(object sender, EventArgs e)
@@ -582,7 +592,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
             _subTask.AddComment(textBox.Text, _user, _subTask);
             DBUsage.InsertCommentMessage(_subTask.Comments[0], _subTask, _user);
-            _subTask.Comments[0].Id = DBUsage.GetLastCommentId();
+            _subTask.Comments.First().Id = DBUsage.GetLastCommentId();
 
             InitHistoryComments();
         }
@@ -599,16 +609,19 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         public void InitDescription()
         {
+            const int startWidthLoc = 5;
+            const int maxDescLenght = 1000;
+
             _descriptionPanel.Location = new Point(_deadlinePanel.Location.X, _deadlinePanel.Location.Y + _deadlinePanel.Height + _distanceBetweenMainBlocks);
             Label descLB = new Label();
             descLB.Text = "Description";
             descLB.Font = new Font("Times New Roman", 16);
             descLB.AutoSize = true;
-            descLB.Location = new Point(5, 0);
+            descLB.Location = new Point(startWidthLoc, 0);
 
             MaterialMultiLineTextBox2 descTextPanel = new MaterialMultiLineTextBox2();
             //descTextPanel.ScrollBars = ScrollBars.Vertical;
-            descTextPanel.MaxLength = 1000;
+            descTextPanel.MaxLength = maxDescLenght;
             descTextPanel.Location = new Point(descLB.Location.X, descLB.Location.Y + descLB.Height + _distanceBetweenBlocks);
             descTextPanel.Size = new Size(_descriptionPanel.Width - _distanceBetweenBlocks, _descriptionPanel.Height - descLB.Height - _distanceBetweenBlocks * 2);
 
@@ -674,7 +687,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 _deadlinePanel.Controls.Add(printLB);
 
             }
-            if(_subTask.DeadLine is null)
+            if (_subTask.DeadLine is null)
             {
                 _deadlinePanel.Height = 0;
             }
@@ -855,7 +868,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
             CheckListModel model = _subTask.CheckLists[(int)checkList.Tag];
             CheckListCase checkCase = model.Cases[(int)((MaterialCheckbox)sender).Tag];
-            
+
 
             //Get progress bar 
             MaterialProgressBar progressBar = GetProgressBarFromPanel(checkList);
@@ -983,7 +996,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _flagPanel.Controls.Add(addBut);
 
 
-            if(_subTask.Flags.Count == 0)
+            if (_subTask.Flags.Count == 0)
             {
                 _flagPanel.Height = 0;
             }
@@ -1149,13 +1162,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         private void AddCheckList_Click(object sender, EventArgs e)
         {
-/*            _subTask.CheckLists.Add(new CheckListModel("First check List"));
-            _subTask.CheckLists.Last().Cases.Add(new CheckListCase("first"));
-            _subTask.CheckLists.Last().Cases.Add(new CheckListCase("second"));
+            /*            _subTask.CheckLists.Add(new CheckListModel("First check List"));
+                        _subTask.CheckLists.Last().Cases.Add(new CheckListCase("first"));
+                        _subTask.CheckLists.Last().Cases.Add(new CheckListCase("second"));
 
-            _subTask.CheckLists.Add(new CheckListModel("Second check List"));
-            _subTask.CheckLists.Last().Cases.Add(new CheckListCase("third"));
-            _subTask.CheckLists.Last().Cases.Add(new CheckListCase("fourth "));*/
+                        _subTask.CheckLists.Add(new CheckListModel("Second check List"));
+                        _subTask.CheckLists.Last().Cases.Add(new CheckListCase("third"));
+                        _subTask.CheckLists.Last().Cases.Add(new CheckListCase("fourth "));*/
 
 
             CheckListAction addCheckList = new CheckListAction(_table, _subTask);
@@ -1237,7 +1250,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             {
                 Control control = GetMainPanelByType((SubTaskTypes)i);
 
-                if(!(control.Tag is null) && control.Tag.ToString() == SubTaskTypes.Cover.ToString())
+                if (!(control.Tag is null) && control.Tag.ToString() == SubTaskTypes.Cover.ToString())
                 {
                     control.Location = new Point(0, 0);
                     tempLoc = new Point(tempLoc.X, tempLoc.Y + control.Height + _distanceBetweenMainBlocks);

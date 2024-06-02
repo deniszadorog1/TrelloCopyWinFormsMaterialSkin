@@ -44,7 +44,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             if (toDelete.Type == AccountType.Admin && _table.UserInTable.Count > 1)
             {
-                DBUsage.DeleteUserFromUsersTable(toDelete.Id);
+                DBUsage.DeleteUserFromUsersTable(toDelete.Id, _table.Id);
                 DBUsage.MakeUserAnAdminInTable(_table.Id);
 
 
@@ -52,13 +52,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 DBUsage.MakeUserAnAdminInTable(_table.Id);
 
             }
-/*            else if (toDelete.Type == AccountType.Admin && _table.UserInTable.Count == 1)
+            else if (toDelete.Type == AccountType.Admin && _table.UserInTable.Count == 1)
             {
-                //Delete table
-            }*/
+                DBUsage.MakeTableInActive(_table.Id);
+                DBUsage.DeleteUserFromUsersTable(toDelete.Id, _table.Id);
+                MessageBox.Show("Deleted!");
+            }
             else
             {
-                DBUsage.DeleteUserFromUsersTable(toDelete.Id);
+                DBUsage.DeleteUserFromUsersTable(toDelete.Id, _table.Id);
                 MessageBox.Show("Deleted!");
             }
             _table.UserInTable = DBUsage.GetUsersForTable(_table.Id);

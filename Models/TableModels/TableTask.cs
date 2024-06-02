@@ -33,7 +33,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             Name = name;
             SubTasks = subTasks;
         }
-
         public SubTask GetSubTaskByName(string subTaskName)
         {
             for (int i = 0; i < SubTasks.Count; i++)
@@ -45,7 +44,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return null;
         }
-
         public SubTask GetSubTaskByNameAndIndex(string name, int index)
         {
             for (int i = 0; i < SubTasks.Count; i++)
@@ -58,20 +56,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return null;
         }
-
-        public SubTask GetSubTaskByIndex(int index)
-        {
-            for (int i = 0; i < SubTasks.Count; i++)
-            {
-                if (SubTasks[i].GlobalSubTaskIndex == index)
-                {
-                    return SubTasks[i];
-                }
-            }
-            throw new Exception("Cant find subTask with such globalsubTaskIndex");
-        }
-
-
         public bool IfSubTaskContainsAttachmentWhitchContainsGlobalIndex(int index)
         {
             for (int i = 0; i < SubTasks.Count; i++)
@@ -83,7 +67,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return false;
         }
-
         public string GetSubTaskaNameByGlobalIndex(int index)
         {
             for (int i = 0; i < SubTasks.Count; i++)
@@ -129,7 +112,6 @@ namespace TrelloCopyWinForms.Models.TableModels
                 subTask.UniqueIndex = SubTasks.Count;
             }
         }
-
         public void UpdateSubTasksUniqueIndexes()
         {
             for (int i = 0; i < SubTasks.Count; i++)

@@ -35,7 +35,6 @@
             this.LoginBut = new MaterialSkin.Controls.MaterialButton();
             this.NewAccBut = new MaterialSkin.Controls.MaterialButton();
             this.FacePic = new System.Windows.Forms.PictureBox();
-            this.CheckSubTaskMenu = new MaterialSkin.Controls.MaterialButton();
             ((System.ComponentModel.ISupportInitialize)(this.FacePic)).BeginInit();
             this.SuspendLayout();
             // 
@@ -151,32 +150,11 @@
             this.FacePic.TabIndex = 6;
             this.FacePic.TabStop = false;
             // 
-            // CheckSubTaskMenu
-            // 
-            this.CheckSubTaskMenu.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.CheckSubTaskMenu.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.CheckSubTaskMenu.Depth = 0;
-            this.CheckSubTaskMenu.HighEmphasis = true;
-            this.CheckSubTaskMenu.Icon = null;
-            this.CheckSubTaskMenu.Location = new System.Drawing.Point(183, 188);
-            this.CheckSubTaskMenu.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.CheckSubTaskMenu.MouseState = MaterialSkin.MouseState.HOVER;
-            this.CheckSubTaskMenu.Name = "CheckSubTaskMenu";
-            this.CheckSubTaskMenu.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.CheckSubTaskMenu.Size = new System.Drawing.Size(158, 36);
-            this.CheckSubTaskMenu.TabIndex = 7;
-            this.CheckSubTaskMenu.Text = "check subTaskMenu ";
-            this.CheckSubTaskMenu.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.CheckSubTaskMenu.UseAccentColor = false;
-            this.CheckSubTaskMenu.UseVisualStyleBackColor = true;
-            this.CheckSubTaskMenu.Click += new System.EventHandler(this.CheckSubTaskMenu_Click);
-            // 
             // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(500, 475);
-            this.Controls.Add(this.CheckSubTaskMenu);
             this.Controls.Add(this.FacePic);
             this.Controls.Add(this.NewAccBut);
             this.Controls.Add(this.LoginBut);
@@ -203,7 +181,6 @@
         private MaterialSkin.Controls.MaterialButton LoginBut;
         private MaterialSkin.Controls.MaterialButton NewAccBut;
         private System.Windows.Forms.PictureBox FacePic;
-        private MaterialSkin.Controls.MaterialButton CheckSubTaskMenu;
     }
 }
 

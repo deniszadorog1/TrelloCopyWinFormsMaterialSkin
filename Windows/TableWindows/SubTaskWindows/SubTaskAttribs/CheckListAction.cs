@@ -29,14 +29,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             InitCopyBox();
         }
-
         private void InitCopyBox()
         {
             const int distanceBetweenChecksNames = 5;
             const int existCheckListsWidthError = 30;
             Point tempPanelLoc = new Point(0, 0);
             
-
             for (int i = 0; i < _table.Tasks.Count; i++)
             {
                 for (int j = 0; j < _table.Tasks[i].SubTasks.Count; j++)
@@ -90,11 +88,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                         subTaskCheckLists.Size = new Size(autoSize.Width - existCheckListsWidthError, panelHeight);
 
                         CheckBoxesToCopy.Controls.Add(subTaskCheckLists);
-
                     }
                 }
             }
-
         }
         private void CheckListNameLb_Click(object sender, EventArgs e)
         {
@@ -125,11 +121,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         {
             for (int i = 0; i < control.Controls.Count; i++)
             {
-                Console.WriteLine(control.Controls[i].Name);
                 if (control.Controls[i] is Panel)
                 {
                     Label label = GetLabelWhichTextIsGreen(control.Controls[i]);
-
                     if(!(label is null))
                     {
                         return label;
@@ -145,10 +139,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             }
             return null;
         }
-
         private void AddBut_Click(object sender, EventArgs e)
         {
-            if (CheckName.Text == "")
+            if (CheckName.Text == string.Empty)
             {
                 MessageBox.Show("Smth went wrong!", "Mistake!");
                 return;
@@ -166,22 +159,19 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
                 InsertModelInDb(model);
                 _chosenSubTask.CheckLists.Add(model);
-
                 Close();
                 return;
             }
             CheckListModel boxToCopy = new CheckListModel(GetCheckBox());
-            boxToCopy.Name = CheckName.Text != "" ? CheckName.Text : boxToCopy.Name;
+            boxToCopy.Name = CheckName.Text != string.Empty ? CheckName.Text : boxToCopy.Name;
 
             if (IfCheckListIsAlreadyExist(boxToCopy))
             {
                 MessageBox.Show("Check list with such name is exist!", "Mistake!");
                 return;
             }
-
             InsertModelInDb(boxToCopy);
             _chosenSubTask.CheckLists.Add(boxToCopy);
-
             Close();
         }
         public void InsertModelInDb(CheckListModel model)
@@ -212,7 +202,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             return boxToCopy;
         }
-
         private Control GetLabelInControl(Control control)
         {
             for (int i = 0; i < control.Controls.Count; i++)
@@ -225,7 +214,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             }
             return null;
         }
-
         private void ClearCopyBut_Click(object sender, EventArgs e)
         {
             ChosenCheckList.Text = _notCopySign.ToString();

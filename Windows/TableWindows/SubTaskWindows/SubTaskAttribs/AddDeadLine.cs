@@ -24,12 +24,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             _subTask = subTask;
             InitializeComponent();
         }
-        public AddDeadLine(DeadLineDate deadLine)
-        {
-            _deadLine = deadLine;
-            InitializeComponent();
-        }
-
         private void AddBut_Click(object sender, EventArgs e)
         {
             DateTime start = StartDatePicker.Value;
@@ -53,10 +47,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             _subTask.DeadLine = _deadLine;
             DBUsage.UpdateSubTask(_subTask);
-
             Close();
         }
-
         private void BackBut_Click(object sender, EventArgs e)
         {
             _deadLine = null;

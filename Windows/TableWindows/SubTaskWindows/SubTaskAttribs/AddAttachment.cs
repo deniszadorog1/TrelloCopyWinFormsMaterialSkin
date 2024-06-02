@@ -71,7 +71,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 }
             }
         }
-
         private void AddBut_Click(object sender, EventArgs e)
         {
             if (SignBox.Text == string.Empty ||
@@ -84,7 +83,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             _newAttachment = new Attachment(_listWithoutChosen[SubTaskBox.SelectedIndex].GlobalSubTaskIndex,
                 SignBox.Text, _chosenSubTask.Attachments.Count, _chosenSubTask.Id, _listWithoutChosen[SubTaskBox.SelectedIndex].Id);
 
-
             _table.LastSubTaskIndex++;
             _chosenSubTask.Attachments.Add(_newAttachment);
 
@@ -93,7 +91,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             Close();
         }
-
         private void BackBut_Click(object sender, EventArgs e)
         {
             Close();

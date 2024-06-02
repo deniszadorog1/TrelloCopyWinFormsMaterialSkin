@@ -76,16 +76,29 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
 
         public Color GetColorForTableName(Color bgColor)
         {
-            
-            return bgColor == Color.Transparent || bgColor == Color.Transparent  ? Color.Black :
-                Color.FromArgb(GetChangedColorParam(bgColor.R), GetChangedColorParam(bgColor.G), GetChangedColorParam(bgColor.B));
+            double bgLuminance = GetLuminance(bgColor);
+            Color black = Color.Black;
+            Color white = Color.White;
+            double blackLuminance = GetLuminance(black);
+            double whiteLuminance = GetLuminance(white);
+            double blackContrast = (Math.Max(bgLuminance, blackLuminance) + 0.05) / (Math.Min(bgLuminance, blackLuminance) + 0.05);
+            double whiteContrast = (Math.Max(bgLuminance, whiteLuminance) + 0.05) / (Math.Min(bgLuminance, whiteLuminance) + 0.05);
+
+            return (blackContrast > whiteContrast) ? black : white;
 
         }
-        public int GetChangedColorParam(int colorParam)
+        public double GetLuminance(Color color)
         {
-            return colorParam <= 150 && colorParam >= 30 ? colorParam + 100 :
-                colorParam >= 150  ? colorParam - 30 :
-                colorParam >= 150 ? colorParam - 50 : 100;
+            double r = color.R / 255.0;
+            double g = color.G / 255.0;
+            double b = color.B / 255.0;
+
+            r = (r <= 0.03928) ? r / 12.92 : Math.Pow((r + 0.055) / 1.055, 2.4);
+            g = (g <= 0.03928) ? g / 12.92 : Math.Pow((g + 0.055) / 1.055, 2.4);
+            b = (b <= 0.03928) ? b / 12.92 : Math.Pow((b + 0.055) / 1.055, 2.4);
+
+            // Рассчитываем относительную яркость согласно WCAG
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
         }
 
 

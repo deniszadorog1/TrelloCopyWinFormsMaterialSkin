@@ -31,7 +31,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         }
         private void CorrectBut_Click(object sender, EventArgs e)
         {
-            if(CommentBox.Text == "")
+            if(CommentBox.Text == string.Empty)
             {
                 MessageBox.Show("Smth went wrong!", "mistake!");
                 return;

@@ -57,8 +57,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         }
         private void BackBut_Click(object sender, EventArgs e)
         {
-/*            _subTask.Cover.Type = (_subTask.Cover.BGImage is null && _subTask.Cover.BGColor is null) ? null : 
-                FullSizeTypeRadio.Checked ? CoverType.FullSizeCover : CoverType.PartSizeCover;*/
             if(_subTask.Cover.BGImage is null && _subTask.Cover.BGColor is null)
             {
                 _subTask.Cover.Type = null;
@@ -91,7 +89,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             }
 
             _subTask.Cover = new Cover(ChooseColor.Color);
-            _subTask.Cover.Type = FullSizeTypeRadio.Checked ? CoverType.FullSizeCover : CoverType.PartSizeCover;
+            _subTask.Cover.Type = FullSizeTypeRadio.Checked ? 
+                CoverType.FullSizeCover : CoverType.PartSizeCover;
 
 
             DBUsage.DeleteCover(_subTask);
@@ -110,18 +109,20 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         {
             ImagesPanel.Controls.Clear();
             const int distBetweenImages = 5;
+            const int imageWidthError = 20;
+            const int imageBoxHeight = 150;
+
             Point loc = new Point(0, distBetweenImages);
             for(int i = 0; i < _bgImages.Count; i++)
             {
                 PictureBox box = new PictureBox();
                 box.Image = _bgImages[i];
                 box.Location = loc;
-                box.Size = new Size(ImagesPanel.Width - 20, 150);
+                box.Size = new Size(ImagesPanel.Width - imageWidthError, imageBoxHeight);
                 box.SizeMode = PictureBoxSizeMode.StretchImage;
                 box.Click += ChooseBGImage_Click;
 
                 ImagesPanel.Controls.Add(box);
-
                 loc = new Point(loc.X, loc.Y + box.Height + distBetweenImages);
 
                 DBUsage.InsertCoverPhoto(_bgImages[i].Tag.ToString());
@@ -134,7 +135,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 BgPanel.BackColor = Color.Empty;
                 BgPanel.BackgroundImage = picBox.Image;
 
-                _subTask.Cover = new Cover(new CoverImageAttributes(BgPanel.BackgroundImage, BgPanel.BackgroundImage.Tag.ToString()));
+                _subTask.Cover = new Cover(new CoverImageAttributes(BgPanel.BackgroundImage,
+                    BgPanel.BackgroundImage.Tag.ToString()));
                 _subTask.Cover.Type = CoverType.PartSizeCover;
 
                 DBUsage.DeleteCover(_subTask);
@@ -146,7 +148,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         {
 
         }
-
         private void AddImageBut_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -154,7 +155,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 Filter = "Image files (*.jpg; *.jpeg; *.png)|*.jpg; *.jpeg; *.png|All files (*.*)|*.*",
                 Title = "Open an image file"
             };
-
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string filePath = openFileDialog.FileName;
@@ -168,40 +168,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
                 InitBGImagesInList();
                 FillImages();
-
-                //RenameBGImages();
-            }
-        }
-
-        private void RenameBGImages()
-        {
-            string[] fileNames = Directory.GetFiles(_bgImagesPath);
-
-            foreach (string filePath in fileNames)
-            {
-                string fileExtension = Path.GetExtension(filePath);
-                string fileName = Path.GetFileName(filePath);
-
-                if (fileExtension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                    fileExtension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-                    fileExtension.Equals(".png", StringComparison.OrdinalIgnoreCase))
-                {
-
-                    if (fileName.Length <= 32)
-                    {
-                        string newName = Guid.NewGuid().ToString() + fileExtension;
-                        string newPath = Path.Combine(_bgImagesPath, newName);
-
-                        // Перемещаем файл
-                        File.Move(filePath, newPath);
-                    }
-                }
             }
         }
         public void ReplaceImage(string filePath)
         {      
-            string fileName = GetFileName(filePath);
-
             string fileExtension = Path.GetExtension(filePath);
             string newName = Guid.NewGuid().ToString() + fileExtension;     
             string filePathNewImage = Path.Combine(_bgImagesPath, newName);

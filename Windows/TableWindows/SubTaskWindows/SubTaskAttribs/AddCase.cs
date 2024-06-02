@@ -43,7 +43,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             Close();
         }
-
         private void BackBut_Click(object sender, EventArgs e)
         {
             Close();

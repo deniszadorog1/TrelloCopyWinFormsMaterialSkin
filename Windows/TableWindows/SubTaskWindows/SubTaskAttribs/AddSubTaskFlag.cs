@@ -23,7 +23,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         Table _table;
         private const string _addColorText = "Add Color in List";
         private const string _correctColorText = "Correct color";
-
         public AddSubTaskFlag(SubTask subTask, Table table)
         {
             _subTask = subTask;
@@ -32,26 +31,24 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             InitBaseParams();
         }
-
         public void InitBaseParams()
         {
             ChoseColor.Color = Color.Empty;
             FillColorsBox();
         }
-
         public void FillColorsBox()
         {
             ColorsBox.Controls.Clear();
             Point loc = new Point();
+            const int _distanceBetweenFlags = 5;
             for (int i = 0; i < _table._allFlags.Count; i++)
             {
                 Panel colorPanel = CreateColorPanel(_table._allFlags[i].FlagColor, _table._allFlags[i].FlagTag, i);
                 colorPanel.Location = loc;
 
                 ColorsBox.Controls.Add(colorPanel);
-                loc = new Point(loc.X, loc.Y + colorPanel.Height + 5);
+                loc = new Point(loc.X, loc.Y + colorPanel.Height + _distanceBetweenFlags);
             }
-
             for (int i = 0; i < ColorsBox.Controls.Count; i++)
             {
                 if (ColorsBox.Controls[i] is Panel)
@@ -71,18 +68,21 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         {
             const int checkBoxXDistance = 10;
             const int distanceBetweenControls = 20;
+            const int colorPanelHeight = 50;
+            Size flagCheckBoxSize = new Size(15, 15);
+            const int colorPanelXDistMultiplier = 3;
 
             Panel colorPanel = new Panel();
 
             colorPanel.AutoSize = false;
-            colorPanel.Size = new Size(ColorsBox.Width - checkBoxXDistance * 3, 50);
+            colorPanel.Size = new Size(ColorsBox.Width - checkBoxXDistance * colorPanelXDistMultiplier, colorPanelHeight);
 
             colorPanel.BorderStyle = BorderStyle.FixedSingle;
             colorPanel.Tag = tag;// newColor;
 
             CheckBox check = new CheckBox();
             check.Text = "";
-            check.Size = new Size(15, 15);
+            check.Size = flagCheckBoxSize;
             check.Location = new Point(checkBoxXDistance, colorPanel.Height / 2 - check.Height / 2);
 
             check.Checked = _subTask.Flags.Any(x => x.FlagColor == newColor && x.FlagTag == text);
@@ -102,7 +102,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             colorText.TextAlign = ContentAlignment.MiddleCenter;
 
             color.Controls.Add(colorText);
-
             colorPanel.Controls.Add(color);
 
             return colorPanel;
@@ -111,7 +110,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         {
             Panel colorPanel = (Panel)((CheckBox)sender).Parent;
             Flag flag = _table._allFlags[(int)colorPanel.Tag];
-
             if (((CheckBox)sender).Checked)
             {
                 DBUsage.InsertSubTaskTag(_subTask, flag);
@@ -231,7 +229,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             Label colorPanelLb = GetLabelFromControl(colorPanel);
             if (colorPanelLb is null) return false;
 
-
             return (colorPanel.BackColor == color &&
                 colorPanelLb.Text == text);
         }
@@ -268,7 +265,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             }
             return null;
         }
-
         private void OwnColorBut_Click(object sender, EventArgs e)
         {
             _toChangeFlag = null;
@@ -283,9 +279,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 ChosenColorBox.BackColor = ChoseColor.Color;
                 ChosenColorBox.Invalidate();
             }
-
         }
-
         private Flag IfFlagParamsIsExist()
         {
             for (int i = 0; i < _table._allFlags.Count; i++)

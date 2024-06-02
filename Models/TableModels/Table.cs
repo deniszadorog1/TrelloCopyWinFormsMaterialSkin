@@ -20,7 +20,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         public int LastSubTaskIndex { get; set; }
         public List<User> UserInTable { get; set; }
         public TableStatus Status { get; set; }
-        public FavoriteType favStatus { get; set; }
+        public FavoriteType FavStatus { get; set; }
 
         public List<Flag> _allFlags = new List<Flag>();
 
@@ -51,10 +51,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             Name = name;
             BgColor = bgColor;
             UserInTable = new List<User>();
-
-            /*            _allFlags.Add(new Flag(Color.Red, string.Empty));
-                        _allFlags.Add(new Flag(Color.Green, string.Empty));
-                        _allFlags.Add(new Flag(Color.Blue, string.Empty));*/
         }
         public TableTask GetTaskByName(string name)
         {
@@ -92,20 +88,11 @@ namespace TrelloCopyWinForms.Models.TableModels
 
             return task.SubTasks.Last();
         }
-        public int GetUniqueNumForLastSubTask(string tasksName)
-        {
-            return GetTaskByName(tasksName).SubTasks.Last().UniqueIndex;
-        }
-
         public SubTask GetSubTask(string taskName, string subTaskName, int uniqueIndex)
         {
             TableTask task = GetTaskByName(taskName);
 
             return task.GetSubTaskByNameAndIndex(subTaskName, uniqueIndex);
-        }
-        public List<Flag> GetAllFlags()
-        {
-            return _allFlags;
         }
         public CheckListModel GetCheckBox(string taskName, string subTaskName, string checkName)
         {
@@ -128,10 +115,6 @@ namespace TrelloCopyWinForms.Models.TableModels
                 Tasks[tableIndex].SubTasks[i].UniqueIndex = i;
             }
         }
-        public List<SubTask> GetAllSubTasks()
-        {
-            return null;
-        }
         public string GetTaskNameWitchContainsSubTaskByGlobalIndex(int index)
         {
             for (int i = 0; i < Tasks.Count; i++)
@@ -143,7 +126,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return "";
         }
-
         public string GetSubTaskNameByGlobalindex(int index)
         {
             for (int i = 0; i < Tasks.Count; i++)
@@ -156,22 +138,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             return "";
         }
-
-        public bool IfSuccessDeleteAttachment(string taskName, string subTaskName, int uniqueIndex, int subTaskGlobalIndex)
-        {
-            TableTask task = GetTaskByName(taskName);
-            SubTask subTask = task.GetSubTaskByIndex(subTaskGlobalIndex);
-
-            for (int i = 0; i < subTask.Attachments.Count; i++)
-            {
-                if (subTask.Attachments[i].UniqueIndex == uniqueIndex)
-                {
-                    subTask.Attachments.RemoveAt(i);
-                    return true;
-                }
-            }
-            return false;
-        }
         public string GetUserLoginById(int userId)
         {
             for (int i = 0; i < UserInTable.Count; i++)
@@ -183,27 +149,9 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             throw new InvalidOperationException("Cant find user with such ID");
         }
-
         public bool IfTaskIsExist(string name)
         {
             return Tasks.Any(x => x.Name == name);
-        }
-
-        public void SwapTwoLastTasks()
-        {
-            if (Tasks.Count >= 2)
-            {
-                TableTask task = Tasks.Last();
-
-                Tasks[Tasks.Count - 1] = Tasks[Tasks.Count - 2];
-                Tasks[Tasks.Count - 2] = task;
-            }
-        }
-        public void RemoveSubTask(int taskIndex, int subTaskGloba)
-        {
-            TableTask task = Tasks[taskIndex];
-
-            task.SubTasks.Remove(task.SubTasks.Find(x => x.GlobalSubTaskIndex == subTaskGloba));
         }
         public int GetTaskIndexByName(string name)
         {
@@ -254,15 +202,6 @@ namespace TrelloCopyWinForms.Models.TableModels
 
             Tasks[tableIndex].UpdateSubTasksUniqueIndexes();
         }
-
-        public void UpdateTasksInDb()
-        {
-            for (int i = 0; i < Tasks.Count; i++)
-            {
-                DBUsage.UpdateTask(Tasks[i]);
-            }
-        }
-
         public void UpdateSUbTasksInDB()
         {
             for (int i = 0; i < Tasks.Count; i++)
@@ -286,7 +225,6 @@ namespace TrelloCopyWinForms.Models.TableModels
             }
             LastSubTaskIndex = theMostNum;
         }
-
         public void SortTaskByPlaceingOnTable()
         {
             for (int i = 0; i < Tasks.Count - 1; i++)
@@ -302,16 +240,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                 }
             }
         }
-        public void InitReintTableUsers(List<Table> tables)
-        {
-            for (int i = 0; i < tables.Count; i++)
-            {
-                if (tables[i].Id == Id)
-                {
-                    tables[i].UserInTable = UserInTable;
-                    return;
-                }
-            }
-        }
+
+
     }
 }

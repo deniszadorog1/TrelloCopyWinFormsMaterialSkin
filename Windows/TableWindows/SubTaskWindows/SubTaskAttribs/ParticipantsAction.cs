@@ -29,7 +29,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             FillBoxes();
         }
-
         public void FillBoxes()
         {
             UsersInSubTaskBox.Items.Clear();
@@ -37,7 +36,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             {
                 UsersInSubTaskBox.Items.Add(_table.GetUserLoginById(_subTask.UsersIdsInSuBTask[i]));
             }
-
             _usersIndexesToAdd.Clear();
             UsersToAddBox.Items.Clear();
             for (int i = 0; i < _table.UserInTable.Count; i++)
@@ -82,8 +80,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             FillBoxes();
             UsersToAddBox.Text = string.Empty;
-            UsersToAddBox.SelectedItem = null;
-            
+            UsersToAddBox.SelectedItem = null;    
         }
     }
 }

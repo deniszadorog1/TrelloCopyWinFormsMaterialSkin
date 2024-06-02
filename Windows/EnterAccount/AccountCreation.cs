@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 using TrelloCopyWinForms.Models.UserModel;
 using TrelloCopyWinForms.Models.DataBase;
@@ -22,17 +23,17 @@ namespace TrelloCopyWinForms.Windows.EnterAccount
         }
         private void CreateBut_Click(object sender, EventArgs e)
         {
-            if (LoginBox.Text == "" || EmailBox.Text == "")
+
+            if (string.IsNullOrWhiteSpace(LoginBox.Text) ||
+                string.IsNullOrWhiteSpace(EmailBox.Text))
             {
                 ClearBoxes();
-
-                MessageBox.Show("You didnt enter the login!", "Mistake!");
+                MessageBox.Show("login or email doesnt entered!", "Mistake!");
             }
-            else if (EmailBox.Text == "")
+            else if (!EmailValidation())
             {
-                ClearBoxes();
-
-                MessageBox.Show("Email doesnt enter!", "Mistake!");
+                MessageBox.Show("smth wrong with email validation!", "Mistake!");
+                return;
             }
             else if (!DBUsage.IfUserParamsExistInDB(LoginBox.Text, EmailBox.Text))
             {
@@ -44,6 +45,12 @@ namespace TrelloCopyWinForms.Windows.EnterAccount
             }
             else MessageBox.Show("login or email is Exist!", "Mistake!");
             ClearBoxes();
+        }
+        public bool EmailValidation()
+        {
+            string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            return regex.IsMatch(EmailBox.Text);
         }
         private void ClearBoxes()
         {

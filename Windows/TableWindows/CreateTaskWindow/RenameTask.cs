@@ -25,7 +25,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow
 
             NameBox.Text = taskToRename.Name;
         }
-
         private void RenameBut_Click(object sender, EventArgs e)
         {
             if(NameBox.Text == string.Empty &&
@@ -37,7 +36,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow
             _task.Name = NameBox.Text;
             Close();
         }
-
         private void BackBut_Click(object sender, EventArgs e)
         {
             Close();

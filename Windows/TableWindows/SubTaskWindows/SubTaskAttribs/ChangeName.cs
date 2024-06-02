@@ -27,12 +27,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         {
             SubTaskNameBox.Text = _subTask.Name;
         }
-
         private void BackBut_Click(object sender, EventArgs e)
         {
             Close();
         }
-
         private void InitBut_Click(object sender, EventArgs e)
         {
             if(SubTaskNameBox.Text == string.Empty)

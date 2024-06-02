@@ -63,7 +63,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                     return (AccountType)i;
                 }
             }
-
             return AccountType.Viewer;
         }
     }

@@ -24,28 +24,22 @@ namespace TrelloCopyWinForms.Windows.TableWindows.Codes
             _user = user;
             InitializeComponent();
         }
-
         private void EnterCodeBut_Click(object sender, EventArgs e)
         {
             if(CodeBox.Text == "" || !DBUsage.IfCodeExist(CodeBox.Text)) 
             {
                 MessageBox.Show("No such code");
                 return;
-            }            
-            
+            }                     
             _table = DBUsage.GetTableByCode(CodeBox.Text);
-
             if(DBUsage.IfUserContainsInTable(_table.Id, _user.Id))
             {
                 _table = null;
                 MessageBox.Show("User is already contains in this table");
                 return;
             }
-
             DBUsage.InsertUserTables(_table, _user, DBUsage.GetTypeByCode(CodeBox.Text));
-
         }
-
         private void BackBut_Click(object sender, EventArgs e)
         {
             Close();

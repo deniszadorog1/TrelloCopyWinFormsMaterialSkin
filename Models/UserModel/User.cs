@@ -36,6 +36,5 @@ namespace TrelloCopyWinForms.Models.UserModel
             Id = id;
             Password = "";
         }
-
     }
 }

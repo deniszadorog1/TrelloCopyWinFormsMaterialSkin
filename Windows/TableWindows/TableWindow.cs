@@ -17,6 +17,7 @@ using TrelloCopyWinForms.Models.DataBase;
 using TrelloCopyWinForms.Models.UserModel;
 using TrelloCopyWinForms.Windows.CreateTableWindow;
 using TrelloCopyWinForms.Windows.TableWindows.Codes;
+using System.IO;
 
 namespace TrelloCopyWinForms.Windows.TableWindows
 {
@@ -44,30 +45,38 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         private bool _addTaskEventCorrection = true;
 
         private FlagsViewOnTableWindowType _type = FlagsViewOnTableWindowType.Line;
+
+        private Image _emptyStar;
+        private Image _fullStar;
+
         public TableWindow(Table table, User user, List<Table> tables)
         {
             _table = table;
             _user = user;
             _tables = tables;
             _user.Type = DBUsage.GetUserTypeForTable(_table.Id, _user.Id);
+            DBUsage.InsertFavStatusForTables(_user, _tables);
 
             InitializeComponent();
 
+            InitStartPaths();
+
             TablePanel.AllowDrop = true;
-            InitBackGroundColor();
+            TablePanel.BackColor = (Color)_table.BgColor;
 
             InitTable();
             CreateLeftPanel();
         }
-        public void InitBackGroundColor()
-        {
-            TablePanel.BackColor = (Color)_table.BgColor;
-        }
         public void CreateLeftPanel()
         {
             LeftTablesPanel.Controls.Clear();
+
             Point loc = new Point(_distanceBetweenSubTaskName, _distanceBetweenSubTasks);
+            Size starSize = new Size(30, 30);
             const int tablePanelHeight = 50;
+
+            SortTablesByFavs();
+
             for (int i = 0; i < _tables.Count; i++)
             {
                 Panel tablePanel = new Panel();
@@ -78,28 +87,71 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 tablePanel.Click += ChangeTable_Click;
 
                 PictureBox tableColor = new PictureBox();
+                tableColor.BorderStyle = BorderStyle.FixedSingle;
                 tableColor.BackColor = (Color)_tables[i].BgColor;
                 tableColor.Size = new Size(tablePanelHeight / 2, tablePanelHeight / 2);
-                tableColor.Location = new Point(tablePanel.Height / 2 - tableColor.Height / 2, 0);
+                tableColor.Location = new Point(_distanceBetweenSubTaskName / 2, tablePanel.Height / 2 - tableColor.Height / 2);
                 tablePanel.Controls.Add(tableColor);
 
+                PictureBox starBox = new PictureBox();
+                starBox.Tag = _tables[i].Id;
+                starBox.BorderStyle = BorderStyle.FixedSingle;
+                starBox.Size = starSize;
+                starBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                starBox.Click += ChangeFavType_Click;
+                starBox.Location = new Point(tablePanel.Width - starBox.Width, 0);
+                starBox.Image = _tables[i].FavStatus == FavoriteType.Favorite ? _fullStar : _emptyStar;
+                tablePanel.Controls.Add(starBox);
+
+
                 Label label = new Label();
+                label.AutoSize = false;
+                label.BorderStyle = BorderStyle.FixedSingle;
                 label.Text = _tables[i].Name;
-                label.Location = new Point(tableColor.Location.X + tableColor.Width + _distanceBetweenSubTasks);
+                label.Location = new Point(tableColor.Location.X + tableColor.Width, 0);
+                label.Size = new Size(tablePanel.Width - tableColor.Width - starBox.Width - _distanceBetweenSubTaskName * 2, tablePanel.Height);
                 tablePanel.Controls.Add(label);
 
-                PictureBox starBox = new PictureBox();
-                starBox.Click += ChangeFavType_Click;
 
-
+              
                 LeftTablesPanel.Controls.Add(tablePanel);
 
                 loc = new Point(loc.X, loc.Y + tablePanel.Height + _distanceBetweenSubTasks);
             }
         }
+        public void SortTablesByFavs()
+        {
+            List<Table> res = new List<Table>();
+
+            res.AddRange(_tables.Where(x => x.FavStatus == FavoriteType.Favorite).ToList());
+            res.AddRange(_tables.Where(x => x.FavStatus == FavoriteType.Usual).ToList());
+
+            _tables = res;
+        }
         private void ChangeFavType_Click(object sender, EventArgs e)
         {
+            if (sender is PictureBox picBox)
+            {
+                Table table = _tables.Find(x => x.Id == (int)picBox.Tag);
 
+                table.FavStatus = table.FavStatus == FavoriteType.Favorite ? FavoriteType.Usual : FavoriteType.Favorite;
+
+                DBUsage.UpdateFavStatus(_user.Id, table.Id, table.FavStatus == FavoriteType.Favorite ? true : false);
+                CreateLeftPanel();
+            }
+        }
+        private void InitStartPaths()
+        {
+            DirectoryInfo baseDirectoryInfo = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            string imageDirectory = baseDirectoryInfo.Parent.Parent.FullName;
+            string imagePath = Path.Combine(imageDirectory, "Images");
+            string strasDisrctory = Path.Combine(imagePath, "FavStars");
+
+            string emptyStarPath = Path.Combine(strasDisrctory, "emptyStar.png"); 
+            _emptyStar = Image.FromFile(emptyStarPath);
+
+            string fullStarPath = Path.Combine(strasDisrctory, "fullStar.png");
+            _fullStar = Image.FromFile(fullStarPath);
         }
         private void ChangeTable_Click(object sender, EventArgs e)
         {

@@ -20,12 +20,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow
         {
             InitializeComponent();
         }
-
         private void BackBut_Click(object sender, EventArgs e)
         {
             Close();
         }
-
         private void AddTaskBut_Click(object sender, EventArgs e)
         {
             if(TaskNameBox.Text == "")

@@ -409,11 +409,12 @@ namespace TrelloCopyWinForms.Models.DataBase
             {
                 connection.Open();
 
-                string query = "INSERT INTO [Tables]([Name], [ColorId]) VALUES(@name, @colorId)";
+                string query = "INSERT INTO [Tables]([Name], [ColorId], [Access]) VALUES(@name, @colorId, @access)";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@name", table.Name);
                 command.Parameters.AddWithValue("@colorId", GetColorId(table));
+                command.Parameters.AddWithValue("@access", 1);
 
                 command.ExecuteNonQuery();
 
@@ -596,12 +597,13 @@ namespace TrelloCopyWinForms.Models.DataBase
             {
                 connection.Open();
 
-                string query = "INSERT INTO [UsersTable] ([UserId], [TableId], [UserTypeId]) VALUES(@userId, @tableId, @typeId)";
+                string query = "INSERT INTO [UsersTable] ([UserId], [TableId], [UserTypeId], [IfFavorite]) VALUES(@userId, @tableId, @typeId, @ifFavorite)";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@userId", user.Id);
                 command.Parameters.AddWithValue("@tableId", table.Id);
                 command.Parameters.AddWithValue("@typeId", GetTypeIdByUserType(type));
+                command.Parameters.AddWithValue("@ifFavorite", 0);
 
                 command.ExecuteNonQuery();
 
@@ -2119,15 +2121,16 @@ namespace TrelloCopyWinForms.Models.DataBase
                 
             }
         }
-        public static void DeleteUserFromUsersTable(int userId)
+        public static void DeleteUserFromUsersTable(int userId, int tableId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                string query = "DELETE FROM [UsersTable] WHERE [UserId] = @id";
+                string query = "DELETE FROM [UsersTable] WHERE [UserId] = @userId AND [TableId] = @tableId";
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", userId);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@tableId", tableId);
 
                 command.ExecuteNonQuery();
 
@@ -2209,7 +2212,63 @@ namespace TrelloCopyWinForms.Models.DataBase
                 //connection.Close();
             }
         }
+        public static void InsertFavStatusForTables(User user, List<Table> tables)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
 
+                string query = "SELECT * FROM [UsersTable] WHERE [UserId] = @userId";
 
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@userId", user.Id);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int tableId = (int)reader["TableId"];
+                    bool status = (bool)reader["IfFavorite"];
+
+                    tables.Find(x => x.Id == tableId).FavStatus = status ? 
+                        FavoriteType.Favorite : FavoriteType.Usual;
+                }
+                connection.Close();
+            }
+        }
+        public static void MakeTableInActive(int tableId)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "UPDATE [Tables] SET [Access] = 0 WHERE [Id] = @tableId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@tableId", tableId);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
+        public static void UpdateFavStatus(int userId, int tableId, bool newFavStatus)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "UPDATE [UsersTable] SET [IfFavorite] = @fav WHERE [TableId] = @tableId AND [UserId] = @userId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@tableId", tableId);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@fav", newFavStatus ? 1 : 0);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
     }
 }
