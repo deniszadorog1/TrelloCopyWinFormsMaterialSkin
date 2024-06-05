@@ -84,6 +84,8 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             double blackContrast = (Math.Max(bgLuminance, blackLuminance) + 0.05) / (Math.Min(bgLuminance, blackLuminance) + 0.05);
             double whiteContrast = (Math.Max(bgLuminance, whiteLuminance) + 0.05) / (Math.Min(bgLuminance, whiteLuminance) + 0.05);
 
+            //test
+
             return (blackContrast > whiteContrast) ? black : white;
 
         }
