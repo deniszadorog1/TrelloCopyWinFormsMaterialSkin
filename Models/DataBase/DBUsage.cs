@@ -16,7 +16,7 @@ namespace TrelloCopyWinForms.Models.DataBase
 {
     public static class DBUsage
     {
-        private static string _connectionString = "";
+        private static string _connectionString = string.Empty;
 
         public static void InitConnectionString()
         {
@@ -36,7 +36,7 @@ namespace TrelloCopyWinForms.Models.DataBase
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@login", user.Login);
                 command.Parameters.AddWithValue("@password", passHash);
-                command.Parameters.AddWithValue("@email", user.Password);
+                command.Parameters.AddWithValue("@email", user.Email);
 
                 command.ExecuteNonQuery();
 
@@ -56,6 +56,27 @@ namespace TrelloCopyWinForms.Models.DataBase
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@login", login);
                 command.Parameters.AddWithValue("@email", email);
+
+                SqlDataReader reader = command.ExecuteReader();
+                bool check = reader.Read();
+
+                connection.Close();
+
+                return check;
+            }
+        }
+        public static bool IfUserLoginParamExistInDB(string login)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT [Login], [Email] FROM [Users] us " +
+                    "WHERE EXISTS(SELECT[Login], [Email] FROM[Users] users " +
+                    "WHERE us.Login = @login)";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@login", login);
 
                 SqlDataReader reader = command.ExecuteReader();
                 bool check = reader.Read();
@@ -92,54 +113,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return res;
         }
-/*        public static Table AddTableByTag(string tag)
-        {
-            Table res = null;
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "SELECT * FROM [Tables]";
-
-                SqlCommand command = new SqlCommand(query, connection);
-
-                SqlDataReader reader = command.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    if (BCrypt.Net.BCrypt.Verify(tag, reader["EnterTag"].ToString()))
-                    {
-                        res = new Table();
-
-                        res.Name = reader["Name"].ToString();
-                        if (reader["ColorId"] != DBNull.Value)
-                        {
-                            res.BgColor = GetColorById(int.Parse(reader["ColorId"].ToString()));
-                        }
-                        res.Id = int.Parse(reader["id"].ToString());
-
-                        //Init flags
-                        List<Flag> flags = GetTagsForTable(res);
-                        res._allFlags = flags;
-
-                        //Init Tasks
-                        res.Tasks = GetTasksForTable(res.Id);
-
-                        //Init Users
-                        res.UserInTable = GetUsersForTable(res.Id);
-
-                        //Init lastSubTask index
-                        res.InitLastSubTaskIndex();
-                    }
-                }
-
-
-                connection.Close();
-            }
-
-            return res;
-        }*/
         private static Table GetTableById(int id)
         {
             Table res = null;
@@ -181,10 +154,8 @@ namespace TrelloCopyWinForms.Models.DataBase
                 }
                 connection.Close();
             }
-
             return res;
         }
-
         public static bool ComparePassHashes(string login, string oldPassword)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -304,7 +275,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         public static void InsertCover(Cover cover)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -322,7 +292,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         private static object GetCoverType(Cover cover)
         {
             if (cover is null) return DBNull.Value;
@@ -346,7 +315,6 @@ namespace TrelloCopyWinForms.Models.DataBase
         {
             if (cover.BGImage is null) return DBNull.Value;
             return GetPhotoIdByPath(cover.BGImage.Path);
-
         }
         public static object GetPhotoIdByPath(string path)
         {
@@ -372,16 +340,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return DBNull.Value;
         }
-
-        public static object InitPathToImageCover(Cover cover)
-        {
-            if (!(cover.BGImage is null))
-            {
-                return cover.BGImage.Path;
-            }
-            return DBNull.Value;
-        }
-
         public static object GetColorIdByColor(Color? color)
         {
             if (color is null) return DBNull.Value;
@@ -402,7 +360,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return res;
         }
-
         public static void InsertTable(Table table)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -421,7 +378,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         public static void InsertTask(TableTask task)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -554,20 +510,20 @@ namespace TrelloCopyWinForms.Models.DataBase
             if (subTask.DeadLine is null || subTask.DeadLine.EndDate is null) return DBNull.Value;
             return subTask.DeadLine.EndDate;
         }
-
         public static void InsertTags(Table table, Flag flag)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                string query = "INSERT INTO [Tag]([TableId], [ColorId], [Text]) " +
-                    "VALUES(@tableId, @colorId, @text)";
+                string query = "INSERT INTO [Tag]([TableId], [ColorId], [Text], [TextColor]) " +
+                    "VALUES(@tableId, @colorId, @text, @textColorId)";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@tableId", table.Id);
                 command.Parameters.AddWithValue("@colorId", GetColorIdByColor(flag.FlagColor));
                 command.Parameters.AddWithValue("@text", flag.FlagTag);
+                command.Parameters.AddWithValue("@textColorId", flag.ForColor == Color.Black ? 0 : 1);
 
                 command.ExecuteNonQuery();
 
@@ -627,7 +583,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         public static void InsertUserSubTask(int userId, SubTask subtask)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -645,7 +600,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         public static void InsertHistoryMessage(Comment message, SubTask subTask, User user)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -764,7 +718,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         public static List<Table> GetAllTables()
         {
             List<Table> res = new List<Table>();
@@ -804,7 +757,6 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                     res.Add(table);
                 }
-
                 connection.Close();
             }
             return res;
@@ -937,7 +889,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 }
                 connection.Close();
             }
-
             return res;
         }
         private static List<CheckListModel> GetCehckLists(int subtaskId)
@@ -968,13 +919,11 @@ namespace TrelloCopyWinForms.Models.DataBase
                 }
                 connection.Close();
             }
-
             return res;
         }
         private static List<CheckListCase> GetCheckListCases(int checkListId)
         {
             List<CheckListCase> res = new List<CheckListCase>();
-
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -1049,10 +998,8 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                     res.Add(attachment);
                 }
-
                 connection.Close();
             }
-
             return res;
         }
         private static List<int> GetUserIdsForSubTask(int subTaskId)
@@ -1134,7 +1081,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         private static Flag GetFlagByFlagId(int flagId)
         {
             Flag res = new Flag();
@@ -1153,12 +1099,13 @@ namespace TrelloCopyWinForms.Models.DataBase
                     res.Id = int.Parse(reader["Id"].ToString());
                     res.FlagTag = reader["Text"].ToString();
                     res.FlagColor = (Color)GetColorById(int.Parse(reader["ColorId"].ToString()));
+
+                    res.ForColor = (bool)reader["TextColor"] == false ? Color.Black : Color.White;
                 }
                 connection.Close();
             }
             return res;
         }
-
         private static List<Comment> GetCommentsForSubTask(int subTaskId)
         {
             List<Comment> comments = new List<Comment>();
@@ -1186,7 +1133,6 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                     comments.Add(commentMessage);
                 }
-
                 connection.Close();
             }
             return comments;
@@ -1218,12 +1164,10 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                     history.Add(historyMessage);
                 }
-
                 connection.Close();
             }
             return history;
         }
-
         private static Cover GetCoverById(object coverId)
         {
             if (coverId == DBNull.Value) return null;
@@ -1292,7 +1236,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return null;
         }
-
         private static CoverImageAttributes GetImageAttribsForCoverByPhotoId(object photoId)
         {
             if (photoId == DBNull.Value) return null;
@@ -1319,9 +1262,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return res;
         }
-
-
-
         private static Color? GetColorForCover(object colorId)
         {
             if (colorId == DBNull.Value) return null;
@@ -1352,7 +1292,6 @@ namespace TrelloCopyWinForms.Models.DataBase
 
             return deadLint;
         }
-
         private static List<Flag> GetTagsForTable(Table table)
         {
             List<Flag> res = new List<Flag>();
@@ -1375,13 +1314,15 @@ namespace TrelloCopyWinForms.Models.DataBase
                     flag.FlagTag = reader["Text"].ToString();
                     flag.FlagColor = (Color)GetColorById(int.Parse(reader["ColorId"].ToString()));
 
+                    string  num = reader["TextColor"].ToString();
+                    flag.ForColor = num == 0.ToString() ? Color.Black : Color.White;
+
                     res.Add(flag);
                 }
                 connection.Close();
             }
             return res;
         }
-
         public static void UpdateSubTask(SubTask subTask)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -1393,20 +1334,15 @@ namespace TrelloCopyWinForms.Models.DataBase
                     "[DeadLine] = @endDate, [CoverId] = @coverId, [IfDone] = @ifDone WHERE [Id] = @id";
 
                 SqlCommand command = new SqlCommand(query, connection);
-
                 command.Parameters.AddWithValue("@name", subTask.Name);
                 command.Parameters.AddWithValue("@taskId", subTask.TaskId);
                 command.Parameters.AddWithValue("@desc", subTask.Description);
                 command.Parameters.AddWithValue("@placeInTask", subTask.UniqueIndex);
                 command.Parameters.AddWithValue("@subTaskOnTable", subTask.GlobalSubTaskIndex);
-
                 command.Parameters.AddWithValue("@startDate", GetStartTime(subTask.DeadLine));
                 command.Parameters.AddWithValue("@endDate", GetEndTime(subTask.DeadLine));
                 command.Parameters.AddWithValue("@ifDone", IfDaeadLineIsDone(subTask));
-
                 command.Parameters.AddWithValue("@coverId", GetCoverId(subTask));
-
-
                 command.Parameters.AddWithValue("@id", subTask.Id);
 
                 try
@@ -1458,7 +1394,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                     "[Text] = @text, [IndexInHistory] = @indexInHist  WHERE [Id] = @id";
 
                 SqlCommand command = new SqlCommand(query, connection);
-
                 command.Parameters.AddWithValue("@subTaskId", comment.SubTaskId);
                 command.Parameters.AddWithValue("@date", comment.Date);
                 command.Parameters.AddWithValue("@userId", comment.UserId);
@@ -1491,7 +1426,6 @@ namespace TrelloCopyWinForms.Models.DataBase
         public static void DeleteCoversWhichDoesntContainsInSubTasks()
         {
             List<int> usingCoverIds = new List<int>();
-
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -1532,142 +1466,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             if (subTask.Cover is null || subTask.Cover.Id == 0) return DBNull.Value;
             return subTask.Cover.Id;
         }
-        public static void DeleteSubTask(SubTask subTask)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "DELETE FROM [SubTask] WHERE [@Id] = @id";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", subTask);
-
-                command.ExecuteNonQuery();
-
-                DeleteFromSubTaskParticipants(subTask.Id);
-                DeleteFromSubTaskTag(subTask.Id);
-                DeleteAttachment(subTask.Id);
-
-                DeleteComments(subTask.Id);
-                DeleteFromHistoryTable(subTask.Id);
-
-                DeleteFromCheckList(subTask.Id);
-                DeleteFromCheckListParam(subTask.Id);
-                connection.Close();
-            }
-        }
-        private static void DeleteFromCheckListParam(int subTaskId)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "DELETE FROM [CheckListParam] WHERE [SubTaskId] = @subTaskId";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@subTaskId", subTaskId);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-        private static void DeleteFromCheckList(int subTaskId)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "DELETE FROM [CheckList] WHERE [SubTaskId] = @subTaskId";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@subTaskId", subTaskId);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-        private static void DeleteFromHistoryTable(int subTaskId)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "DELETE FROM [SubTaskChangingHistory] WHERE [SubtaskId] = @id";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", subTaskId);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-        private static void DeleteComments(int subTaskId)
-        {
-            using (SqlConnection connection = new SqlConnection())
-            {
-                connection.Open();
-
-                string query = "DELETE FROM [Comments] WHERE [SubtaskId] = @id";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", subTaskId);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-        private static void DeleteAttachment(int subTaskId)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "DELETE FROM [Attachments] WHERE " +
-                    "[SubTaskPlaceingId] = @id OR [SubTaskLinkingId] = @id";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", subTaskId);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-        private static void DeleteFromSubTaskTag(int subtaskId)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "DELETE FROM [SubtaskTag] WHERE [SubtaskID] = @id";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", subtaskId);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-        private static void DeleteFromSubTaskParticipants(int subTaskId)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "DELETE FROM [SubTaskParticipants] WHERE [SubtaskId] = @id";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", subTaskId);
-
-                command.ExecuteNonQuery();
-                connection.Close();
-            }
-        }
         private static object GetStartTime(DeadLineDate deadLine)
         {
             if (deadLine is null || deadLine.StartDate is null) return DBNull.Value;
@@ -1678,7 +1476,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             if (deadLine is null || deadLine.EndDate is null) return DBNull.Value;
             return deadLine.EndDate;
         }
-
         private static Color? GetColorById(int colorID)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -1704,7 +1501,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return null;
         }
-
         public static void DeleteCheckListParam(CheckListCase checkListCase)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -1869,36 +1665,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 return res;
             }
         }
-        public static int GetCheckListCaseLastId()
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "SELECT TOP 1 [Id] FROM [CheckListParam] ORDER BY [Id] DESC";
-
-                SqlCommand command = new SqlCommand(query, connection);
-
-                int res = int.Parse(command.ExecuteScalar().ToString());
-                connection.Close();
-                return res;
-            }
-        }
-        public static int GetUsersLastId()
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = "SELECT TOP 1 [Id] FROM [Users] ORDER BY [Id] DESC";
-
-                SqlCommand command = new SqlCommand(query, connection);
-
-                int res = int.Parse(command.ExecuteScalar().ToString());
-                connection.Close();
-                return res;
-            }
-        }
         public static int GetTagLastId()
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -1957,20 +1723,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 return res;
             }
         }
-        public static int GetLastHistoryId()
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "SELECT TOP 1 [Id] FROM [SubTaskChangingHistory] ORDER BY [Id] DESC";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                int res = int.Parse(command.ExecuteScalar().ToString());
-
-                connection.Close();
-                return res;
-            }
-        }
         public static AccountType? GetUserTypeForTable(int tableId, int userId)
         {
             AccountType? type = null;
@@ -1995,7 +1747,6 @@ namespace TrelloCopyWinForms.Models.DataBase
             }
             return type;
         }
-
         private static AccountType? GetTypeById(int typeId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -2079,7 +1830,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         public static Table GetTableByCode(string code)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -2170,7 +1920,6 @@ namespace TrelloCopyWinForms.Models.DataBase
                 connection.Close();
             }
         }
-
         public static AccountType GetTypeByCode(string key)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))

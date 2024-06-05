@@ -28,7 +28,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         }
         private void AddBut_Click(object sender, EventArgs e)
         {
-            if(CaseNameBox.Text == "" || 
+            if(CaseNameBox.Text == string.Empty || 
                 _subTask.IfCaseInCheckListIsExist(_checkList.Name, CaseNameBox.Text))
             {
                 MessageBox.Show("Smth went wrong!", "Mistake!");

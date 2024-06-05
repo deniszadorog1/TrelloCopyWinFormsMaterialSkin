@@ -17,6 +17,7 @@ using TrelloCopyWinForms.Models.TableModels;
 using TrelloCopyWinForms.Windows.TableWindows;
 using TrelloCopyWinForms.Models.Enums;
 using TrelloCopyWinForms.Windows.TableWindows.Codes;
+using System.Text.RegularExpressions;
 
 namespace TrelloCopyWinForms.Windows.UserMainMenu
 {
@@ -63,7 +64,6 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
                     label.DoubleClick += EnterTable_DoubleClick;
                     label.ForeColor = GetColorForTableName(panel.BackColor);
 
-
                     panel.Controls.Add(label);
 
                     tempPoint = new Point(AccessableTablesPanel.Width / 2 - panel.Width / 2, tempPoint.Y);
@@ -73,41 +73,54 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
                 }
             }
         }
-
         public Color GetColorForTableName(Color bgColor)
         {
+            const double lumCorrection = 0.05;
             double bgLuminance = GetLuminance(bgColor);
             Color black = Color.Black;
             Color white = Color.White;
             double blackLuminance = GetLuminance(black);
             double whiteLuminance = GetLuminance(white);
-            double blackContrast = (Math.Max(bgLuminance, blackLuminance) + 0.05) / (Math.Min(bgLuminance, blackLuminance) + 0.05);
-            double whiteContrast = (Math.Max(bgLuminance, whiteLuminance) + 0.05) / (Math.Min(bgLuminance, whiteLuminance) + 0.05);
+            double blackContrast = (Math.Max(bgLuminance, blackLuminance) + lumCorrection) /
+                (Math.Min(bgLuminance, blackLuminance) + lumCorrection);
+            double whiteContrast = (Math.Max(bgLuminance, whiteLuminance) + lumCorrection) /
+                (Math.Min(bgLuminance, whiteLuminance) + lumCorrection);
 
             //test
 
             return (blackContrast > whiteContrast) ? black : white;
-
         }
         public double GetLuminance(Color color)
         {
-            double r = color.R / 255.0;
-            double g = color.G / 255.0;
-            double b = color.B / 255.0;
+            const double maxColorValue = 255.0;
 
-            r = (r <= 0.03928) ? r / 12.92 : Math.Pow((r + 0.055) / 1.055, 2.4);
-            g = (g <= 0.03928) ? g / 12.92 : Math.Pow((g + 0.055) / 1.055, 2.4);
-            b = (b <= 0.03928) ? b / 12.92 : Math.Pow((b + 0.055) / 1.055, 2.4);
+            const double rReturnParamMultipilier = 0.2126;
+            const double gReturnParamMultipilier = 0.7152;
+            const double bReturnParamMultipilier = 0.0722;
 
-            // Рассчитываем относительную яркость согласно WCAG
-            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+            const double comparationParam = 0.03928;
+            const double trueParamDevider = 12.92;
+            const double additionInPow = 0.055;
+            const double deviderInPow = 1.055;
+            const double power = 2.4;
+
+            double r = color.R / maxColorValue;
+            double g = color.G / maxColorValue;
+            double b = color.B / maxColorValue;
+
+            r = (r <= comparationParam) ? r / trueParamDevider :
+                Math.Pow((r + additionInPow) / deviderInPow, power);
+            g = (g <= comparationParam) ? g / trueParamDevider :
+                Math.Pow((g + additionInPow) / deviderInPow, power);
+            b = (b <= comparationParam) ? b / trueParamDevider :
+                Math.Pow((b + additionInPow) / deviderInPow, power);
+
+            return rReturnParamMultipilier * r + gReturnParamMultipilier * g + bReturnParamMultipilier * b;
         }
-
-
         private List<Table> GetTablesWhichUserCanUse()
         {
             List<Table> res = new List<Table>();
-            for(int i = 0; i < _tables.Count; i++)
+            for (int i = 0; i < _tables.Count; i++)
             {
                 if (IfUserContrinsInTable(_tables[i]))
                 {
@@ -172,7 +185,6 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             }
             return false;
         }
-
         private void FillUserInfoPage()
         {
             LoginInfo.Text = _chosenUser.Login;
@@ -194,33 +206,76 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
         }
         private void CorrectBut_Click(object sender, EventArgs e)
         {
-            if (LoginCorBox.Text == "" || EmailCorBox.Text == "" ||
-                OldPassCorBox.Text == "" || NewPasCorBox.Text == "")
-            {
-                MessageBox.Show("Somthing went wrong!", "Mistake!");
-                return;
-            }
 
             //Compare old password
-            if (DBUsage.ComparePassHashes(_chosenUser.Login, OldPassCorBox.Text))
+            if (LoginCorBox.Text != string.Empty && EmailCorBox.Text != string.Empty &&
+                OldPassCorBox.Text != string.Empty && NewPasCorBox.Text != string.Empty &&
+
+                DBUsage.ComparePassHashes(_chosenUser.Login, OldPassCorBox.Text) && 
+                EmailValidation())
             {
                 //Assign param
                 string oldUserLogin = _chosenUser.Login;
                 _chosenUser.Login = LoginCorBox.Text;
-                _chosenUser.Email = _chosenUser.Email;
+                _chosenUser.Email = EmailCorBox.Text;
                 _chosenUser.Password = NewPasCorBox.Text;
                 //Init correction in db
                 DBUsage.UpdateUser(oldUserLogin, _chosenUser);
 
-                LoginInfo.Text = _chosenUser.Login;
-                EmailInfo.Text = _chosenUser.Email;
+                FillUserInfoPage();
 
                 MessageBox.Show("Changed!", "Success!");
                 return;
             }
+            else if(LoginCorBox.Text != string.Empty && EmailCorBox.Text != string.Empty &&
+                !DBUsage.IfUserParamsExistInDB(LoginCorBox.Text, EmailCorBox.Text) &&
+                EmailValidation())
+            {
+                string oldUserLogin = _chosenUser.Login;
+
+                _chosenUser.Login = LoginCorBox.Text;
+                _chosenUser.Email = EmailCorBox.Text;
+
+                DBUsage.UpdateUser(oldUserLogin, _chosenUser);
+
+                FillUserInfoPage();
+
+                MessageBox.Show("Changed!", "Success!");
+                return;
+            }
+            else if(LoginCorBox.Text != string.Empty && !DBUsage.IfUserLoginParamExistInDB(LoginCorBox.Text) &&  
+                _chosenUser.Email == EmailCorBox.Text)
+            {
+                string oldUserLogin = _chosenUser.Login;
+                _chosenUser.Login = LoginCorBox.Text;
+
+                DBUsage.UpdateUser(oldUserLogin, _chosenUser);
+
+                FillUserInfoPage();
+
+                MessageBox.Show("Changed!", "Success!");
+                return;
+            }
+            else if(_chosenUser.Login == LoginCorBox.Text && _chosenUser.Email == EmailCorBox.Text &&
+                DBUsage.ComparePassHashes(_chosenUser.Login, OldPassCorBox.Text))
+            {
+                string oldUserLogin = _chosenUser.Login;
+                _chosenUser.Password = NewPasCorBox.Text;
+                DBUsage.UpdateUser(oldUserLogin, _chosenUser);
+
+                FillUserInfoPage();
+
+                MessageBox.Show("Changed!", "Success!");
+            }
+
             MessageBox.Show("Somthing went wrong!", "Mistake!");
         }
-
+        public bool EmailValidation()
+        {
+            string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            return regex.IsMatch(EmailCorBox.Text);
+        }
         private void NewPasEyeImg_Click(object sender, EventArgs e)
         {
             if (sender is PictureBox picBox)
@@ -246,15 +301,13 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             _tables = DBUsage.GetAllTables();
             FillTablesList();
         }
-
         private void ChooseTableBut_Click(object sender, EventArgs e)
         {
-            if(ChosenTablePanel.Controls.Count == 0)
+            if (ChosenTablePanel.Controls.Count == 0)
             {
                 MessageBox.Show("Need to chosoe table");
                 return;
             }
-
             Table chosenTable = _tables[(int)ChosenTablePanel.Tag];
 
             Hide();
@@ -262,12 +315,10 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
             window.ShowDialog();
             Show();
 
-
             _tables = GetTablesWhichUserCanUse();
             ClearChosenTablePanel();
             FillTablesList();
         }
-
         private void AddTableBut_Click(object sender, EventArgs e)
         {
             EnterCode code = new EnterCode(_chosenUser);
@@ -281,6 +332,6 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
                 FillTablesList();
             }
         }
-        
+
     }
 }

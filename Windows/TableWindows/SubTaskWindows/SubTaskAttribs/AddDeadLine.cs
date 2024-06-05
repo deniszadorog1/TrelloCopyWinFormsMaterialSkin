@@ -19,6 +19,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
     {
         public DeadLineDate _deadLine = new DeadLineDate();
         private SubTask _subTask;
+        
         public AddDeadLine(SubTask subTask)
         {
             _subTask = subTask;
@@ -26,6 +27,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         }
         private void AddBut_Click(object sender, EventArgs e)
         {
+            
+            const string datesDivider = "  - ";
             DateTime start = StartDatePicker.Value;
             DateTime end = EndDatePicker.Value;
 
@@ -40,7 +43,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             if (StartDateBox.Checked)
             {
                 _deadLine.StartDate = start;
-                _deadLine.PrintString = startDate + " - ";
+                _deadLine.PrintString = startDate + datesDivider;
             }
             _deadLine.EndDate = end;
             _deadLine.PrintString += endDate;
@@ -49,6 +52,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             DBUsage.UpdateSubTask(_subTask);
             Close();
         }
+        
         private void BackBut_Click(object sender, EventArgs e)
         {
             _deadLine = null;
@@ -56,6 +60,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             DBUsage.UpdateSubTask(_subTask);
 
             Close();
+        }
+
+        private void AddDeadLine_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _deadLine = null;
+            _subTask.DeadLine = null;
         }
     }
 }
