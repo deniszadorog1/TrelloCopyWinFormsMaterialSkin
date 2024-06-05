@@ -31,11 +31,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         private const string _addTaskButName = "AddTaskBut";
 
         private const int _taskBoxWidth = 250;
-        private const int _taskBoxStartHeight = 150;
-
         private const int _upperBorderDistance = 10;
-        private const int _distanceBetweenTasks = 10;
-
         private const int _distanceBetweenSubTasks = 10;
         private const int _distanceBetweenSubTaskName = 5;
 
@@ -83,14 +79,16 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 tablePanel.BorderStyle = BorderStyle.FixedSingle;
                 tablePanel.Tag = _tables[i].Id;
                 tablePanel.Location = loc;
-                tablePanel.Size = new Size(LeftTablesPanel.Width - _distanceBetweenSubTasks * 2, tablePanelHeight);
+                tablePanel.Size = new Size(LeftTablesPanel.Width -
+                    _distanceBetweenSubTasks * 2, tablePanelHeight);
                 tablePanel.Click += ChangeTable_Click;
 
                 PictureBox tableColor = new PictureBox();
                 tableColor.BorderStyle = BorderStyle.FixedSingle;
                 tableColor.BackColor = (Color)_tables[i].BgColor;
                 tableColor.Size = new Size(tablePanelHeight / 2, tablePanelHeight / 2);
-                tableColor.Location = new Point(_distanceBetweenSubTaskName / 2, tablePanel.Height / 2 - tableColor.Height / 2);
+                tableColor.Location = new Point(_distanceBetweenSubTaskName / 2,
+                    tablePanel.Height / 2 - tableColor.Height / 2);
                 tablePanel.Controls.Add(tableColor);
 
                 PictureBox starBox = new PictureBox();
@@ -103,17 +101,16 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 starBox.Image = _tables[i].FavStatus == FavoriteType.Favorite ? _fullStar : _emptyStar;
                 tablePanel.Controls.Add(starBox);
 
-
                 Label label = new Label();
                 label.AutoSize = false;
                 label.BorderStyle = BorderStyle.FixedSingle;
                 label.Text = _tables[i].Name;
                 label.Location = new Point(tableColor.Location.X + tableColor.Width, 0);
-                label.Size = new Size(tablePanel.Width - tableColor.Width - starBox.Width - _distanceBetweenSubTaskName * 2, tablePanel.Height);
+                label.Size = new Size(tablePanel.Width - tableColor.Width -
+                    starBox.Width - _distanceBetweenSubTaskName * 2, tablePanel.Height);
+                label.Click += ChangeTable_Click;
                 tablePanel.Controls.Add(label);
 
-
-              
                 LeftTablesPanel.Controls.Add(tablePanel);
 
                 loc = new Point(loc.X, loc.Y + tablePanel.Height + _distanceBetweenSubTasks);
@@ -147,7 +144,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             string imagePath = Path.Combine(imageDirectory, "Images");
             string strasDisrctory = Path.Combine(imagePath, "FavStars");
 
-            string emptyStarPath = Path.Combine(strasDisrctory, "emptyStar.png"); 
+            string emptyStarPath = Path.Combine(strasDisrctory, "emptyStar.png");
             _emptyStar = Image.FromFile(emptyStarPath);
 
             string fullStarPath = Path.Combine(strasDisrctory, "fullStar.png");
@@ -155,6 +152,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private void ChangeTable_Click(object sender, EventArgs e)
         {
+            if(sender is Label lb)
+            {
+                sender = lb.Parent;
+            }
+
             if (sender is Panel panel)
             {
                 Table table = _tables.Find(x => x.Id == (int)((Panel)sender).Tag);
@@ -166,6 +168,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         public void InitTable()
         {
+            const int deviderInQuoters = 4;
+            const int addSubTaskWidthMultiplier = 3;
+            const int addSubTaskHeightMultiplier = 10;
+
             TablePanel.Controls.Clear();
 
             TablePanel.BackColor = (Color)_table.BgColor;
@@ -177,7 +183,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 TablePanel.Controls.Add(taskBox);
 
                 _table.Tasks[i].SortSubTaskForPlaceing();
-                Point loc = new Point(GetLabelFormMaterialListBox(taskBox).Location.X, taskBox.Location.Y + taskBox.Height + _distanceBetweenSubTasks);
+                Point loc = new Point(GetLabelFormMaterialListBox(taskBox).Location.X,
+                    taskBox.Location.Y + taskBox.Height + _distanceBetweenSubTasks);
                 for (int j = 0; j < _table.Tasks[i].SubTasks.Count; j++)
                 {
                     Panel newSubTask = CreateSubTask(_table.Tasks[i].SubTasks[j], taskBox);
@@ -186,8 +193,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                     newSubTask.MouseDown += SubTask_MouseDown;
                     newSubTask.DragOver += SubTask_DragOver;
                     newSubTask.DragEnter += SubTask_DragEnter;
-                    newSubTask.DragLeave += SubTask_DragLeave;
-                    newSubTask.DragDrop += SubTask_DragDrop;
 
                     newSubTask.Click -= EnterSubTaskMenu_Click;
                     newSubTask.Click += EnterSubTaskMenu_Click;
@@ -204,8 +209,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 but.Name = _addSubTaskButName;
                 but.Tag = taskBox.Name;
                 but.AutoSize = false;
-                but.Size = new Size(_taskBoxWidth / 4 * 3, _taskBoxWidth / 10);
-
+                but.Size = new Size(_taskBoxWidth / deviderInQuoters * addSubTaskWidthMultiplier, _taskBoxWidth / addSubTaskHeightMultiplier);
                 but.Location = new Point(_distanceBetweenSubTasks, taskBox.Height - _distanceBetweenSubTasks - but.Height);
                 but.Click += AddSubTask_Click;
 
@@ -213,10 +217,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 taskBox.Height += but.Height + _distanceBetweenSubTasks * 2;
 
                 taskBox.Controls.Add(but);
-
-
-                //init add task button
             }
+            //init add task button
             _addTaskBut.Text = "Add new task";
             _addTaskBut.Name = _addTaskButName;
             _addTaskBut.Click -= AddTask_Click;
@@ -235,7 +237,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 }
             }
             throw new InvalidOperationException("Cant find label with such name");
-
         }
         private void EnterSubTaskMenu_Click(object sender, EventArgs e)
         {
@@ -258,10 +259,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             InitTable();
         }
-
         public string RemoveTransfers(string text)
         {
-            string res = "";
+            string res = string.Empty;
             for (int i = 0; i < text.Length; i++)
             {
                 if (text[i] != '\n')
@@ -302,8 +302,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private MaterialListBox CreateTaskPanel(string taskName)
         {
+            const int taskBoxWidthDistBetwennMultiplier = 3;
+            const int taskBoxHeightDistBetwennMultiplier = 3;
+
             MaterialListBox taskBox = new MaterialListBox();
-            //taskBox.Size = new Size(_taskBoxWidth, _taskBoxStartHeight);
             taskBox.Name = taskName;
             taskBox.BorderColor = Color.Black;
             taskBox.ShowBorder = true;
@@ -318,15 +320,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             name.BorderStyle = BorderStyle.FixedSingle;
             taskBox.Controls.Add(name);
 
-            taskBox.Size = new Size(_taskBoxWidth + _distanceBetweenSubTasks * 3,
-            name.Height + _distanceBetweenSubTasks * 3);
+            taskBox.Size = new Size(_taskBoxWidth + _distanceBetweenSubTasks * taskBoxWidthDistBetwennMultiplier,
+            name.Height + _distanceBetweenSubTasks * taskBoxHeightDistBetwennMultiplier);
 
             taskBox.AllowDrop = true;
 
             taskBox.MouseDown += TaskPanel_MouseDown;
-
             taskBox.DragOver += TaskPanel_DragOver;
-            //taskBox.DragLeave += TaskPanel_DragLeave;
             taskBox.DragDrop += TaskPanel_DragDrop;
             taskBox.DragEnter += TaskPanel_DragEnter;
 
@@ -340,7 +340,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             if (e.Button == MouseButtons.Left)
             {
                 box.DoDragDrop(box, DragDropEffects.Move);
-
             }
         }
         private void TaskPanel_DragOver(object sender, DragEventArgs e)
@@ -350,7 +349,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         private void TaskPanel_DragDrop(object sender, DragEventArgs e)
         {
             //if sender is Panel(subTask) //handle 
-
             if (!((Panel)e.Data.GetData(typeof(Panel)) is null))
             {
                 Panel subTaskPan = (Panel)e.Data.GetData(typeof(Panel));
@@ -360,10 +358,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 ReassingDraggedTask(from, (MaterialListBox)sender, subTaskPan, dropLocation);
 
                 _table.UpdateSUbTasksInDB();
-
                 return;
             }
-
             //if Panel dropped on anouther Panel => swap them
             //sender - place(or control) where we dropped
             MaterialListBox panel = (MaterialListBox)e.Data.GetData(typeof(MaterialListBox)); //that was dragged
@@ -373,11 +369,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             SwapTableInLogic(panel, (MaterialListBox)sender);
 
             _table.UpdateTasks();
-
             InitTable();
         }
-
-
         public void SwapTableInLogic(MaterialListBox first, MaterialListBox second)
         {
             Label firstNameLB = GetLabelFormMaterialListBox(first);
@@ -427,7 +420,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             CreateSubTask create = new CreateSubTask();
             create.ShowDialog();
 
-            if (create._subTaskName == "") return;
+            if (create._subTaskName == string.Empty) return;
 
             SubTask subTask = _table.AddSubTask(((Button)sender).Tag.ToString(), create._subTaskName);
             subTask.TaskId = _table.GetTaskByName(((Button)sender).Tag.ToString()).Id;
@@ -441,11 +434,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             DBUsage.InsertSubTask(subTask);
             subTask.Id = DBUsage.GetSubTasksLastId();
         }
-
-
         private void SubTask_MouseDown(object sender, MouseEventArgs e)
         {
-            if (_user.Type == AccountType.Viewer) return; 
+            if (_user.Type == AccountType.Viewer) return;
             if (!(sender is Panel)) return;
             Panel box = sender as Panel;
 
@@ -453,10 +444,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 box.DoDragDrop(box, DragDropEffects.Move);
             }
-        }
-        private void SubTask_DragLeave(object sender, EventArgs e)
-        {
-
         }
         private void SubTask_DragOver(object sender, DragEventArgs e)
         {
@@ -472,37 +459,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 e.Effect = DragDropEffects.None;
             }
-        }
-        private void SubTask_DragDrop(object sender, DragEventArgs e)
-        {
-            /*//sender - place(or control) where we dropped
-            Panel panel = (Panel)e.Data.GetData(typeof(Panel)); //that was dragged
-            Point dropLocation = this.PointToClient(new Point(e.X, e.Y));
-
-            //Get task where we are dragged from 
-            Control taskPanelGettingFrom = panel.Parent;
-
-            //Get task where we dragging into 
-            Control taskPanelInsertingInto = ((Panel)sender).Parent;
-
-            //GetTask name drgging from 
-            Control gettingFromLB = GetLabelNameFromPanel(taskPanelGettingFrom);
-            //GetTask name drgging where
-            Control draggingIntoLB = GetLabelNameFromPanel(taskPanelInsertingInto);
-
-            //define position
-            int newSubTaskPosition =
-                GetNewPositionInDraggedTaskPanel(dropLocation, (MaterialListBox)taskPanelInsertingInto);
-
-            Control subTaskNameLB = GetLabelNameFromPanel(panel);
-
-            _table.MoveSubTaskToAnoutherTask(gettingFromLB.Text, draggingIntoLB.Text, subTaskNameLB.Text, int.Parse(panel.Tag.ToString()), newSubTaskPosition);
-
-
-            _table.UpdateSUbTasksInDB();
-
-
-            InitTable();*/
         }
         public void ReassingDraggedTask(Control from, Control into, Panel draggedPanel, Point droppedPosition)
         {
@@ -525,12 +481,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 _table.MoveSubTaskToAnoutherTask(gettingFromLB.Text, draggingIntoLB.Text, subTaskNameLB.Text, int.Parse(draggedPanel.Tag.ToString()), newSubTaskPosition);
             }
-
-
             InitTable();
         }
-
-
         public int GetNewPositionInDraggedTaskPanel(Point droppedPoint, MaterialListBox newTaskBox)
         {
             int lastpanelIndex = -1;
@@ -585,19 +537,23 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             if (!(flgsPanel is null)) subTask.Controls.Add(flgsPanel);
 
             //Other stuf attribs
-
             return subTask;
         }
 
         public Panel InitFlags(Panel subTaskPanel, SubTask subTask, int positionToPlace)
         {
-            Panel flagsPanel = new Panel();
+            const int flagPanelHeightLineType = 10;
+            const int flagPanelHeightFullType = 40;
+            Size lineFlagSize = new Size(60, 10);
+            Size wholeFlagSize = new Size(60, 40);
 
+            Panel flagsPanel = new Panel();
 
             flagsPanel.Click -= EnterSubTaskMenu_Click;
             flagsPanel.Click += EnterSubTaskMenu_Click;
 
-            int panelHeight = _type == FlagsViewOnTableWindowType.Line ? 10 : 40;
+            int panelHeight = _type == FlagsViewOnTableWindowType.Line ?
+                flagPanelHeightLineType : flagPanelHeightFullType;
             panelHeight += _distanceBetweenSubTaskName * 2;
 
             flagsPanel.Size = new Size(subTaskPanel.Width, panelHeight);
@@ -611,13 +567,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             {
                 Panel oneFlagPanel = new Panel();
                 oneFlagPanel.BackColor = subTask.Flags[i].FlagColor;
-                oneFlagPanel.Size = new Size(60, 10);
+                oneFlagPanel.Size = lineFlagSize;
 
                 oneFlagPanel.Click += ChecngeFlagsViewType_Click;
 
                 if (_type == FlagsViewOnTableWindowType.Whole)
                 {
-                    oneFlagPanel.Size = new Size(60, 40);
+                    oneFlagPanel.Size = wholeFlagSize;
 
                     if (subTask.Flags[i].FlagTag != string.Empty)
                     {
@@ -626,35 +582,38 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                         flagTag.Text = subTask.Flags[i].FlagTag;
                         flagTag.Font = new Font("Times New Roman", 12);
                         flagTag.TextAlign = ContentAlignment.MiddleLeft;
+                        flagTag.ForeColor = subTask.Flags[i].ForColor;
 
                         flagTag.Click += ChecngeFlagsViewType_Click;
 
-                        Size textSize = TextRenderer.MeasureText(flagTag.Text, flagTag.Font, new Size(flagTag.Width, 0), TextFormatFlags.WordBreak);
-
+                        Size textSize = TextRenderer.MeasureText(flagTag.Text, flagTag.Font, 
+                            new Size(flagTag.Width, 0), TextFormatFlags.WordBreak);
 
                         if (textSize.Width > oneFlagPanel.Width)
                         {
                             oneFlagPanel.Width = flagTag.Width;
                         }
-
                         oneFlagPanel.Controls.Add(flagTag);
                     }
                 }
-
                 if (i == 0)
                 {
                     oneFlagPanel.Location = loc;
                 }
-                else if (loc.X + flagsPanel.Controls[flagsPanel.Controls.Count - 1].Width + oneFlagPanel.Width + _distanceBetweenSubTaskName * 2 > flagsPanel.Width)
+                else if (loc.X + flagsPanel.Controls[flagsPanel.Controls.Count - 1].Width + 
+                    oneFlagPanel.Width + _distanceBetweenSubTaskName * 2 > flagsPanel.Width)
                 {
-                    loc = new Point(flagsPanel.Controls[0].Location.X, flagsPanel.Controls[flagsPanel.Controls.Count - 1].Location.Y + oneFlagPanel.Height + _distanceBetweenSubTaskName * 2);
+                    loc = new Point(flagsPanel.Controls[0].Location.X, 
+                        flagsPanel.Controls[flagsPanel.Controls.Count - 1].Location.Y + 
+                        oneFlagPanel.Height + _distanceBetweenSubTaskName * 2);
                     flagsPanel.Height += oneFlagPanel.Height + _distanceBetweenSubTaskName * 2;
                     oneFlagPanel.Location = loc;
 
                 }
                 else
                 {
-                    loc = new Point(loc.X + flagsPanel.Controls[flagsPanel.Controls.Count - 1].Width + _distanceBetweenSubTaskName, loc.Y);
+                    loc = new Point(loc.X + flagsPanel.Controls[flagsPanel.Controls.Count - 1].Width + 
+                        _distanceBetweenSubTaskName, loc.Y);
                     oneFlagPanel.Location = loc;
                 }
                 flagsPanel.Controls.Add(oneFlagPanel);
@@ -670,19 +629,19 @@ namespace TrelloCopyWinForms.Windows.TableWindows
 
             return flagsPanel;
         }
-
         private void ChecngeFlagsViewType_Click(object sender, EventArgs e)
         {
             _type = _type == FlagsViewOnTableWindowType.Line ? FlagsViewOnTableWindowType.Whole : FlagsViewOnTableWindowType.Line;
 
             InitTable();
         }
-
-
         public Label InitNameLBInSUbTasksaPanel(Panel subTask, SubTask subTaskOBJ, int yLocToPlace)
         {
+            const int transfersCorrcetion = 1;
+            const int heightPerOneTransfer = 20;
             string deviderInRows = DevideStringInRows(subTaskOBJ.Name);
             int amountOfTransfers = GetTransfersAmount(deviderInRows);
+            
 
             Label _subTaskName = new Label();
             _subTaskName.AutoSize = true;
@@ -691,8 +650,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             _subTaskName.Text = DevideStringInRows(subTaskOBJ.Name);
             _subTaskName.Location = new Point(_distanceBetweenSubTaskName, yLocToPlace);
             _subTaskName.AutoSize = false;
-            _subTaskName.Size = new Size(subTask.Width - _distanceBetweenSubTaskName * 2, 20 * amountOfTransfers + 1);
-
+            _subTaskName.Size = new Size(subTask.Width - _distanceBetweenSubTaskName * 2, 
+                heightPerOneTransfer * amountOfTransfers + transfersCorrcetion);
 
             subTask.Size = new Size(subTask.Width,
                 subTask.Height + _subTaskName.Height + _distanceBetweenSubTaskName * 2);
@@ -731,37 +690,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                     else if (!(subTaskOBJ.Cover.BGImage is null)) subTask.BackgroundImage = subTaskOBJ.Cover.BGImage.Image;
                 }
                 _subTaskCover.Location = new Point(0, 0);
-                //_subTaskCover.Height = heightBgColorPartTypeCover;
-
                 subTask.Height += _subTaskCover.Height;
             }
             else
             {
                 subTask.BackColor = Color.Empty;
             }
-
             return _subTaskCover;
-        }
-        private void BackgroundPanel_Paint(object sender, PaintEventArgs e)
-        {
-            if (sender is PictureBox picBox && picBox.BackgroundImage != null)
-            {
-                e.Graphics.DrawImage(picBox.BackgroundImage, new Rectangle(0, 0, picBox.Width, picBox.Height));
-            }
-        }
-        private void SubTask_MouseEnter(object sender, EventArgs e)
-        {
-            if (sender is Panel subTask)
-            {
-                subTask.BorderStyle = BorderStyle.Fixed3D;
-            }
-        }
-        private void SubTask_MouseLeave(object sender, EventArgs e)
-        {
-            if (sender is Panel subTask)
-            {
-                subTask.BorderStyle = BorderStyle.FixedSingle;
-            }
         }
         private static int GetTransfersAmount(string str)
         {
@@ -780,7 +715,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         private string DevideStringInRows(string row)
         {
             const int charsInRow = 17;
-            string res = "";
+            string res = string.Empty;
 
             for (int i = 0; i < row.Length; i++)
             {
@@ -792,22 +727,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             }
             return res;
         }
-        private void BGImage_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TablePanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void CreateInviteMessBut_Click(object sender, EventArgs e)
         {
             CreateInviteMessage createMessage = new CreateInviteMessage(_table);
             createMessage.ShowDialog();
         }
-
         private void CreateTableBut_Click(object sender, EventArgs e)
         {
             if (_user.Type == AccountType.Viewer)
@@ -843,7 +767,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             }
             return false;
         }
-
         private void EnterCodeBut_Click(object sender, EventArgs e)
         {
             EnterCode code = new EnterCode(_user);
@@ -852,7 +775,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             if (!(code._table is null))
             {
                 _tables = DBUsage.GetAllTables();
-
                 _tables = GetTablesWhichUserCanUse();
                 CreateLeftPanel();
             }

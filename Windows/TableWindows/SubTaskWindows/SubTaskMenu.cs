@@ -621,7 +621,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
             MaterialMultiLineTextBox2 descTextPanel = new MaterialMultiLineTextBox2();
             //descTextPanel.ScrollBars = ScrollBars.Vertical;
-            descTextPanel.MaxLength = maxDescLenght;
+            descTextPanel.MaxLength = maxDescLenght ;
             descTextPanel.Location = new Point(descLB.Location.X, descLB.Location.Y + descLB.Height + _distanceBetweenBlocks);
             descTextPanel.Size = new Size(_descriptionPanel.Width - _distanceBetweenBlocks, _descriptionPanel.Height - descLB.Height - _distanceBetweenBlocks * 2);
 
@@ -663,7 +663,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 MaterialCheckbox box = new MaterialCheckbox();
                 box.AutoSize = false;
                 box.Size = boxSize;
-                box.Text = "";
+                box.Text = string.Empty;
                 box.Location = new Point(borderDist, borderDist);
                 box.Checked = _subTask.DeadLine.IfDone;
 
@@ -706,6 +706,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             const int distanceFromBorders = 5;
             const int checkBoxSizeParam = 30;
             const int deleteButtonWidth = 75;
+            const int progersBaxMax = 100;
+            const int addElemButWidthDevider = 3;
+            const double addElemHeightMultiplier = 1.5;
+            Size deleteBustSize = new Size(100, 30);
 
             _checlListsPanel.Controls.Clear();
             _checlListsPanel.Size = new Size(_checlListsPanel.Width, 50);
@@ -729,7 +733,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 panel.Size = new Size(_flagPanel.Width - distanceFromBorders * 2, 0);
                 panel.Location = tempLoc;
 
-
                 Label checkListName = new Label();
                 checkListName.Location = new Point(distanceFromBorders, distanceFromBorders);
                 checkListName.Text += _subTask.CheckLists[i].Name;
@@ -748,19 +751,16 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                 panel.Size = new Size(panel.Width, panel.Height + deleteCheckList.Height + _distanceBetweenSubBlocks);
 
-
                 MaterialProgressBar progressBar = new MaterialProgressBar();
                 progressBar.Location = new Point(checkListName.Location.X, checkListName.Location.Y + checkListName.Height + distanceFromBorders);
-                progressBar.Size = new Size(deleteCheckList.Location.X - checkListName.Location.X, 5);
-                progressBar.Maximum = 100;
+                progressBar.Size = new Size(deleteCheckList.Location.X - checkListName.Location.X, distanceFromBorders);
+                progressBar.Maximum = progersBaxMax;
                 progressBar.Value = _subTask.CheckLists[i].LineParam;
 
                 panel.Controls.Add(progressBar);
 
                 panel.Size = new Size(panel.Width, panel.Height + progressBar.Height + _distanceBetweenSubBlocks);
 
-
-                Point caseLoc = new Point();
                 for (int j = 0; j < _subTask.CheckLists[i].Cases.Count; j++)
                 {
                     lastControl = panel.Controls[panel.Controls.Count - 1];
@@ -773,7 +773,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                     MaterialCheckbox box = new MaterialCheckbox();
                     box.Tag = i;
-                    box.Text = "";
+                    box.Text = string.Empty;
                     box.Size = new Size(checkBoxSizeParam, checkBoxSizeParam);
                     box.Checked = _subTask.CheckLists[i].Cases[j].IfCaseDone;
                     box.CheckedChanged += CaseIsDoneOrNotDone_CheckedChanged;
@@ -790,7 +790,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     MaterialButton deleteCaseBut = new MaterialButton();
                     deleteCaseBut.Tag = i;
                     deleteCaseBut.AutoSize = false;
-                    deleteCaseBut.Size = new Size(100, 30);
+                    deleteCaseBut.Size = deleteBustSize;
                     deleteCaseBut.Text = "Delete case";
                     deleteCaseBut.Location = new Point(listCase.Width - deleteCaseBut.Width -
                         _distanceBetweenSubBlocks, listCase.Height / 2);
@@ -802,13 +802,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                     panel.Size = new Size(panel.Width, panel.Height + listCase.Height + _distanceBetweenSubBlocks);
                 }
-
                 lastControl = panel.Controls[panel.Controls.Count - 1];
                 //Add AddElement button
                 MaterialButton addElement = new MaterialButton();
                 addElement.Text = "Add Element";
                 addElement.AutoSize = false;
-                addElement.Size = new Size(panel.Width / 3, (int)(GetMaterialButtonFromPanel(panel).Height * 1.5));
+
+
+                addElement.Size = new Size(panel.Width / addElemButWidthDevider, (int)(GetMaterialButtonFromPanel(panel).Height * addElemHeightMultiplier));
                 addElement.Location = new Point(lastControl.Location.X, lastControl.Location.Y + lastControl.Height + _distanceBetweenBlocks);
                 addElement.Click += AddCase_Click;
 
@@ -821,7 +822,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                 _checlListsPanel.Controls.Add(panel);
             }
-
             if (_subTask.CheckLists.Count == 0)
             {
                 _checlListsPanel.Height = 0;
@@ -832,7 +832,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     _checlListsPanel.Controls[_checlListsPanel.Controls.Count - 1].Height + _distanceBetweenBlocks;
             }
             ReintiLocsForMainBlocks();
-
         }
         public MaterialButton GetMaterialButtonFromPanel(Panel panel)
         {
@@ -863,12 +862,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         private void CaseIsDoneOrNotDone_CheckedChanged(object sender, EventArgs e)
         {
+            const int maxPercentAmount = 100;
             Panel checkList = (Panel)((MaterialCheckbox)sender).Parent.Parent;
             Panel caseInCheckList = (Panel)((MaterialCheckbox)sender).Parent;
 
             CheckListModel model = _subTask.CheckLists[(int)checkList.Tag];
             CheckListCase checkCase = model.Cases[(int)((MaterialCheckbox)sender).Tag];
-
 
             //Get progress bar 
             MaterialProgressBar progressBar = GetProgressBarFromPanel(checkList);
@@ -878,15 +877,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             Label checkListNameLB = GetLabelFromPanel(checkList);
             Label caseNameLB = GetLabelFromPanel(caseInCheckList);
 
-
             //Change case check Value in listCheck 
             _subTask.CheckCheckSignForCase(checkListNameLB.Text, caseNameLB.Text);
-
 
             int amountOfCases = _subTask.GetAmountOfCasesOfCheckBox(checkListNameLB.Text, caseNameLB.Text);
             int amountOfTurnedCheckCases = _subTask.GetAmountOfTurnedOnCasesOfCheckBox(checkListNameLB.Text, caseNameLB.Text);
 
-            double percent = (double)amountOfTurnedCheckCases / amountOfCases * 100;
+            double percent = (double)amountOfTurnedCheckCases / amountOfCases * maxPercentAmount;
 
             progressBar.Value = (int)percent;
             model.LineParam = (int)percent;
@@ -948,10 +945,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         public void InitFlags()
         {
+            const int baseFlagWidth = 50;
+            const int baseFlagHeight = 40;
+            const int flagPanelWidthStartPoint = 10;
+            const string addFlag = "+";
+
             _flagPanel.Size = new Size(_flagPanel.Width, 0);
             _flagPanel.BorderStyle = BorderStyle.FixedSingle;
-            _flagPanel.Location = new Point(10, _menuPanel.Location.Y);
-            Size baseFlagSize = new Size(50, 40);
+            _flagPanel.Location = new Point(flagPanelWidthStartPoint, _menuPanel.Location.Y);
+            Size baseFlagSize = new Size(baseFlagWidth, baseFlagHeight);
             Point loc = new Point(_distBetweenFlagsInPanel, _distBetweenFlagsInPanel);
             _flagPanel.Controls.Clear();
 
@@ -973,6 +975,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 flagText.Text = _subTask.Flags[i].FlagTag;
                 flagText.Dock = DockStyle.Fill;
                 flagText.TextAlign = ContentAlignment.MiddleCenter;
+                flagText.ForeColor = _subTask.Flags[i].ForColor;
 
                 panel.Controls.Add(flagText);
                 if (i > 1) (loc, transferCheck) = CheckIfNeedToTransferFlag(panel, loc);
@@ -983,10 +986,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                 if (i == 0) loc = new Point(loc.X + panel.Width + _distBetweenFlagsInPanel, loc.Y);
             }
-
-            //Control lastControl = _flagPanel.Controls[_flagPanel.Controls.Count - 1];
             MaterialButton addBut = new MaterialButton();
-            addBut.Text = "+";
+            addBut.Text = addFlag;
             addBut.BackColor = SystemColors.Control;
             addBut.AutoSize = false;
             addBut.Size = baseFlagSize;
@@ -994,7 +995,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
             UpdateFlagPanelHeight(transferCheck, baseFlagSize.Height);
             _flagPanel.Controls.Add(addBut);
-
 
             if (_subTask.Flags.Count == 0)
             {
@@ -1005,7 +1005,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 _flagPanel.Height = _flagPanel.Controls[_flagPanel.Controls.Count - 1].Location.Y +
                     _flagPanel.Controls[_flagPanel.Controls.Count - 1].Height + _distanceBetweenBlocks;
             }
-
             ReintiLocsForMainBlocks();
         }
         public void UpdateFlagPanelHeight(bool ifNeedToTransfer, int statndatFlagPanelHeight)
@@ -1013,7 +1012,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             if (ifNeedToTransfer)
             {
                 _flagPanel.Size = new Size(_flagPanel.Width, _flagPanel.Height + statndatFlagPanelHeight + _distBetweenFlagsInPanel);
-                //_descriptionPanel.Location = new Point(_descriptionPanel.Location.X, _descriptionPanel.Location.Y + statndatFlagPanelHeight);
                 _flagPanel.BorderStyle = BorderStyle.FixedSingle;
 
                 MakeOneOfThePanelHeightBigger(_flagPanel, statndatFlagPanelHeight + _distanceBetweenBlocks);
@@ -1035,13 +1033,10 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         private int AdjustTextBoxHeight(TextBox textBox)
         {
-            // Создаем графический объект для измерения высоты текста
             using (Graphics g = textBox.CreateGraphics())
             {
-                // Определяем размер текста
                 SizeF textSize = g.MeasureString(textBox.Text, textBox.Font, textBox.Width);
 
-                // Устанавливаем высоту текстового поля в соответствии с высотой текста
                 return (int)Math.Ceiling(textSize.Height) + textBox.Margin.Vertical + SystemInformation.HorizontalScrollBarHeight;
             }
         }
@@ -1068,9 +1063,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                 loc = new Point(loc.X, loc.Y + but.Height + distanceBetweenButtons);
             }
-
             InitClicks();
-
         }
         private void InitClicks()
         {
@@ -1118,7 +1111,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             partAction.ShowDialog();
 
             AddCommentInHistory("Entered In participants menu");
-
             InitParticipants();
         }
         private void AddCover_Click(object sender, EventArgs e)
@@ -1127,7 +1119,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             coverAction.ShowDialog();
 
             AddCommentInHistory("Entered in cover menu");
-
             InitCover();
         }
         private void AddAttachment_Click(object sender, EventArgs e)
@@ -1136,7 +1127,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             addAtt.ShowDialog();
 
             AddCommentInHistory("Entered in attachment menu");
-
             InitAttachments();
         }
         private void AddDeadLine_Click(object sender, EventArgs e)
@@ -1147,7 +1137,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             _subTask.DeadLine = deadLine._deadLine;
 
             AddCommentInHistory("Entered In DeadLine menu");
-
             InitDeadLine();
         }
         private void AddTag_Click(object sender, EventArgs e)
@@ -1156,27 +1145,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             addFlag.ShowDialog();
 
             AddCommentInHistory("Entered In Tag menu");
-
-
             InitFlags();
         }
         private void AddCheckList_Click(object sender, EventArgs e)
         {
-            /*            _subTask.CheckLists.Add(new CheckListModel("First check List"));
-                        _subTask.CheckLists.Last().Cases.Add(new CheckListCase("first"));
-                        _subTask.CheckLists.Last().Cases.Add(new CheckListCase("second"));
-
-                        _subTask.CheckLists.Add(new CheckListModel("Second check List"));
-                        _subTask.CheckLists.Last().Cases.Add(new CheckListCase("third"));
-                        _subTask.CheckLists.Last().Cases.Add(new CheckListCase("fourth "));*/
-
-
             CheckListAction addCheckList = new CheckListAction(_table, _subTask);
             addCheckList.ShowDialog();
 
             InitCheckLists();
             AddCommentInHistory("Entered In Check List menu");
-
         }
         private Control GetButtonFromMenuList(SubTaskButType type)
         {
@@ -1197,7 +1174,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
             if (panelType is null) throw new Exception("Main panel type tag is null. " +
                 "Maybe you gave in method not main panel");
-
             for (int i = (int)panelType + 1; i < (int)SubTaskTypes.ButMenu; i++)
             {
                 Control control = GetMainPanelByType((SubTaskTypes)i);
@@ -1228,7 +1204,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     return (SubTaskTypes)i;
                 }
             }
-
             return null;
         }
         private void InitLocationForBlocks()
@@ -1244,6 +1219,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             //Check Lists
             //History || comments
 
+            const int menuPanelDistWidthMultiplier = 3;
 
             Point tempLoc = _startNameLoc;
             for (int i = 0; i < (int)SubTaskTypes.ButMenu; i++)
@@ -1267,22 +1243,29 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 }
             }
             int yButMenuLoc = _namePanel.Location.Y + _namePanel.Height * 2;
-            _menuPanel.Location = new Point(this.Size.Width - _menuPanel.Width - _distanceBetweenMainBlocks * 3, yButMenuLoc);
+            _menuPanel.Location = new Point(this.Size.Width - _menuPanel.Width - 
+                _distanceBetweenMainBlocks * menuPanelDistWidthMultiplier, yButMenuLoc);
         }
         private void InitPanelsSize()
         {
-            _namePanel.AutoSize = false;
-            _namePanel.Size = new Size(this.Width - 30, _onePointInNamePanelHeight * _subTask.GetTransfersAmount());
-
+            const int namePanelWidthDiffer = 30;
+            const int panelWidthDiffer = 15;
+            const int distanceBLocksPanelWidthMultiplier = 3;
+            const int coverWidthDiffer = 30;
+            const int descPanelHeight = 150;
             _menuPanel.Size = new Size(200, 350);
 
-            int rightPanelsWidth = this.Width - _menuPanel.Width - 15 - _distanceBetweenBlocks * 3;
+            _namePanel.AutoSize = false;
+            _namePanel.Size = new Size(this.Width - namePanelWidthDiffer, _onePointInNamePanelHeight * _subTask.GetTransfersAmount());
 
-            _coverPanel.Size = new Size(this.Width - 30, 0);
+            int rightPanelsWidth = this.Width - _menuPanel.Width - panelWidthDiffer - 
+                _distanceBetweenBlocks * distanceBLocksPanelWidthMultiplier;
+
+            _coverPanel.Size = new Size(this.Width - coverWidthDiffer, 0);
             _partisipentsPanel.Size = new Size(rightPanelsWidth, 0);
             _flagPanel.Size = new Size(rightPanelsWidth, 0);
             _deadlinePanel.Size = new Size(rightPanelsWidth, 0);
-            _descriptionPanel.Size = new Size(rightPanelsWidth, 150);
+            _descriptionPanel.Size = new Size(rightPanelsWidth, descPanelHeight);
             _attachmentsPanel.Size = new Size(rightPanelsWidth, 0);
             _checlListsPanel.Size = new Size(rightPanelsWidth, 0);
             _historyPanel.Size = new Size(rightPanelsWidth, 0);

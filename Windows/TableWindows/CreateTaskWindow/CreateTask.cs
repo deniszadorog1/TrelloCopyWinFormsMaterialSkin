@@ -26,7 +26,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.CreateTaskWindow
         }
         private void AddTaskBut_Click(object sender, EventArgs e)
         {
-            if(TaskNameBox.Text == "")
+            if(TaskNameBox.Text == string.Empty)
             {
                 MessageBox.Show("Cant be add!", "Mistake!");
                 return;

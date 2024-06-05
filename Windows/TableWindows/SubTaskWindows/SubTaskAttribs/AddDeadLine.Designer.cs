@@ -151,6 +151,7 @@
             this.Controls.Add(this.StartDateLB);
             this.Name = "AddDeadLine";
             this.Text = "AddDeadLine";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AddDeadLine_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -43,7 +43,12 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             const int _distanceBetweenFlags = 5;
             for (int i = 0; i < _table._allFlags.Count; i++)
             {
-                Panel colorPanel = CreateColorPanel(_table._allFlags[i].FlagColor, _table._allFlags[i].FlagTag, i);
+
+                if (_table._allFlags[i].ForColor == Color.FromArgb(255, 64, 0, 64))
+                {
+                    _table._allFlags[i].ForColor = Color.White;
+                }
+                Panel colorPanel = CreateColorPanel(_table._allFlags[i].FlagColor, _table._allFlags[i].FlagTag, i, _table._allFlags[i].ForColor);
                 colorPanel.Location = loc;
 
                 ColorsBox.Controls.Add(colorPanel);
@@ -64,7 +69,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 }
             }
         }
-        private Panel CreateColorPanel(Color newColor, string text, int tag)
+        private Panel CreateColorPanel(Color newColor, string text, int tag, Color textColor)
         {
             const int checkBoxXDistance = 10;
             const int distanceBetweenControls = 20;
@@ -81,7 +86,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             colorPanel.Tag = tag;// newColor;
 
             CheckBox check = new CheckBox();
-            check.Text = "";
+            check.Text = string.Empty;
             check.Size = flagCheckBoxSize;
             check.Location = new Point(checkBoxXDistance, colorPanel.Height / 2 - check.Height / 2);
 
@@ -100,6 +105,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             Label colorText = new Label();
             colorText.Text = text;
             colorText.TextAlign = ContentAlignment.MiddleCenter;
+            colorText.ForeColor = textColor;
 
             color.Controls.Add(colorText);
             colorPanel.Controls.Add(color);
@@ -182,7 +188,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
                 _toChangeFlag.FlagColor = ChoseColor.Color;
                 _toChangeFlag.FlagTag = TagNameBox.Text;
-
+                _toChangeFlag.ForColor = GetColorForTableName(ChoseColor.Color);
 
                 ChoseColor.Color = Color.Empty;
                 TagNameBox.Text = string.Empty;
@@ -206,10 +212,15 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 return;
             }
 
+
+
             DBUsage.InsertColor(ChoseColor.Color.R, ChoseColor.Color.G, ChoseColor.Color.B);
             Flag newFlag = new Flag(ChoseColor.Color, TagNameBox.Text);
             DBUsage.InsertTags(_table, newFlag);
             newFlag.Id = DBUsage.GetTagLastId();
+
+            newFlag.ForColor = GetColorForTableName(ChoseColor.Color);
+
 
             _table._allFlags.Add(newFlag);
 
@@ -217,6 +228,49 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
 
             ChoseColor.Color = Color.Empty;
             TagNameBox.Text = string.Empty;
+        }
+
+        public Color GetColorForTableName(Color bgColor)
+        {
+            const double lumCorrection = 0.05;
+            double bgLuminance = GetLuminance(bgColor);
+            Color black = Color.Black;
+            Color white = Color.White;
+            double blackLuminance = GetLuminance(black);
+            double whiteLuminance = GetLuminance(white);
+            double blackContrast = (Math.Max(bgLuminance, blackLuminance) + lumCorrection) /
+                (Math.Min(bgLuminance, blackLuminance) + lumCorrection);
+            double whiteContrast = (Math.Max(bgLuminance, whiteLuminance) + lumCorrection) /
+                (Math.Min(bgLuminance, whiteLuminance) + lumCorrection);
+
+            return (blackContrast > whiteContrast) ? black : white;
+        }
+        public double GetLuminance(Color color)
+        {
+            const double maxColorValue = 255.0;
+
+            const double rReturnParamMultipilier = 0.2126;
+            const double gReturnParamMultipilier = 0.7152;
+            const double bReturnParamMultipilier = 0.0722;
+
+            const double comparationParam = 0.03928;
+            const double trueParamDevider = 12.92;
+            const double additionInPow = 0.055;
+            const double deviderInPow = 1.055;
+            const double power = 2.4;
+
+            double r = color.R / maxColorValue;
+            double g = color.G / maxColorValue;
+            double b = color.B / maxColorValue;
+
+            r = (r <= comparationParam) ? r / trueParamDevider :
+                Math.Pow((r + additionInPow) / deviderInPow, power);
+            g = (g <= comparationParam) ? g / trueParamDevider :
+                Math.Pow((g + additionInPow) / deviderInPow, power);
+            b = (b <= comparationParam) ? b / trueParamDevider :
+                Math.Pow((b + additionInPow) / deviderInPow, power);
+
+            return rReturnParamMultipilier * r + gReturnParamMultipilier * g + bReturnParamMultipilier * b;
         }
         private bool IfFlagColorIsAlreadyExist(Color color, string text)
         {

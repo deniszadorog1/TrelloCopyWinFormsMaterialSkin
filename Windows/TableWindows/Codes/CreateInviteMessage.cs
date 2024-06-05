@@ -41,7 +41,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private void GenerateCodeBut_Click(object sender, EventArgs e)
         {
-            if(TypeBox.Text == "")
+            if(TypeBox.Text == string.Empty)
             {
                 MessageBox.Show("Wrong type!", "Mistake!");
                 return;

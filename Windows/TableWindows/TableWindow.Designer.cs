@@ -46,7 +46,6 @@
             this.TablePanel.Size = new System.Drawing.Size(650, 457);
             this.TablePanel.TabIndex = 1;
             this.TablePanel.WrapContents = false;
-            this.TablePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.TablePanel_Paint);
             // 
             // LeftTablesPanel
             // 

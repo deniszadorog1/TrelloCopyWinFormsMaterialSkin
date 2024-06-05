@@ -61,7 +61,7 @@ namespace TrelloCopyWinForms
         private void LoginBut_Click(object sender, EventArgs e)
         {
             //verfy login and hash for password
-            if (LoginBox.Text == "" || PasswordBox.Text == "")
+            if (LoginBox.Text == string.Empty || PasswordBox.Text == string.Empty)
             {
                 MessageBox.Show("Smth went wrong!", "Mistake!");
                 return;
@@ -71,7 +71,7 @@ namespace TrelloCopyWinForms
 
             if(!(user is null))//we can enter in account
             {
-                PasswordBox.Text = "";
+                PasswordBox.Text = string.Empty;
                 Hide();
                 UserMenu menu = new UserMenu(user);
                 menu.ShowDialog();

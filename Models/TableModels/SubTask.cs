@@ -29,7 +29,7 @@ namespace TrelloCopyWinForms.Models.TableModels
 
         public SubTask()
         {
-            Name = "";
+            Name = string.Empty;
             UniqueIndex = -1;
             GlobalSubTaskIndex = -1;
             Flags = new List<Flag>();
@@ -40,7 +40,7 @@ namespace TrelloCopyWinForms.Models.TableModels
             Attachments = new List<Attachment>();
             Cover = null;
             UsersIdsInSuBTask = new List<int>();
-            Description = "";
+            Description = string.Empty;
         }
         public SubTask(string name, int uniqueIndex, int globalSubTaskIndex, int taskId)
         {
@@ -56,7 +56,7 @@ namespace TrelloCopyWinForms.Models.TableModels
             Attachments = new List<Attachment>();
             Cover = null;
             UsersIdsInSuBTask = new List<int>();
-            Description = "";
+            Description = string.Empty;
         }
         public int GetTransfersAmount()
         {
