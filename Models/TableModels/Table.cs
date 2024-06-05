@@ -28,7 +28,7 @@ namespace TrelloCopyWinForms.Models.TableModels
 
         public Table()
         {
-            Name = "";
+            Name = string.Empty;
             Tasks = new List<TableTask>();
             BgColor = null;
             UserInTable = new List<User>();
@@ -66,7 +66,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         }
         private string DeleteStrTransfersInString(string str)
         {
-            string res = "";
+            string res = string.Empty;
             for (int i = 0; i < str.Length; i++)
             {
                 if (str[i] != '\n')
@@ -124,7 +124,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                     return Tasks[i].Name;
                 }
             }
-            return "";
+            return string.Empty;
         }
         public string GetSubTaskNameByGlobalindex(int index)
         {
@@ -136,7 +136,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                     return res;
                 }
             }
-            return "";
+            return string.Empty;
         }
         public string GetUserLoginById(int userId)
         {

@@ -26,7 +26,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.Codes
         }
         private void EnterCodeBut_Click(object sender, EventArgs e)
         {
-            if(CodeBox.Text == "" || !DBUsage.IfCodeExist(CodeBox.Text)) 
+            if(CodeBox.Text == string.Empty || !DBUsage.IfCodeExist(CodeBox.Text)) 
             {
                 MessageBox.Show("No such code");
                 return;

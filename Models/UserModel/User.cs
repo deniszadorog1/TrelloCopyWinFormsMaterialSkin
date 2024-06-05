@@ -18,10 +18,10 @@ namespace TrelloCopyWinForms.Models.UserModel
 
         public User()
         {
-            Login = "";
-            Email = "";
+            Login = string.Empty;
+            Email = string.Empty;
             Id = -1;
-            Password = "";
+            Password = string.Empty;
         }
         public User(string login, string email, string password)
         {
@@ -34,7 +34,7 @@ namespace TrelloCopyWinForms.Models.UserModel
             Login = login;
             Email = email;
             Id = id;
-            Password = "";
+            Password = string.Empty;
         }
     }
 }

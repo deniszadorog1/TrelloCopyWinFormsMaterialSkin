@@ -17,7 +17,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         public int Id { get; set; }
         public TableTask()
         {
-            Name = "";
+            Name = string.Empty;
             SubTasks = new List<SubTask>();
         }
         public TableTask(string name)
@@ -78,7 +78,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                     return res;
                 }
             }
-            return "";
+            return string.Empty;
         }
         public int GetSubTaskIndexByNameAndUniqueIndex(string name, int index)
         {

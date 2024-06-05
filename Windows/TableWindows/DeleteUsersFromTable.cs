@@ -36,13 +36,14 @@ namespace TrelloCopyWinForms.Windows.TableWindows
         }
         private void DeleteUserBut_Click(object sender, EventArgs e)
         {
+            const int checkForObjsAmount = 1;
+
             if (UsersBox.SelectedIndex == -1) return;
             User toDelete = _table.UserInTable[UsersBox.SelectedIndex];
 
             toDelete.Type =  DBUsage.InitUserTypeToUser(toDelete.Id, _table.Id);
 
-
-            if (toDelete.Type == AccountType.Admin && _table.UserInTable.Count > 1)
+            if (toDelete.Type == AccountType.Admin && _table.UserInTable.Count > checkForObjsAmount)
             {
                 DBUsage.DeleteUserFromUsersTable(toDelete.Id, _table.Id);
                 DBUsage.MakeUserAnAdminInTable(_table.Id);
@@ -52,7 +53,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                 DBUsage.MakeUserAnAdminInTable(_table.Id);
 
             }
-            else if (toDelete.Type == AccountType.Admin && _table.UserInTable.Count == 1)
+            else if (toDelete.Type == AccountType.Admin && _table.UserInTable.Count == checkForObjsAmount)
             {
                 DBUsage.MakeTableInActive(_table.Id);
                 DBUsage.DeleteUserFromUsersTable(toDelete.Id, _table.Id);

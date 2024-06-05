@@ -20,11 +20,7 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
     public partial class CreateTable : MaterialForm
     {
         private List<Image> _images = new List<Image>();
-        private Image _chosenImage = null;
-
-        private (int, int) _backGroundPicSize = (215, 125);
-        private const int _distanceBetweenPossiableBGs = 5;
-        private string _pathToBackGroundImages = "";
+        private string _pathToBackGroundImages = string.Empty;
 
         private User _user;
         public CreateTable(User chosenUser)
@@ -38,6 +34,7 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         }
         private void RenameBGImages()
         {
+            const int maxImageNameLength = 32;
             DirectoryInfo baseDirectoryInfo = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
             string imageDirectory = baseDirectoryInfo.Parent.Parent.FullName;
             string imagePath = Path.Combine(imageDirectory, "Images");
@@ -55,16 +52,12 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                      fileName.Contains(".png") ||
                      fileName.Contains(".jpeg"))
                 {
-                   /* _images.Add(Image.FromFile(pathToPic));
-                    _images.Last().Tag = fileName;*/
-
-                    if (fileName.Length <= 32)
+                    if (fileName.Length <= maxImageNameLength)
                     {
                         string newName = Guid.NewGuid().ToString();
                         newName += fileExtension;
 
                         string newPath = Path.Combine(_pathToBackGroundImages, newName);
-
 
                         File.Move(pathToPic, newPath);
                     }
@@ -91,10 +84,11 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         }
         private string GetFileExtension(string filePath)
         {
-            string res = "";
+            const char devider = '.';
+            string res = string.Empty;
             for (int i = filePath.Length - 1; i >= 0; i--)
             {
-                if (filePath[i] == '.')
+                if (filePath[i] == devider)
                 {
                     res += filePath[i];
                     res = new string(res.Reverse().ToArray());
@@ -107,7 +101,7 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         }
         private string GetFileName(string filePath)
         {
-            string fileName = "";
+            string fileName = string.Empty;
             char cros = '\\';
             for (int i = filePath.Length - 1; i >= 0; i--)
             {
@@ -126,7 +120,7 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
         }
         private void CreateBut_Click(object sender, EventArgs e)
         {
-            if (TableNameBox.Text == "" ||  ChosenBG.BackColor == Color.Empty)
+            if (TableNameBox.Text == string.Empty || ChosenBG.BackColor == Color.Empty)
             {
                 MessageBox.Show("Smth went wrong");
                 return;
@@ -142,18 +136,13 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
             DBUsage.InsertUserTables(newTable, _user, AccountType.Admin);
 
             newTable.Id = DBUsage.GetTableLastId();
-            /*
-                        Hide();         
-                        TableWindow window = new TableWindow(newTable, _user);
-                        window.ShowDialog();
-                        Show();*/
             Close();
         }
         private void ChooseBGBut_Click(object sender, EventArgs e)
         {
             tableBgColor.ShowDialog();
 
-            if(tableBgColor.Color != Color.Empty)
+            if (tableBgColor.Color != Color.Empty)
             {
                 ChosenBG.BackColor = tableBgColor.Color;
             }

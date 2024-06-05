@@ -21,7 +21,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
     {
         private SubTask _subTask;
 
-        private string _bgImagesPath = "";
+        private string _bgImagesPath = string.Empty;
         private List<Image> _bgImages = new List<Image>();
 
         public CoverAction(SubTask subTask)
@@ -212,7 +212,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         }
         private string GetFileName(string filePath)
         {
-            string fileName = "";
+            string fileName = string.Empty;
             char cros = '\\';
             for (int i = filePath.Length - 1; i >= 0; i--)
             {
