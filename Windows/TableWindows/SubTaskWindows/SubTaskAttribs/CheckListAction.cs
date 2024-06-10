@@ -33,6 +33,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         {
             const int distanceBetweenChecksNames = 5;
             const int existCheckListsWidthError = 30;
+            const int nameLocParam = 5;
             Point tempPanelLoc = new Point(0, 0);
             
             for (int i = 0; i < _table.Tasks.Count; i++)
@@ -41,7 +42,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 {
                     int panelHeight = 0;
 
-                    Point nameLoc = new Point(5, 5);
+                    Point nameLoc = new Point(nameLocParam, nameLocParam);
 
                     Panel subTaskCheckLists = new Panel();
                     subTaskCheckLists.BorderStyle = BorderStyle.FixedSingle;

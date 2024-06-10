@@ -21,7 +21,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         private TableTask _task;
         private User _user;
 
-        private Point _startNameLoc = new Point(5, 5);
+        const int nameLbLocParam = 5;
+        private Point _startNameLoc = new Point(nameLbLocParam, nameLbLocParam);
 
 
         //Panel queue
@@ -56,16 +57,6 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         private const int _distanceBetweenSubBlocks = 5;
 
 
-        List<string> _menuList = new List<string>()
-        {
-            "Partisipants",
-            "Tags",
-            "Check-List",
-            "Date",
-            "Attachment",
-            "Cover",
-            "Exit"
-        };
         public SubTaskMenu(SubTask subTask, Table table, TableTask tempTask, User user)
         {
             _subTask = subTask;
@@ -135,6 +126,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         public void InitName()
         {
+            const int startHeight = 0;
             Font nameFont = new Font("Times New Roman", 16);
             const int nameLBHeight = 40;
 
@@ -144,7 +136,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             nameLabel.Font = nameFont;
             nameLabel.AutoSize = false;
 
-            nameLabel.MaximumSize = new Size(_namePanel.Width, 0);
+            nameLabel.MaximumSize = new Size(_namePanel.Width, startHeight);
             nameLabel.BorderStyle = BorderStyle.FixedSingle;
             nameLabel.Size = new Size(_namePanel.Width, nameLBHeight);
 
@@ -286,6 +278,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         public void InitAttachments()
         {
+            const int getLastControlError = 1;
+            const int getPreLastControlError = 2;
+
             const int attachHeight = 500;
             const int attachLinkLbHeight = 10;
             Size mainPanelSize = new Size(150, 30);
@@ -364,8 +359,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
                 if (i % 2 != 0)
                 {
-                    Control getXloc = _attachmentsPanel.Controls[_attachmentsPanel.Controls.Count - 2];
-                    Control getYloc = _attachmentsPanel.Controls[_attachmentsPanel.Controls.Count - 1];
+                    Control getXloc = _attachmentsPanel.Controls[_attachmentsPanel.Controls.Count - getPreLastControlError];
+                    Control getYloc = _attachmentsPanel.Controls[_attachmentsPanel.Controls.Count - getLastControlError];
 
                     int yLoc = getYloc.Height > getXloc.Height ? getYloc.Height : getXloc.Height;
 
@@ -404,7 +399,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             const int _distBetweenBlocks = 5;
             const int commentMaxLength = 250;
             const int histHeaderHeightMultiplier = 3;
-            Size commentButSize = new Size(100, 40);
+            const int commButWidth = 100;
+            const int commButHeight = 40;
+            Size commentButSize = new Size(commButWidth, commButHeight);
 
             _historyPanel.Size = new Size(_historyPanel.Width, historyPanelHeight);
             _historyPanel.Location = new Point();
@@ -583,7 +580,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     return panel.Controls[i];
                 }
             }
-            throw new Exception("Cant find control with such name");
+            throw new ArgumentException("Cant find control with such name");
         }
         private void AddComment_Click(object sender, EventArgs e)
         {
@@ -605,7 +602,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     return (MaterialTextBox2)panel.Controls[i];
                 }
             }
-            throw new Exception("Couldnt find a materialText box!");
+            throw new ArgumentException("Couldnt find a materialText box!");
         }
         public void InitDescription()
         {
@@ -842,19 +839,19 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                     return (MaterialButton)panel.Controls[i];
                 }
             }
-            throw new Exception("Cant find button");
+            throw new ArgumentException("Cant find button");
         }
         private void DeleteCase_Click(object sender, EventArgs e)
         {
             //check list CASE info
             Panel checkListCasePanel = (Panel)((MaterialButton)sender).Parent;
             Label checkListCaseName = GetLabelFromPanel(checkListCasePanel);
-            if (checkListCaseName is null) throw new Exception("Cant find checkCASE name");
+            if (checkListCaseName is null) throw new ArgumentException("Cant find checkCASE name");
 
             //checkLIST info
             Panel checkListPanel = (Panel)((MaterialButton)sender).Parent.Parent;
             Label checkListName = GetLabelFromPanel(checkListPanel);
-            if (checkListName is null) throw new Exception("Cant find checkList name");
+            if (checkListName is null) throw new ArgumentException("Cant find checkList name");
 
             _subTask.DeleteSubTask(checkListName.Text, checkListCaseName.Text);
 
@@ -871,7 +868,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
 
             //Get progress bar 
             MaterialProgressBar progressBar = GetProgressBarFromPanel(checkList);
-            if (progressBar is null) throw new Exception("Couldnt get a prgress bar");
+            if (progressBar is null) throw new ArgumentException("Couldnt get a prgress bar");
 
 
             Label checkListNameLB = GetLabelFromPanel(checkList);
@@ -880,8 +877,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             //Change case check Value in listCheck 
             _subTask.CheckCheckSignForCase(checkListNameLB.Text, caseNameLB.Text);
 
-            int amountOfCases = _subTask.GetAmountOfCasesOfCheckBox(checkListNameLB.Text, caseNameLB.Text);
-            int amountOfTurnedCheckCases = _subTask.GetAmountOfTurnedOnCasesOfCheckBox(checkListNameLB.Text, caseNameLB.Text);
+            int amountOfCases = _subTask.GetAmountOfCasesOfCheckBox(checkListNameLB.Text);
+            int amountOfTurnedCheckCases = _subTask.GetAmountOfTurnedOnCasesOfCheckBox(checkListNameLB.Text);
 
             double percent = (double)amountOfTurnedCheckCases / amountOfCases * maxPercentAmount;
 
@@ -949,6 +946,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
             const int baseFlagHeight = 40;
             const int flagPanelWidthStartPoint = 10;
             const string addFlag = "+";
+            const int checkForZero = 0;
+            const int checkForOne = 1;
+
 
             _flagPanel.Size = new Size(_flagPanel.Width, 0);
             _flagPanel.BorderStyle = BorderStyle.FixedSingle;
@@ -978,13 +978,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 flagText.ForeColor = _subTask.Flags[i].ForColor;
 
                 panel.Controls.Add(flagText);
-                if (i > 1) (loc, transferCheck) = CheckIfNeedToTransferFlag(panel, loc);
+                if (i > checkForOne) (loc, transferCheck) = CheckIfNeedToTransferFlag(panel, loc);
                 panel.Location = loc;
 
                 UpdateFlagPanelHeight(transferCheck, baseFlagSize.Height);
                 _flagPanel.Controls.Add(panel);
 
-                if (i == 0) loc = new Point(loc.X + panel.Width + _distBetweenFlagsInPanel, loc.Y);
+                if (i == checkForZero) loc = new Point(loc.X + panel.Width + _distBetweenFlagsInPanel, loc.Y);
             }
             MaterialButton addBut = new MaterialButton();
             addBut.Text = addFlag;
@@ -1017,6 +1017,11 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
                 MakeOneOfThePanelHeightBigger(_flagPanel, statndatFlagPanelHeight + _distanceBetweenBlocks);
             }
         }
+
+
+        /// <param name="newControl">control to check</param>
+        /// <param name="tempPoint">temp control point</param>
+        /// <returns>control loc ,if string should be transfered</returns>
         private (Point, bool) CheckIfNeedToTransferFlag(Control newControl, Point tempPoint)
         {
             if (newControl is Button && _flagPanel.Controls.Count <= 1) return (tempPoint, false);
@@ -1044,17 +1049,18 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         {
             const int distanceBetweenButtons = 10;
             const int borderDistance = 5;
-            Size butSize = new Size(_menuPanel.Width - distanceBetweenButtons * 2, 35);
+            const int butHeight = 35;
+            Size butSize = new Size(_menuPanel.Width - distanceBetweenButtons * 2, butHeight);
 
             Point loc = new Point(_menuPanel.Width - butSize.Width - borderDistance, 0);
 
-            for (int i = 0; i < _menuList.Count; i++)
+            for (int i = 0; i < (int)SubTaskButType.Exit; i++)
             {
                 MaterialButton but = new MaterialButton();
 
                 but.Tag = (SubTaskButType)i;
-                but.Name = _menuList[i];
-                but.Text = _menuList[i];
+                but.Name = ((SubTaskButType)i).ToString();
+                but.Text = ((SubTaskButType)i).ToString();
                 but.AutoSize = false;
                 but.Size = butSize;
                 but.Location = loc;
@@ -1067,7 +1073,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows
         }
         private void InitClicks()
         {
-            for (int i = 0; i <= (int)SubTaskButType.Exit; i++)
+            for (int i = (int)SubTaskButType.Partisipants; i <= (int)SubTaskButType.Exit; i++)
             {
                 Control but = GetButtonFromMenuList((SubTaskButType)i);
 

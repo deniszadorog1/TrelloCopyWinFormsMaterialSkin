@@ -90,7 +90,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                     return i;
                 }
             }
-            throw new Exception("Cant find subTasks with such params");
+            throw new ArgumentException("Cant find subTasks with such params");
         }
         public void RemoveSubTask(string name, int uniqueIndex)
         {

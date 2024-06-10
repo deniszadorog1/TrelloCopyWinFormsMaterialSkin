@@ -180,9 +180,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
         }
         private bool CheckForFileType(string fileName)
         {
-            return (fileName.Contains(".jpg") ||
-                     fileName.Contains(".png") ||
-                     fileName.Contains(".jpeg"));
+            return (fileName.EndsWith(".jpg") ||
+                     fileName.EndsWith(".png") ||
+                     fileName.EndsWith(".jpeg"));
         }
         public void InitBGFilePath()
         {
@@ -201,9 +201,9 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
                 string fileName = GetFileName(filePath);
                 string pathToPic = Path.Combine(_bgImagesPath, filePath);
 
-                if (fileName.Contains(".jpg") ||
-                     fileName.Contains(".png") ||
-                     fileName.Contains(".jpeg"))
+                if (fileName.EndsWith(".jpg") ||
+                     fileName.EndsWith(".png") ||
+                     fileName.EndsWith(".jpeg"))
                 {
                     _bgImages.Add(Image.FromFile(pathToPic));
                     _bgImages.Last().Tag = pathToPic;

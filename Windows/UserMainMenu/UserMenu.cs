@@ -43,7 +43,8 @@ namespace TrelloCopyWinForms.Windows.UserMainMenu
         {
             AccessableTablesPanel.Controls.Clear();
             const int _deistanceBetweenTables = 5;
-            Size accessTableSize = new Size(100, 100);
+            const int accessTableSizeParam = 100;
+            Size accessTableSize = new Size(accessTableSizeParam, accessTableSizeParam);
             Point tempPoint = new Point(0, _deistanceBetweenTables);
             for (int i = 0; i < _tables.Count; i++)
             {

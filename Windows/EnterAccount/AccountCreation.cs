@@ -49,8 +49,7 @@ namespace TrelloCopyWinForms.Windows.EnterAccount
         public bool EmailValidation()
         {
             string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
-            return regex.IsMatch(EmailBox.Text);
+            return Regex.IsMatch(EmailBox.Text, pattern);
         }
         private void ClearBoxes()
         {

@@ -45,6 +45,7 @@ namespace TrelloCopyWinForms.Models.DataBase
         }
         public static bool IfUserParamsExistInDB(string login, string email)
         {
+            bool check;
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -58,12 +59,12 @@ namespace TrelloCopyWinForms.Models.DataBase
                 command.Parameters.AddWithValue("@email", email);
 
                 SqlDataReader reader = command.ExecuteReader();
-                bool check = reader.Read();
+                check = reader.Read();
 
                 connection.Close();
 
-                return check;
             }
+            return check;
         }
         public static bool IfUserLoginParamExistInDB(string login)
         {
@@ -238,7 +239,7 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                 connection.Close();
 
-                return count != 0 ? true : false;
+                return count != 0;
             }
         }
         public static void InsertCoverPhoto(string path)
@@ -270,9 +271,9 @@ namespace TrelloCopyWinForms.Models.DataBase
                 command.Parameters.AddWithValue("@path", path);
 
                 int count = (int)command.ExecuteScalar();
-                return count > 0;
-
                 connection.Close();
+
+                return count > 0;
             }
         }
         public static void InsertCover(Cover cover)
@@ -305,11 +306,9 @@ namespace TrelloCopyWinForms.Models.DataBase
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("type", cover.Type.ToString());
 
-                return int.Parse(command.ExecuteScalar().ToString());
-
                 connection.Close();
+                return int.Parse(command.ExecuteScalar().ToString());
             }
-            return DBNull.Value;
         }
         public static object GetPhotoIDByPathForCover(Cover cover)
         {
@@ -407,9 +406,9 @@ namespace TrelloCopyWinForms.Models.DataBase
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("tableId", task.TableId);
 
-                return int.Parse(command.ExecuteScalar().ToString());
-
                 connection.Close();
+
+                return int.Parse(command.ExecuteScalar().ToString());
             }
         }
         public static object GetColorId(Table table)
@@ -427,9 +426,10 @@ namespace TrelloCopyWinForms.Models.DataBase
                 command.Parameters.AddWithValue("@g", ((Color)table.BgColor).G);
                 command.Parameters.AddWithValue("@b", ((Color)table.BgColor).B);
 
+                connection.Close();
+
                 return int.Parse(command.ExecuteScalar().ToString());
 
-                connection.Close();
             }
         }
         public static void InsertSubTask(SubTask subTask)
@@ -460,6 +460,7 @@ namespace TrelloCopyWinForms.Models.DataBase
         {
             if (subTask.Cover is null) return DBNull.Value;
 
+            int id = -1;
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -472,14 +473,16 @@ namespace TrelloCopyWinForms.Models.DataBase
                 command.Parameters.AddWithValue("@photoId", GetPhotoIdForSUbTask(subTask));
                 command.Parameters.AddWithValue("@typeId", GetCoverType(subTask.Cover));
 
+                id = (int)command.ExecuteScalar();
+
                 connection.Close();
             }
-            return DBNull.Value;
+            return id;
         }
         public static object GetPhotoIdForSUbTask(SubTask subTask)
         {
-            if (subTask.Cover.BGImage is null) return DBNull.Value;
-            return GetPhotoIdByPath(subTask.Cover.BGImage.Path);
+            return subTask.Cover.BGImage is null ? 
+                DBNull.Value : GetPhotoIdByPath(subTask.Cover.BGImage.Path);
         }
         public static object GetColorIdForSubTask(SubTask subTask)
         {
@@ -495,15 +498,15 @@ namespace TrelloCopyWinForms.Models.DataBase
                 command.Parameters.AddWithValue("@g", ((Color)subTask.Cover.BGColor).G);
                 command.Parameters.AddWithValue("@b", ((Color)subTask.Cover.BGColor).B);
 
-                return int.Parse(command.ExecuteScalar().ToString());
-
                 connection.Close();
+
+                return int.Parse(command.ExecuteScalar().ToString());
             }
         }
         public static object GetStartDateForSubTask(SubTask subTask)
         {
-            if (subTask.DeadLine is null || subTask.DeadLine.StartDate is null) return DBNull.Value;
-            return subTask.DeadLine.StartDate;
+            if (subTask.DeadLine is null || subTask.DeadLine.StartDate is null) return DBNull.Value; 
+            return  subTask.DeadLine.StartDate;
         }
         public static object GetEndDateForSubTask(SubTask subTask)
         {
@@ -577,10 +580,10 @@ namespace TrelloCopyWinForms.Models.DataBase
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@type", type.ToString());
 
-                return (int)command.ExecuteScalar();
-
-
                 connection.Close();
+
+
+                return (int)command.ExecuteScalar();
             }
         }
         public static void InsertUserSubTask(int userId, SubTask subtask)
@@ -1039,8 +1042,7 @@ namespace TrelloCopyWinForms.Models.DataBase
                 while (reader.Read())
                 {
                     int flagId = int.Parse(reader["TagId"].ToString());
-                    Flag flag = GetFlagByFlagId(flagId);
-                    res.Add(flag);
+                    res.Add(GetFlagByFlagId(flagId));
                 }
                 connection.Close();
             }
@@ -1101,7 +1103,7 @@ namespace TrelloCopyWinForms.Models.DataBase
                     res.FlagColor = (Color)GetColorById(int.Parse(reader["ColorId"].ToString()));
 
                     res.ForColor = (bool)reader["TextColor"] == false ? Color.Black : Color.White;
-                }
+                 }
                 connection.Close();
             }
             return res;
@@ -1211,7 +1213,7 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.Read())
                 {
                     return reader["Type"].ToString();
                 }
@@ -1344,15 +1346,8 @@ namespace TrelloCopyWinForms.Models.DataBase
                 command.Parameters.AddWithValue("@ifDone", IfDaeadLineIsDone(subTask));
                 command.Parameters.AddWithValue("@coverId", GetCoverId(subTask));
                 command.Parameters.AddWithValue("@id", subTask.Id);
-
-                try
-                {
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine();
-                }
+                command.ExecuteNonQuery();
+                
                 connection.Close();
             }
         }
@@ -1489,7 +1484,7 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.Read())
                 {
                     int r = int.Parse(reader["R"].ToString());
                     int g = int.Parse(reader["G"].ToString());
@@ -1738,7 +1733,7 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.Read())
                 {
                     return GetTypeById((int)reader["UserTypeId"]);
                 }
@@ -1760,7 +1755,7 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.Read())
                 {
                     return GetTypeByString(reader["Type"].ToString());
                 }
@@ -1842,7 +1837,7 @@ namespace TrelloCopyWinForms.Models.DataBase
                 command.Parameters.AddWithValue("@key", code);
 
                 SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                if (reader.Read())
                 {
                     int tableId = (int)reader["TableId"];
 
@@ -1933,7 +1928,7 @@ namespace TrelloCopyWinForms.Models.DataBase
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.Read())
                 {
                     int typeId = (int)reader["TypeId"];
 

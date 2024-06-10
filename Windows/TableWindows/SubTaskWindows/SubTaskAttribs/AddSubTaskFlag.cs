@@ -41,10 +41,13 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             ColorsBox.Controls.Clear();
             Point loc = new Point();
             const int _distanceBetweenFlags = 5;
+            const int checkArgbA = 255; 
+            const int checkArgbR = 64; 
+            const int checkArgbG = 0; 
+            const int checkArgbB = 64; 
             for (int i = 0; i < _table._allFlags.Count; i++)
             {
-
-                if (_table._allFlags[i].ForColor == Color.FromArgb(255, 64, 0, 64))
+                if (_table._allFlags[i].ForColor == Color.FromArgb(checkArgbA, checkArgbR, checkArgbG, checkArgbB))
                 {
                     _table._allFlags[i].ForColor = Color.White;
                 }
@@ -74,7 +77,8 @@ namespace TrelloCopyWinForms.Windows.TableWindows.SubTaskWindows.SubTaskAttribs
             const int checkBoxXDistance = 10;
             const int distanceBetweenControls = 20;
             const int colorPanelHeight = 50;
-            Size flagCheckBoxSize = new Size(15, 15);
+            const int checkBoxSizeParam = 15;
+            Size flagCheckBoxSize = new Size(checkBoxSizeParam, checkBoxSizeParam);
             const int colorPanelXDistMultiplier = 3;
 
             Panel colorPanel = new Panel();

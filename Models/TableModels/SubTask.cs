@@ -103,17 +103,13 @@ namespace TrelloCopyWinForms.Models.TableModels
 
             caseModel.IfCaseDone = !caseModel.IfCaseDone; 
         }
-        public int GetAmountOfCasesOfCheckBox(string checkListName, string caseName)
+        public int GetAmountOfCasesOfCheckBox(string checkListName)
         {
-            CheckListModel model = CheckLists.Find(x => x.Name == checkListName);
-
-            return model.Cases.Count;
+            return CheckLists.Find(x => x.Name == checkListName).Cases.Count;
         }
-        public int GetAmountOfTurnedOnCasesOfCheckBox(string checkListName, string caseName)
+        public int GetAmountOfTurnedOnCasesOfCheckBox(string checkListName)
         {
-            CheckListModel model = CheckLists.Find(x => x.Name == checkListName);
-
-            return model.GetAmountOfTurnedOnCases();
+            return CheckLists.Find(x => x.Name == checkListName).GetAmountOfTurnedOnCases();
         }
         public void DeleteSubTask(string checkListName, string caseName)
         {
@@ -126,7 +122,8 @@ namespace TrelloCopyWinForms.Models.TableModels
         }
         public void AddComment(string comment, User user, SubTask subTask)
         {
-            Comments.Insert(0, new Comment(comment, Comments.Count, user.Id, subTask.Id));
+            const int startIndex = 0;
+            Comments.Insert(startIndex, new Comment(comment, Comments.Count, user.Id, subTask.Id));
         }
         public void DeleteComment(string commentValue, int commentIndex)
         {
@@ -173,7 +170,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                     return;
                 }
             }
-            new Exception("Cant find attachment with such index!");
+            throw new ArgumentException("Cant find attachment with such index!");
         }
 
        

@@ -48,9 +48,9 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                 string fileExtension = GetFileExtension(pathToPic);
                 string fileName = GetFileName(filePath);
 
-                if (fileName.Contains(".jpg") ||
-                     fileName.Contains(".png") ||
-                     fileName.Contains(".jpeg"))
+                if (fileName.EndsWith(".jpg") ||
+                     fileName.EndsWith(".png") ||
+                     fileName.EndsWith(".jpeg"))
                 {
                     if (fileName.Length <= maxImageNameLength)
                     {
@@ -73,9 +73,9 @@ namespace TrelloCopyWinForms.Windows.CreateTableWindow
                 string fileName = GetFileName(filePath);
                 string pathToPic = Path.Combine(_pathToBackGroundImages, filePath);
 
-                if (fileName.Contains(".jpg") ||
-                     fileName.Contains(".png") ||
-                     fileName.Contains(".jpeg"))
+                if (fileName.EndsWith(".jpg") ||
+                     fileName.EndsWith(".png") ||
+                     fileName.EndsWith(".jpeg"))
                 {
                     _images.Add(Image.FromFile(pathToPic));
                     _images.Last().Tag = fileName;

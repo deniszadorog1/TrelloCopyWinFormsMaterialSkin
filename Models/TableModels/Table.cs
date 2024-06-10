@@ -90,9 +90,7 @@ namespace TrelloCopyWinForms.Models.TableModels
         }
         public SubTask GetSubTask(string taskName, string subTaskName, int uniqueIndex)
         {
-            TableTask task = GetTaskByName(taskName);
-
-            return task.GetSubTaskByNameAndIndex(subTaskName, uniqueIndex);
+            return GetTaskByName(taskName).GetSubTaskByNameAndIndex(subTaskName, uniqueIndex);
         }
         public CheckListModel GetCheckBox(string taskName, string subTaskName, string checkName)
         {
@@ -147,7 +145,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                     return UserInTable[i].Login;
                 }
             }
-            throw new InvalidOperationException("Cant find user with such ID");
+            throw new ArgumentException("Cant find user with such ID");
         }
         public bool IfTaskIsExist(string name)
         {
@@ -162,7 +160,7 @@ namespace TrelloCopyWinForms.Models.TableModels
                     return i;
                 }
             }
-            throw new InvalidOperationException("cant find task with such name!");
+            throw new ArgumentException("cant find task with such name!");
         }
         public void SwapTwoTasks(string firstTaskName, string secondTaskName)
         {

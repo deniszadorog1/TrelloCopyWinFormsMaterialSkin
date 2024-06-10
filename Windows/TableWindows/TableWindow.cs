@@ -533,19 +533,23 @@ namespace TrelloCopyWinForms.Windows.TableWindows
             nameLabel.Click += EnterSubTaskMenu_Click;
 
             //Flags
-            Panel flgsPanel = InitFlags(subTask, subTaskOBJ, nameLabel.Location.Y + nameLabel.Height);
+            Panel flgsPanel = InitFlags(subTask, subTaskOBJ);
             if (!(flgsPanel is null)) subTask.Controls.Add(flgsPanel);
 
             //Other stuf attribs
             return subTask;
         }
 
-        public Panel InitFlags(Panel subTaskPanel, SubTask subTask, int positionToPlace)
+        public Panel InitFlags(Panel subTaskPanel, SubTask subTask)
         {
             const int flagPanelHeightLineType = 10;
             const int flagPanelHeightFullType = 40;
-            Size lineFlagSize = new Size(60, 10);
-            Size wholeFlagSize = new Size(60, 40);
+            const int flagWidth = 60;
+            const int flagLineHeight = 10;
+            const int flagWholeHeight = 40;
+            const int checkForZero = 0;
+            Size lineFlagSize = new Size(flagWidth, flagLineHeight);
+            Size wholeFlagSize = new Size(flagWidth, flagWholeHeight);
 
             Panel flagsPanel = new Panel();
 
@@ -596,7 +600,7 @@ namespace TrelloCopyWinForms.Windows.TableWindows
                         oneFlagPanel.Controls.Add(flagTag);
                     }
                 }
-                if (i == 0)
+                if (i == checkForZero)
                 {
                     oneFlagPanel.Location = loc;
                 }
